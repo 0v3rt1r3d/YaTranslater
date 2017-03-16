@@ -1,3 +1,4 @@
 <resources>
   <string name="app_name">YaTranslater</string>
+  <string name="hint_for_translater_field">Enter the text to translate here</string>
 </resources>
