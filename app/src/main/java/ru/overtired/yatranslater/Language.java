@@ -13,5 +13,16 @@ public class Language
     }
 
     private String mFullName;
+
+    public String getFullName()
+    {
+        return mFullName;
+    }
+
+    public String getShortName()
+    {
+        return mShortName;
+    }
+
     private String mShortName;
 }

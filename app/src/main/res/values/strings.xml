@@ -4,4 +4,6 @@
   <string name="settings">Settings</string>
   <string name="history">History</string>
   <string name="favorites">Favorites</string>
+  <string name="language_text">Text language</string>
+  <string name="language_translate">Translate language</string>
 </resources>

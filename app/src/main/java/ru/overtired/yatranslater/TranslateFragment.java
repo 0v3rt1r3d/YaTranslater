@@ -1,5 +1,6 @@
 package ru.overtired.yatranslater;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -22,10 +23,15 @@ import java.util.List;
 
 public class TranslateFragment extends Fragment
 {
+    private TextView mFromLanguageTextView;
+    private TextView mToLanguageTextView;
+
     private EditText mFieldToTranslate;
     private Button mTranslateButton;
     private TextView mResultTextView;
     private Toolbar mToolbar;
+
+    private List<Language> mLanguages;
 
     public static TranslateFragment newInstance()
     {
@@ -40,8 +46,6 @@ public class TranslateFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
-        setHasOptionsMenu(true);
-
         View v = inflater.inflate(R.layout.fragment_translate,container,false);
         mTranslateButton = (Button) v.findViewById(R.id.button_translate);
         mTranslateButton.setOnClickListener(new View.OnClickListener()
@@ -58,12 +62,35 @@ public class TranslateFragment extends Fragment
 
         mToolbar =(Toolbar) v.findViewById(R.id.toolbar_translate);
 
+        mToLanguageTextView = (TextView) v.findViewById(R.id.to_language_text_view);
+        mToLanguageTextView.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent intent = LanguageChooserActivity.newIntent(getActivity());
+                startActivity(intent);
+            }
+        });
+
+        mFromLanguageTextView = (TextView) v.findViewById(R.id.from_language_text_view);
+        mFromLanguageTextView.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent intent = LanguageChooserActivity.newIntent(getActivity());
+                startActivity(intent);
+            }
+        });
+
+        new LanguageTaker().execute("ru");
+
         return v;
     }
 
     private class LanguageTaker extends AsyncTask<String,Void,List<Language>>
     {
-
         @Override
         protected List<Language> doInBackground(String... params)
         {
@@ -74,7 +101,22 @@ public class TranslateFragment extends Fragment
         @Override
         protected void onPostExecute(List<Language> languages)
         {
-            super.onPostExecute(languages);
+            //Нерационально беру элементы, нужен хешмап или что-то вроде того
+            mLanguages = languages;
+            for (Language language:mLanguages)
+            {
+                if(language.getShortName().equals("ru"))
+                {
+                    mFromLanguageTextView.setText(language.getFullName());
+                }
+            }
+            for (Language language:mLanguages)
+            {
+                if(language.getShortName().equals("en"))
+                {
+                    mToLanguageTextView.setText(language.getFullName());
+                }
+            }
         }
     }
 
@@ -84,7 +126,7 @@ public class TranslateFragment extends Fragment
         protected String[] doInBackground(String... params)
         {
             Translater translater = new Translater();
-            return translater.getTranslation(params[0],params[1]);
+            return translater.getTranslation(params[0], params[1]);
         }
 
         @Override

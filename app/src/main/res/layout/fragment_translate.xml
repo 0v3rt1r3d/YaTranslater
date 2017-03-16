@@ -19,11 +19,12 @@
       android:layout_height="wrap_content">
 
       <TextView
+        android:id="@+id/from_language_text_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:text="Левый"
+        android:text="From"
         android:layout_gravity="center_vertical"
-        android:textSize="36sp"
+        android:textSize="28sp"
         android:textColor="@android:color/white"
         android:layout_marginRight="10dp"
         />
@@ -35,12 +36,13 @@
         android:background="@android:color/transparent"/>
 
       <TextView
+        android:id="@+id/to_language_text_view"
         android:layout_marginLeft="10dp"
         android:layout_gravity="center_vertical"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:text="Правый"
-        android:textSize="36sp"
+        android:text="To"
+        android:textSize="28sp"
         android:textColor="@android:color/white"
         />
 
@@ -72,7 +74,8 @@
     android:id="@+id/translated_text_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:text="Результат перевода"
+    android:textSize="20sp"
+    android:text="Result"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintTop_toBottomOf="@id/button_translate"/>
 
