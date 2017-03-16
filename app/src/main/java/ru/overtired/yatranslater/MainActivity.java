@@ -12,12 +12,11 @@ public class MainActivity extends AppCompatActivity
 {
 //    Кнопки из бара снизу
     private ImageButton mTranslateButton;
-    private ImageButton mBookmarkButton;
+    private ImageButton mMiddleButton;
     private ImageButton mSettingsButton;
 
 //    Фрагменты
-    private BookmarkFragment mBookmarkFragment;
-    private HistoryFragment mHistoryFragment;
+    private MiddleFragment mMiddleFragment;
     private TranslateFragment mTranslateFragment;
     private SettingsFragment mSettingsFragment;
 
@@ -28,9 +27,9 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
 //        Сразу инициализирую все фрагменты
-        mBookmarkFragment = BookmarkFragment.newInstance();
         mTranslateFragment = TranslateFragment.newInstance();
         mSettingsFragment = SettingsFragment.newInstance();
+        mMiddleFragment = MiddleFragment.newInstance();
 
 
 //        Первым фрагментом выбираю перевод
@@ -50,15 +49,15 @@ public class MainActivity extends AppCompatActivity
                         .commit();
             }
         });
-        mBookmarkButton = (ImageButton)findViewById(R.id.nav_button_bookmark);
-        mBookmarkButton.setOnClickListener(new View.OnClickListener()
+        mMiddleButton= (ImageButton)findViewById(R.id.nav_button_middle);
+        mMiddleButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
                 getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.fragment_container,mBookmarkFragment)
+                        .replace(R.id.fragment_container,mMiddleFragment)
                         .commit();
             }
         });
@@ -74,6 +73,8 @@ public class MainActivity extends AppCompatActivity
                         .commit();
             }
         });
+
+
 
     }
 }

@@ -11,14 +11,14 @@ import android.view.ViewGroup;
  * Created by overtired on 14.03.17.
  */
 
-public class BookmarkFragment extends Fragment
+public class FavoriteFragment extends Fragment
 {
-    public static BookmarkFragment newInstance()
+    public static FavoriteFragment newInstance()
     {
 
 //        Bundle args = new Bundle();
 
-        BookmarkFragment fragment = new BookmarkFragment();
+        FavoriteFragment fragment = new FavoriteFragment();
 //        fragment.setArguments(args);
         return fragment;
     }
@@ -27,7 +27,7 @@ public class BookmarkFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
-        View v = inflater.inflate(R.layout.fragment_bookmark,container,false);
+        View v = inflater.inflate(R.layout.fragment_favorite,container,false);
         return v;
     }
 }

@@ -4,7 +4,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -22,6 +25,7 @@ public class TranslateFragment extends Fragment
     private EditText mFieldToTranslate;
     private Button mTranslateButton;
     private TextView mResultTextView;
+    private Toolbar mToolbar;
 
     public static TranslateFragment newInstance()
     {
@@ -36,6 +40,8 @@ public class TranslateFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
+        setHasOptionsMenu(true);
+
         View v = inflater.inflate(R.layout.fragment_translate,container,false);
         mTranslateButton = (Button) v.findViewById(R.id.button_translate);
         mTranslateButton.setOnClickListener(new View.OnClickListener()
@@ -49,6 +55,8 @@ public class TranslateFragment extends Fragment
 
         mResultTextView = (TextView) v.findViewById(R.id.translated_text_view);
         mFieldToTranslate = (EditText) v.findViewById(R.id.field_for_translate);
+
+        mToolbar =(Toolbar) v.findViewById(R.id.toolbar_translate);
 
         return v;
     }
