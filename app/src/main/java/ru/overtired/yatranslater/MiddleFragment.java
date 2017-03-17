@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,6 +32,7 @@ public class MiddleFragment extends Fragment
     private TextView mFavoriteTextView;
 
     private ViewPager mViewPager;
+    private FragmentPagerAdapter mAdapter;
 
     public static MiddleFragment newInstance()
     {
@@ -92,7 +94,7 @@ public class MiddleFragment extends Fragment
             @Override
             public void onClick(View v)
             {
-                Toast.makeText(getActivity(),"Work! favorites",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(),"Work! history",Toast.LENGTH_SHORT).show();
                 Log.d(TAG,Integer.toString(mViewPager.getCurrentItem()));
                 if (mViewPager.getCurrentItem()!=0)
                 {
