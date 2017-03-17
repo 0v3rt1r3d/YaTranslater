@@ -24,6 +24,7 @@ public class SplashActivity extends AppCompatActivity
 
         if(true)
         {
+            Data.get(SplashActivity.this).removeAllLanguages();
             new LanguageTaker().execute("ru");
         }else
         {

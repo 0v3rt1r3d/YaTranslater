@@ -2,9 +2,11 @@ package ru.overtired.yatranslater.database;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ru.overtired.yatranslater.Language;
@@ -43,12 +45,29 @@ public class Data
 
     public List<Language> getLanguages()
     {
-        return null;
+        List<Language> languages = new ArrayList<>();
+
+        LanguageCursorWrapper cursor = queryLanguages();
+        try
+        {
+            cursor.moveToFirst();
+            while(!cursor.isAfterLast())
+            {
+                languages.add(cursor.getLanguage());
+                cursor.moveToNext();
+            }
+        }
+        finally
+        {
+            cursor.close();
+        }
+
+        return languages;
     }
 
     public void removeAllLanguages()
     {
-        mDatabase.delete(HistoryTable.NAME,"*",null);
+        mDatabase.delete(LanguageTable.NAME, null, null);
     }
 
     public void addLanguage(Language language)
@@ -95,5 +114,19 @@ public class Data
     public void clearHistory()
     {
 
+    }
+
+    private LanguageCursorWrapper queryLanguages()
+    {
+        Cursor cursor = mDatabase.query(
+                LanguageTable.NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+        return new LanguageCursorWrapper(cursor);
     }
 }

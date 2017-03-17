@@ -1,5 +1,6 @@
 package ru.overtired.yatranslater;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.List;
@@ -23,7 +25,11 @@ import ru.overtired.yatranslater.database.Data;
 
 public class TranslateFragment extends Fragment
 {
-    private Data mData;
+    public final static int REQUEST_LANG_FROM = 0;
+    public final static int REQUEST_LANG_TO = 1;
+
+    private String mFromLanguage = "ru";
+    private String mToLanguage = "en";
 
     //View, показывающие языки
     private TextView mFromLanguageTextView;
@@ -32,10 +38,9 @@ public class TranslateFragment extends Fragment
     //Остальные элементы управления
     private EditText mFieldToTranslate;
     private Button mTranslateButton;
+    private ImageButton mSwapLanguagesButton;
     private TextView mResultTextView;
     private Toolbar mToolbar;
-
-    private List<Language> mLanguages;
 
     public static TranslateFragment newInstance()
     {
@@ -51,32 +56,23 @@ public class TranslateFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
         View v = inflater.inflate(R.layout.fragment_translate,container,false);
+
         mTranslateButton = (Button) v.findViewById(R.id.button_translate);
         mTranslateButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                new AsyncTranslater().execute(mFieldToTranslate.getText().toString(),"en");
+                new AsyncTranslater().execute(mFieldToTranslate.getText().toString(),
+                        mFromLanguage+"-"+mToLanguage);
             }
         });
 
         mResultTextView = (TextView) v.findViewById(R.id.translated_text_view);
+
         mFieldToTranslate = (EditText) v.findViewById(R.id.field_for_translate);
 
         mToolbar =(Toolbar) v.findViewById(R.id.toolbar_translate);
-
-        mToLanguageTextView = (TextView) v.findViewById(R.id.to_language_text_view);
-
-        mToLanguageTextView.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                Intent intent = LanguageChooserActivity.newIntent(getActivity());
-                startActivity(intent);
-            }
-        });
 
         mFromLanguageTextView = (TextView) v.findViewById(R.id.from_language_text_view);
         mFromLanguageTextView.setOnClickListener(new View.OnClickListener()
@@ -84,10 +80,37 @@ public class TranslateFragment extends Fragment
             @Override
             public void onClick(View v)
             {
-                Intent intent = LanguageChooserActivity.newIntent(getActivity());
-                startActivity(intent);
+                Intent intent = LanguageChooserActivity.newIntent(getActivity(),false);
+                startActivityForResult(intent,REQUEST_LANG_FROM);
             }
         });
+
+        mToLanguageTextView = (TextView) v.findViewById(R.id.to_language_text_view);
+        mToLanguageTextView.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent intent = LanguageChooserActivity.newIntent(getActivity(),true);
+                startActivityForResult(intent,REQUEST_LANG_TO);
+            }
+        });
+
+        updateLanguagesView();
+
+        mSwapLanguagesButton = (ImageButton) v.findViewById(R.id.swap_languages_button);
+        mSwapLanguagesButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                String temp = mFromLanguage;
+                mFromLanguage = mToLanguage;
+                mToLanguage = temp;
+                updateLanguagesView();
+            }
+        });
+
 
         return v;
     }
@@ -108,19 +131,41 @@ public class TranslateFragment extends Fragment
         }
     }
 
-    private void updateLanguages()
+    private String getFullNameByShortName(String shortName)
     {
-
-        for(int i=0;i<mLanguages.size();i++)
+        List<Language> mLanguages = Data.get(getActivity()).getLanguages();
+        for (Language language:mLanguages)
         {
-            if(mLanguages.get(i).getShortName().equals("ru"))
+            if(language.getShortName().equals(shortName))
             {
-                mFromLanguageTextView.setText(mLanguages.get(i).getFullName());
+                return language.getFullName();
             }
-            if(mLanguages.get(i).getShortName().equals("en"))
-            {
-                mToLanguageTextView.setText(mLanguages.get(i).getFullName());
-            }
+        }
+        return null;
+    }
+
+    private void updateLanguagesView()
+    {
+        mToLanguageTextView.setText(getFullNameByShortName(mToLanguage));
+        mFromLanguageTextView.setText(getFullNameByShortName(mFromLanguage));
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if(resultCode!= Activity.RESULT_OK)
+        {
+            return;
+        }
+        if(requestCode==REQUEST_LANG_FROM)
+        {
+            mFromLanguage = data.getStringExtra(LanguageChooserActivity.EXTRA_LANG);
+            updateLanguagesView();
+        }
+        else if (requestCode == REQUEST_LANG_TO)
+        {
+            mToLanguage = data.getStringExtra(LanguageChooserActivity.EXTRA_LANG);
+            updateLanguagesView();
         }
     }
 }

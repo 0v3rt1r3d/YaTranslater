@@ -9,9 +9,9 @@ import ru.overtired.yatranslater.Language;
  * Created by overtired on 17.03.17.
  */
 
-public class LanguagesCursorWrapper extends CursorWrapper
+public class LanguageCursorWrapper extends CursorWrapper
 {
-    public LanguagesCursorWrapper(Cursor cursor)
+    public LanguageCursorWrapper(Cursor cursor)
     {
         super(cursor);
     }

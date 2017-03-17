@@ -1,5 +1,6 @@
 package ru.overtired.yatranslater;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -14,14 +15,21 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.overtired.yatranslater.database.Data;
+
 public class LanguageChooserActivity extends AppCompatActivity
 {
     private RecyclerView mRecyclerView;
     private List<Language> mLanguages;
 
-    public static Intent newIntent(Context context)
+    private static final String EXTRA_DIR = "ru.overtired.yatranslater.direction";
+
+    public static final String EXTRA_LANG = "ru.overtired.yatranslater.lang";
+
+    public static Intent newIntent(Context context,boolean isLanguageTo)
     {
         Intent intent = new Intent(context,LanguageChooserActivity.class);
+        intent.putExtra(EXTRA_DIR,isLanguageTo);
         return intent;
     }
 
@@ -34,17 +42,22 @@ public class LanguageChooserActivity extends AppCompatActivity
         mRecyclerView = (RecyclerView) findViewById(R.id.language_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(LanguageChooserActivity.this));
 
-        mLanguages = new ArrayList<>();
-
-        for (int i=0;i<50;i++)
-        {
-            mLanguages.add(new Language(Integer.toString(i*137),Integer.toString(i*137)));
-        }
+        mLanguages = Data.get(LanguageChooserActivity.this).getLanguages();
 
         LanguageAdapter adapter = new LanguageAdapter(mLanguages);
 
         mRecyclerView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
+
+        AppCompatActivity activity = (AppCompatActivity)this;
+
+
+        if(getIntent().getBooleanExtra(EXTRA_DIR,false))
+        {
+            activity.getSupportActionBar().setTitle(R.string.language_translate);
+        }else
+        {
+            activity.getSupportActionBar().setTitle(R.string.language_text);
+        }
     }
 
     private class LanguageHolder extends RecyclerView.ViewHolder implements View.OnClickListener
@@ -70,7 +83,10 @@ public class LanguageChooserActivity extends AppCompatActivity
         @Override
         public void onClick(View v)
         {
-            //Тут должно быть завершение активности, возвращение результата
+            Intent intent = new Intent();
+            intent.putExtra(EXTRA_LANG,mLanguage.getShortName());
+            setResult(Activity.RESULT_OK,intent);
+            finish();
         }
     }
 
