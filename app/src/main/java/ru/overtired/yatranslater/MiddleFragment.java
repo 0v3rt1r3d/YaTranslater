@@ -50,26 +50,26 @@ public class MiddleFragment extends Fragment
         mHistoryFragment = HistoryFragment.newInstance();
 
         mViewPager = (ViewPager) v.findViewById(R.id.middle_view_pager);
-//        mViewPager.setAdapter(new FragmentPagerAdapter(getFragmentManager())
-//        {
-//            @Override
-//            public Fragment getItem(int position)
-//            {
-//                if(position == 0)
-//                {
-//                    return mHistoryFragment;
-//                } else
-//                {
-//                    return mFavoriteFragment;
-//                }
-//            }
-//
-//            @Override
-//            public int getCount()
-//            {
-//                return 2;
-//            }
-//        });
+        mViewPager.setAdapter(new FragmentPagerAdapter(getFragmentManager())
+        {
+            @Override
+            public Fragment getItem(int position)
+            {
+                if(position == 0)
+                {
+                    return mHistoryFragment;
+                } else
+                {
+                    return mFavoriteFragment;
+                }
+            }
+
+            @Override
+            public int getCount()
+            {
+                return 2;
+            }
+        });
 
         mFavoriteTextView = (TextView) v.findViewById(R.id.favorites_title);
         mFavoriteTextView.setOnClickListener(new View.OnClickListener()
@@ -78,11 +78,11 @@ public class MiddleFragment extends Fragment
             public void onClick(View v)
             {
                 Toast.makeText(getActivity(),"Work! favorites",Toast.LENGTH_SHORT).show();
-//                Log.d(TAG,Integer.toString(mViewPager.getCurrentItem()));
-//                if (mViewPager.getCurrentItem()!=1)
-//                {
-//                    mViewPager.setCurrentItem(0);
-//                }
+                Log.d(TAG,Integer.toString(mViewPager.getCurrentItem()));
+                if (mViewPager.getCurrentItem()!=1)
+                {
+                    mViewPager.setCurrentItem(0);
+                }
             }
         });
 
@@ -93,11 +93,11 @@ public class MiddleFragment extends Fragment
             public void onClick(View v)
             {
                 Toast.makeText(getActivity(),"Work! favorites",Toast.LENGTH_SHORT).show();
-//                Log.d(TAG,Integer.toString(mViewPager.getCurrentItem()));
-//                if (mViewPager.getCurrentItem()!=0)
-//                {
-//                    mViewPager.setCurrentItem(1);
-//                }
+                Log.d(TAG,Integer.toString(mViewPager.getCurrentItem()));
+                if (mViewPager.getCurrentItem()!=0)
+                {
+                    mViewPager.setCurrentItem(1);
+                }
             }
         });
 

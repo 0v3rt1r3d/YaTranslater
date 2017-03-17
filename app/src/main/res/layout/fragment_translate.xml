@@ -33,12 +33,12 @@
         android:textSize="28sp"
         android:textColor="@android:color/white"
         android:layout_marginRight="10dp"
-        android:layout_toRightOf="@id/swap_languages_button"
+        android:layout_toLeftOf="@id/swap_languages_button"
         />
 
 
       <TextView
-        android:layout_toLeftOf="@id/swap_languages_button"
+        android:layout_toRightOf="@id/swap_languages_button"
         android:id="@+id/to_language_text_view"
         android:layout_marginLeft="10dp"
         android:layout_gravity="center_vertical"

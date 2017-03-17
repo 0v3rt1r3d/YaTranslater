@@ -42,6 +42,8 @@ public class TranslateFragment extends Fragment
     private TextView mResultTextView;
     private Toolbar mToolbar;
 
+    private AsyncTranslater mTranslater;
+
     public static TranslateFragment newInstance()
     {
 //        Bundle args = new Bundle();
@@ -57,13 +59,22 @@ public class TranslateFragment extends Fragment
     {
         View v = inflater.inflate(R.layout.fragment_translate,container,false);
 
+        mTranslater = new AsyncTranslater();
+
         mTranslateButton = (Button) v.findViewById(R.id.button_translate);
         mTranslateButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                new AsyncTranslater().execute(mFieldToTranslate.getText().toString(),
+//                if(mTranslater == null)
+//                {
+//                    mTranslater = new AsyncTranslater();
+//                }else
+//                {
+//                    mTranslater.cancel(true);
+//                }
+                mTranslater.execute(mFieldToTranslate.getText().toString(),
                         mFromLanguage+"-"+mToLanguage);
             }
         });
@@ -72,7 +83,7 @@ public class TranslateFragment extends Fragment
 
         mFieldToTranslate = (EditText) v.findViewById(R.id.field_for_translate);
 
-        mToolbar =(Toolbar) v.findViewById(R.id.toolbar_translate);
+//        mToolbar =(Toolbar) v.findViewById(R.id.toolbar_translate);
 
         mFromLanguageTextView = (TextView) v.findViewById(R.id.from_language_text_view);
         mFromLanguageTextView.setOnClickListener(new View.OnClickListener()

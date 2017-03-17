@@ -50,7 +50,6 @@ public class LanguageChooserActivity extends AppCompatActivity
 
         AppCompatActivity activity = (AppCompatActivity)this;
 
-
         if(getIntent().getBooleanExtra(EXTRA_DIR,false))
         {
             activity.getSupportActionBar().setTitle(R.string.language_translate);
