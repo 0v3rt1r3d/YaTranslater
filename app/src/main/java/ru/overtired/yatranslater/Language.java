@@ -8,11 +8,12 @@ public class Language
 {
     public Language(String FullName, String ShortName)
     {
-        mFullName = FullName;
         mShortName = ShortName;
+        mFullName = FullName;
     }
 
     private String mFullName;
+    private String mShortName;
 
     public String getFullName()
     {
@@ -23,6 +24,4 @@ public class Language
     {
         return mShortName;
     }
-
-    private String mShortName;
 }

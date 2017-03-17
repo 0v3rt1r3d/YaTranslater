@@ -7,8 +7,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -16,6 +14,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import java.util.List;
+
+import ru.overtired.yatranslater.database.Data;
 
 /**
  * Created by overtired on 14.03.17.
@@ -110,7 +110,6 @@ public class TranslateFragment extends Fragment
 
     private void updateLanguages()
     {
-        mLanguages = Data.getInstance(getActivity()).getLanguages();
 
         for(int i=0;i<mLanguages.size();i++)
         {
