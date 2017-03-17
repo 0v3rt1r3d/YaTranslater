@@ -23,9 +23,13 @@ import java.util.List;
 
 public class TranslateFragment extends Fragment
 {
+    private Data mData;
+
+    //View, показывающие языки
     private TextView mFromLanguageTextView;
     private TextView mToLanguageTextView;
 
+    //Остальные элементы управления
     private EditText mFieldToTranslate;
     private Button mTranslateButton;
     private TextView mResultTextView;
@@ -63,6 +67,7 @@ public class TranslateFragment extends Fragment
         mToolbar =(Toolbar) v.findViewById(R.id.toolbar_translate);
 
         mToLanguageTextView = (TextView) v.findViewById(R.id.to_language_text_view);
+
         mToLanguageTextView.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -84,40 +89,7 @@ public class TranslateFragment extends Fragment
             }
         });
 
-        new LanguageTaker().execute("ru");
-
         return v;
-    }
-
-    private class LanguageTaker extends AsyncTask<String,Void,List<Language>>
-    {
-        @Override
-        protected List<Language> doInBackground(String... params)
-        {
-            Translater translater = new Translater();
-            return translater.getLanguages(getActivity(),params[0]);
-        }
-
-        @Override
-        protected void onPostExecute(List<Language> languages)
-        {
-            //Нерационально беру элементы, нужен хешмап или что-то вроде того
-            mLanguages = languages;
-            for (Language language:mLanguages)
-            {
-                if(language.getShortName().equals("ru"))
-                {
-                    mFromLanguageTextView.setText(language.getFullName());
-                }
-            }
-            for (Language language:mLanguages)
-            {
-                if(language.getShortName().equals("en"))
-                {
-                    mToLanguageTextView.setText(language.getFullName());
-                }
-            }
-        }
     }
 
     private class AsyncTranslater extends AsyncTask<String,Void,String[]>
@@ -133,6 +105,23 @@ public class TranslateFragment extends Fragment
         protected void onPostExecute(String[] strings)
         {
             mResultTextView.setText(strings[0]);
+        }
+    }
+
+    private void updateLanguages()
+    {
+        mLanguages = Data.getInstance(getActivity()).getLanguages();
+
+        for(int i=0;i<mLanguages.size();i++)
+        {
+            if(mLanguages.get(i).getShortName().equals("ru"))
+            {
+                mFromLanguageTextView.setText(mLanguages.get(i).getFullName());
+            }
+            if(mLanguages.get(i).getShortName().equals("en"))
+            {
+                mToLanguageTextView.setText(mLanguages.get(i).getFullName());
+            }
         }
     }
 }
