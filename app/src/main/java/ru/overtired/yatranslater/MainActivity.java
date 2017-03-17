@@ -1,19 +1,23 @@
 package ru.overtired.yatranslater;
 
+import android.support.annotation.IdRes;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 
+import com.roughike.bottombar.OnTabSelectListener;
+
 //Главная активность, хост для всех фрагментов
 
 public class MainActivity extends AppCompatActivity
 {
 //    Кнопки из бара снизу
-    private ImageButton mTranslateButton;
-    private ImageButton mMiddleButton;
-    private ImageButton mSettingsButton;
+    private com.roughike.bottombar.BottomBar mBottomBar;
+//    private com.roughike.bottombar.BottomBarTab mTranslateButton;
+//    private com.roughike.bottombar.BottomBarTab mMiddleButton;
+//    private com.roughike.bottombar.BottomBarTab mSettingsButton;
 
 //    Фрагменты
     private MiddleFragment mMiddleFragment;
@@ -36,45 +40,32 @@ public class MainActivity extends AppCompatActivity
         FragmentManager fm = getSupportFragmentManager();
         fm.beginTransaction().add(R.id.fragment_container,mTranslateFragment).commit();
 
-//        Нахожу кнопки нижнего бара и определяю для них слушателей
-        mTranslateButton = (ImageButton)findViewById(R.id.nav_button_translate);
-        mTranslateButton.setOnClickListener(new View.OnClickListener()
+        mBottomBar = (com.roughike.bottombar.BottomBar) findViewById(R.id.bottom_bar);
+        mBottomBar.setOnTabSelectListener(new OnTabSelectListener()
         {
             @Override
-            public void onClick(View v)
+            public void onTabSelected(@IdRes int tabId)
             {
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.fragment_container,mTranslateFragment)
-                        .commit();
+                if(tabId == R.id.nav_button_translate)
+                {
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.fragment_container,mTranslateFragment)
+                            .commit();
+                }else if(tabId == R.id.nav_button_middle)
+                {
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.fragment_container,mMiddleFragment)
+                            .commit();
+                }else if(tabId == R.id.nav_button_settings)
+                {
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.fragment_container,mSettingsFragment)
+                            .commit();
+                }
             }
         });
-        mMiddleButton= (ImageButton)findViewById(R.id.nav_button_middle);
-        mMiddleButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.fragment_container,mMiddleFragment)
-                        .commit();
-            }
-        });
-        mSettingsButton = (ImageButton)findViewById(R.id.nav_button_settings);
-        mSettingsButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.fragment_container,mSettingsFragment)
-                        .commit();
-            }
-        });
-
-
-
     }
 }

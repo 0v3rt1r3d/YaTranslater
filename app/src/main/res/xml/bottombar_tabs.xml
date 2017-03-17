@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tabs>
+  <tab
+    id="@+id/nav_button_translate"
+    icon="@drawable/ic_translate" />
+  <tab
+    id="@+id/nav_button_middle"
+    icon="@drawable/ic_bookmark"/>
+  <tab
+    id="@+id/nav_button_settings"
+    icon="@drawable/ic_settings"/>
+</tabs>

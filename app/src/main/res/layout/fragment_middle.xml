@@ -18,6 +18,7 @@
       android:layout_height="wrap_content">
 
       <LinearLayout
+        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -29,8 +30,7 @@
           android:layout_height="wrap_content"
           android:layout_marginRight="6dp"
           android:text="@string/history"
-          android:textColor="@android:color/white"
-          android:textSize="30sp"
+          style="@style/AppBarTitle"
           />
 
         <TextView
@@ -39,16 +39,17 @@
           android:layout_height="wrap_content"
           android:layout_marginLeft="6dp"
           android:text="@string/favorites"
-          android:textColor="@android:color/white"
-          android:textSize="30sp"
+          style="@style/AppBarTitle"
           />
       </LinearLayout>
 
       <ImageButton
         android:id="@+id/clear_history_button"
         android:layout_alignParentRight="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_marginRight="8dp"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:scaleType="centerInside"
         android:background="@android:color/transparent"
         android:src="@drawable/ic_delete"/>
 

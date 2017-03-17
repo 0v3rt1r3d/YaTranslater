@@ -17,5 +17,13 @@
   <style name="AppTheme.Splash" parent="AppTheme">
     <item name="android:windowBackground">@drawable/splash_screen</item>
   </style>
+  
+  <style name="AppBarTitle">
+    <item name="android:textSize">22sp</item>
+    <item name="android:layout_gravity">center_vertical</item>
+    <item name="android:gravity">center_vertical</item>
+    <item name="android:textColor">@android:color/white</item>
+    <item name="android:layout_centerVertical">true</item>
+  </style>
 
 </resources>
