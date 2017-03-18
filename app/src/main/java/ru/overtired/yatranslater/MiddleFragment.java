@@ -3,6 +3,7 @@ package ru.overtired.yatranslater;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -23,23 +24,18 @@ public class MiddleFragment extends Fragment
 {
     private static final String TAG = "MiddleFragment: ";
 
-    private FavoriteFragment mFavoriteFragment;
-    private HistoryFragment mHistoryFragment;
-
     private ImageButton mClearHistoryButton;
 
     private TextView mHistoryTextView;
     private TextView mFavoriteTextView;
 
     private ViewPager mViewPager;
-    private FragmentPagerAdapter mAdapter;
 
     public static MiddleFragment newInstance()
     {
 //        Bundle args = new Bundle();
-        MiddleFragment fragment = new MiddleFragment();
+        return new MiddleFragment();
 //        fragment.setArguments(args);
-        return fragment;
     }
 
     @Nullable
@@ -48,21 +44,20 @@ public class MiddleFragment extends Fragment
     {
         View v = inflater.inflate(R.layout.fragment_middle, container, false);
 
-        mFavoriteFragment = FavoriteFragment.newInstance();
-        mHistoryFragment = HistoryFragment.newInstance();
 
         mViewPager = (ViewPager) v.findViewById(R.id.middle_view_pager);
-        mViewPager.setAdapter(new FragmentPagerAdapter(getFragmentManager())
+
+        mViewPager.setAdapter(new FragmentPagerAdapter(getChildFragmentManager())
         {
             @Override
             public Fragment getItem(int position)
             {
                 if(position == 0)
                 {
-                    return mHistoryFragment;
+                    return HistoryFragment.newInstance();
                 } else
                 {
-                    return mFavoriteFragment;
+                    return FavoriteFragment.newInstance();
                 }
             }
 
@@ -79,11 +74,10 @@ public class MiddleFragment extends Fragment
             @Override
             public void onClick(View v)
             {
-                Toast.makeText(getActivity(),"Work! favorites",Toast.LENGTH_SHORT).show();
-                Log.d(TAG,Integer.toString(mViewPager.getCurrentItem()));
                 if (mViewPager.getCurrentItem()!=1)
                 {
-                    mViewPager.setCurrentItem(0);
+                    mViewPager.setCurrentItem(1);
+                    mViewPager.getAdapter().notifyDataSetChanged();
                 }
             }
         });
@@ -94,11 +88,10 @@ public class MiddleFragment extends Fragment
             @Override
             public void onClick(View v)
             {
-                Toast.makeText(getActivity(),"Work! history",Toast.LENGTH_SHORT).show();
-                Log.d(TAG,Integer.toString(mViewPager.getCurrentItem()));
                 if (mViewPager.getCurrentItem()!=0)
                 {
-                    mViewPager.setCurrentItem(1);
+                    mViewPager.setCurrentItem(0);
+                    mViewPager.getAdapter().notifyDataSetChanged();
                 }
             }
         });

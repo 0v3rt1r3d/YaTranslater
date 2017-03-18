@@ -5,26 +5,22 @@
                                              android:layout_height="match_parent"
                                              android:orientation="vertical">
 
-  <android.support.v7.widget.Toolbar
+  <RelativeLayout
     android:id="@+id/toolbar_translate"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="56dp"
     android:background="@color/colorPrimary"
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintLeft_toLeftOf="parent"
     app:layout_constraintRight_toRightOf="parent">
 
-    <RelativeLayout
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:orientation="horizontal">
 
       <ImageButton
         android:id="@+id/swap_languages_button"
         style="@style/AppBarTitle"
+        android:layout_centerInParent="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:background="@android:color/transparent"
         android:src="@drawable/ic_change_languages"/>
 
@@ -33,7 +29,7 @@
         style="@style/AppBarTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="10dp"
+        android:layout_marginRight="8dp"
         android:layout_toLeftOf="@id/swap_languages_button"
         />
 
@@ -43,13 +39,11 @@
         style="@style/AppBarTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="8dp"
         android:layout_toRightOf="@id/swap_languages_button"
         />
 
-    </RelativeLayout>
-
-  </android.support.v7.widget.Toolbar>
+  </RelativeLayout>
 
   <EditText
     android:id="@+id/field_for_translate"

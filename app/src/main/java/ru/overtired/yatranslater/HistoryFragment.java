@@ -28,6 +28,7 @@ public class HistoryFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
         View v = inflater.inflate(R.layout.fragment_history,container,false);
+
         return v;
     }
 }

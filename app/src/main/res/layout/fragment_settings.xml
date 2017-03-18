@@ -5,19 +5,22 @@
   android:layout_width="match_parent"
   android:layout_height="match_parent">
 
-  <android.support.v7.widget.Toolbar
+  <RelativeLayout
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="56dp"
     android:background="@color/colorPrimary">
 
     <TextView
+      android:padding="8dp"
+      android:layout_alignParentStart="true"
+      android:layout_alignParentLeft="true"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:text="@string/settings"
       style="@style/AppBarTitle"/>
 
 
-  </android.support.v7.widget.Toolbar>
+  </RelativeLayout>
 
   <TextView
     android:layout_width="wrap_content"
