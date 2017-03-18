@@ -6,4 +6,6 @@
   <string name="favorites">Favorites</string>
   <string name="language_text">Text language</string>
   <string name="language_translate">Translate language</string>
+  <string name="no_internet">Couldn\'t connect to the Internet</string>
+  <string name="result">Result of translation</string>
 </resources>

@@ -7,11 +7,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by overtired on 14.03.17.
  */
 
-public class FavoriteFragment extends Fragment
+public class FavoriteFragment extends HistoryFavoriteRecycler
 {
     public static FavoriteFragment newInstance()
     {
@@ -23,11 +26,9 @@ public class FavoriteFragment extends Fragment
         return fragment;
     }
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
+    protected List<Translation> getTranslations()
     {
-        View v = inflater.inflate(R.layout.fragment_favorite,container,false);
-        return v;
+        return new ArrayList<>();
     }
 }

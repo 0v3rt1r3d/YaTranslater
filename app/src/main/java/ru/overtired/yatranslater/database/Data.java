@@ -65,6 +65,31 @@ public class Data
         return languages;
     }
 
+    public List<Translation> getHistory()
+    {
+        List<Translation> translations = new ArrayList<>();
+        HistoryCursorWrapper cursor = queryHistory();
+        try
+        {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast())
+            {
+                translations.add(cursor.getTranslation());
+                cursor.moveToNext();
+            }
+        }
+        finally
+        {
+            cursor.close();
+        }
+        return translations;
+    }
+
+    public List<Translation> getFavorite()
+    {
+        return null;
+    }
+
     public void removeAllLanguages()
     {
         mDatabase.delete(LanguageTable.NAME, null, null);
@@ -128,5 +153,19 @@ public class Data
                 null
         );
         return new LanguageCursorWrapper(cursor);
+    }
+
+    private HistoryCursorWrapper queryHistory()
+    {
+        Cursor cursor = mDatabase.query(
+                HistoryTable.NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+        return new HistoryCursorWrapper(cursor);
     }
 }

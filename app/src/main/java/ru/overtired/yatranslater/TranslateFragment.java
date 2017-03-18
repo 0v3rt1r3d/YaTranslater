@@ -1,15 +1,21 @@
 package ru.overtired.yatranslater;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -37,7 +43,6 @@ public class TranslateFragment extends Fragment
 
     //Остальные элементы управления
     private EditText mFieldToTranslate;
-    private Button mTranslateButton;
     private ImageButton mSwapLanguagesButton;
     private TextView mResultTextView;
 
@@ -58,27 +63,31 @@ public class TranslateFragment extends Fragment
     {
         View v = inflater.inflate(R.layout.fragment_translate,container,false);
 
-        mTranslateButton = (Button) v.findViewById(R.id.button_translate);
-        mTranslateButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-//                if(mTranslater == null)
-//                {
-//                    mTranslater = new AsyncTranslater();
-//                }else
-//                {
-//                    mTranslater.cancel(true);
-//                }
-                mTranslater.execute(mFieldToTranslate.getText().toString(),
-                        mFromLanguage+"-"+mToLanguage);
-            }
-        });
-
         mResultTextView = (TextView) v.findViewById(R.id.translated_text_view);
 
         mFieldToTranslate = (EditText) v.findViewById(R.id.field_for_translate);
+        mFieldToTranslate.setOnEditorActionListener(new TextView.OnEditorActionListener()
+        {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
+            {
+                if(actionId == EditorInfo.IME_ACTION_DONE)
+                {
+                    if(mTranslater == null)
+                    {
+                        mTranslater = new AsyncTranslater();
+                    }else
+                    {
+                        mTranslater.cancel(true);
+                    }
+                    mTranslater = new AsyncTranslater();
+                    mTranslater.execute(mFieldToTranslate.getText().toString(),
+                            mFromLanguage+"-"+mToLanguage);
+                    hideKeyboard();
+                }
+                return false;
+            }
+        });
 
         mFromLanguageTextView = (TextView) v.findViewById(R.id.from_language_text_view);
         mFromLanguageTextView.setOnClickListener(new View.OnClickListener()
@@ -174,4 +183,36 @@ public class TranslateFragment extends Fragment
             updateLanguagesView();
         }
     }
+
+    public static boolean hasInternetConnection(final Context context)
+    {
+        ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        if (wifiInfo != null && wifiInfo.isConnected())
+        {
+            return true;
+        }
+        wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        if (wifiInfo != null && wifiInfo.isConnected())
+        {
+            return true;
+        }
+        wifiInfo = cm.getActiveNetworkInfo();
+        if (wifiInfo != null && wifiInfo.isConnected())
+        {
+            return true;
+        }
+        return false;
+    }
+
+    private void hideKeyboard()
+    {
+        View view = getActivity().getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+
+
 }

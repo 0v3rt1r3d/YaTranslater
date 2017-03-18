@@ -7,11 +7,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.List;
+
+import ru.overtired.yatranslater.database.Data;
+
 /**
  * Created by overtired on 14.03.17.
  */
 
-public class HistoryFragment extends Fragment
+public class HistoryFragment extends HistoryFavoriteRecycler
 {
     public static HistoryFragment newInstance()
     {
@@ -23,12 +27,9 @@ public class HistoryFragment extends Fragment
         return fragment;
     }
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
+    protected List<Translation> getTranslations()
     {
-        View v = inflater.inflate(R.layout.fragment_history,container,false);
-
-        return v;
+        return Data.get(getActivity()).getHistory();
     }
 }

@@ -1,6 +1,9 @@
 package ru.overtired.yatranslater;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -22,42 +25,64 @@ public class SplashActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
 
-        if(true)
+        boolean hasInternetConnection = false;
+        Context context = SplashActivity.this;
+
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        if (wifiInfo != null && wifiInfo.isConnected())
+        {
+            hasInternetConnection = true;
+        }
+        wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        if (wifiInfo != null && wifiInfo.isConnected())
+        {
+            hasInternetConnection = true;
+        }
+        wifiInfo = cm.getActiveNetworkInfo();
+        if (wifiInfo != null && wifiInfo.isConnected())
+        {
+            hasInternetConnection = true;
+        }
+
+        if (hasInternetConnection)
         {
             Data.get(SplashActivity.this).removeAllLanguages();
             new LanguageTaker().execute("ru");
-        }else
+        }
+        else
         {
-            startMainActivity();
+            startMainActivity(hasInternetConnection);
         }
     }
 
-    private class LanguageTaker extends AsyncTask<String,Void,List<Language>>
+    private class LanguageTaker extends AsyncTask<String, Void, List<Language>>
     {
         @Override
         protected List<Language> doInBackground(String... params)
         {
             Translater translater = new Translater();
-            return translater.getLanguages(SplashActivity.this,params[0]);
+            return translater.getLanguages(SplashActivity.this, params[0]);
         }
 
         @Override
         protected void onPostExecute(List<Language> languages)
         {
-            for(int i=0;i<languages.size();i++)
+            for (int i = 0; i < languages.size(); i++)
             {
                 Data.get(SplashActivity.this).addLanguage(languages.get(i));
             }
-            startMainActivity();
+            startMainActivity(true);
         }
     }
 
-    private void startMainActivity()
+    private void startMainActivity(boolean hasInternet)
     {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = MainActivity.newIntent(SplashActivity.this,hasInternet);
         startActivity(intent);
         finish();
     }
+
 
     //Сюда можно вставить обновление языков
 }
