@@ -16,6 +16,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import ru.overtired.yatranslater.database.Data;
+
 /**
  * Created by overtired on 16.03.17.
  */
@@ -102,7 +104,8 @@ public class MiddleFragment extends Fragment
             @Override
             public void onClick(View v)
             {
-                Toast.makeText(getActivity(),"WORK!",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(),Integer.toString(Data.get(getActivity()).getHistory().size()),Toast.LENGTH_SHORT).show();
+                Data.get(getActivity()).clearHistory();
             }
         });
 

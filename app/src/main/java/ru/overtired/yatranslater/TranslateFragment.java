@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -34,17 +35,20 @@ public class TranslateFragment extends Fragment
     public final static int REQUEST_LANG_FROM = 0;
     public final static int REQUEST_LANG_TO = 1;
 
-    private String mFromLanguage = "ru";
-    private String mToLanguage = "en";
+    private String mShortLangFrom = "en";
+    private String mShortLangTo = "ru";
+    private String mTextFrom;
+    private String mTextTo;
+
+
 
     //View, показывающие языки
     private TextView mFromLanguageTextView;
     private TextView mToLanguageTextView;
-
-    //Остальные элементы управления
     private EditText mFieldToTranslate;
-    private ImageButton mSwapLanguagesButton;
     private TextView mResultTextView;
+    private ImageButton mSwapLanguagesButton;
+    private ImageButton mSaveToHistoryButton;
 
     private AsyncTranslater mTranslater;
 
@@ -82,7 +86,7 @@ public class TranslateFragment extends Fragment
                     }
                     mTranslater = new AsyncTranslater();
                     mTranslater.execute(mFieldToTranslate.getText().toString(),
-                            mFromLanguage+"-"+mToLanguage);
+                            mShortLangFrom +"-"+mShortLangTo);
                     hideKeyboard();
                 }
                 return false;
@@ -119,10 +123,21 @@ public class TranslateFragment extends Fragment
             @Override
             public void onClick(View v)
             {
-                String temp = mFromLanguage;
-                mFromLanguage = mToLanguage;
-                mToLanguage = temp;
+                String temp = mShortLangFrom;
+                mShortLangFrom = mShortLangTo;
+                mShortLangTo = temp;
                 updateLanguagesView();
+            }
+        });
+
+        mSaveToHistoryButton = (ImageButton)v.findViewById(R.id.button_bookmark);
+        mSaveToHistoryButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                //тут добавление в избранное
+                mSaveToHistoryButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
             }
         });
 
@@ -143,6 +158,11 @@ public class TranslateFragment extends Fragment
         protected void onPostExecute(String[] strings)
         {
             mResultTextView.setText(strings[0]);
+            Translation translation = new Translation(mShortLangFrom,mShortLangTo,
+                    mFieldToTranslate.getText().toString(),
+                    mResultTextView.getText().toString(),false);
+            Data.get(getActivity()).addTranslationToHistory(translation);
+            Toast.makeText(getActivity(),Integer.toString(Data.get(getActivity()).getHistory().size()),Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -161,8 +181,8 @@ public class TranslateFragment extends Fragment
 
     private void updateLanguagesView()
     {
-        mToLanguageTextView.setText(getFullNameByShortName(mToLanguage));
-        mFromLanguageTextView.setText(getFullNameByShortName(mFromLanguage));
+        mToLanguageTextView.setText(getFullNameByShortName(mShortLangTo));
+        mFromLanguageTextView.setText(getFullNameByShortName(mShortLangFrom));
     }
 
     @Override
@@ -174,12 +194,12 @@ public class TranslateFragment extends Fragment
         }
         if(requestCode==REQUEST_LANG_FROM)
         {
-            mFromLanguage = data.getStringExtra(LanguageChooserActivity.EXTRA_LANG);
+            mShortLangFrom = data.getStringExtra(LanguageChooserActivity.EXTRA_LANG);
             updateLanguagesView();
         }
         else if (requestCode == REQUEST_LANG_TO)
         {
-            mToLanguage = data.getStringExtra(LanguageChooserActivity.EXTRA_LANG);
+            mShortLangTo = data.getStringExtra(LanguageChooserActivity.EXTRA_LANG);
             updateLanguagesView();
         }
     }

@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.overtired.yatranslater.database.Data;
+
 /**
  * Created by overtired on 14.03.17.
  */
@@ -29,6 +31,6 @@ public class FavoriteFragment extends HistoryFavoriteRecycler
     @Override
     protected List<Translation> getTranslations()
     {
-        return new ArrayList<>();
+        return Data.get(getActivity()).getFavorites();
     }
 }

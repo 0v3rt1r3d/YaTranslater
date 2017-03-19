@@ -25,6 +25,7 @@ public class DataBaseScheme
 
         public static final class Cols
         {
+            public static final String UUID = "uuid";
             public static final String SHORT_FROM = "short_from";
             public static final String SHORT_TO = "short_to";
             public static final String WORD_FROM = "word_from";

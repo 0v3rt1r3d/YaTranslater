@@ -47,8 +47,9 @@ public class SplashActivity extends AppCompatActivity
 
         if (hasInternetConnection)
         {
-            Data.get(SplashActivity.this).removeAllLanguages();
-            new LanguageTaker().execute("ru");
+//            Data.get(SplashActivity.this).removeAllLanguages();
+//            new LanguageTaker().execute("ru");
+            startMainActivity(hasInternetConnection);
         }
         else
         {

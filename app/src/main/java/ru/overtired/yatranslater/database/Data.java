@@ -28,7 +28,7 @@ public class Data
 
     public static Data get(Context context)
     {
-        if(sData == null)
+        if (sData == null)
         {
             sData = new Data(context);
         }
@@ -51,7 +51,7 @@ public class Data
         try
         {
             cursor.moveToFirst();
-            while(!cursor.isAfterLast())
+            while (!cursor.isAfterLast())
             {
                 languages.add(cursor.getLanguage());
                 cursor.moveToNext();
@@ -68,7 +68,7 @@ public class Data
     public List<Translation> getHistory()
     {
         List<Translation> translations = new ArrayList<>();
-        HistoryCursorWrapper cursor = queryHistory();
+        HistoryCursorWrapper cursor = queryHistory(null, null);
         try
         {
             cursor.moveToFirst();
@@ -85,9 +85,26 @@ public class Data
         return translations;
     }
 
-    public List<Translation> getFavorite()
+    public List<Translation> getFavorites()
     {
-        return null;
+        List<Translation> translations = new ArrayList<>();
+        HistoryCursorWrapper cursor =
+                queryHistory(HistoryTable.Cols.IS_FAVORITE + "=1", null);
+        // надо переделать с условиями
+        try
+        {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast())
+            {
+                translations.add(cursor.getTranslation());
+                cursor.moveToNext();
+            }
+        }
+        finally
+        {
+            cursor.close();
+        }
+        return translations;
     }
 
     public void removeAllLanguages()
@@ -98,20 +115,20 @@ public class Data
     public void addLanguage(Language language)
     {
         ContentValues values = getLanguageContentValues(language);
-        mDatabase.insert(LanguageTable.NAME,null,values);
+        mDatabase.insert(LanguageTable.NAME, null, values);
     }
 
     public void addTranslationToHistory(Translation translation)
     {
         ContentValues values = getTranslationContentValues(translation);
-        mDatabase.insert(HistoryTable.NAME,null,values);
+        mDatabase.insert(HistoryTable.NAME, null, values);
     }
 
     private ContentValues getLanguageContentValues(Language language)
     {
         ContentValues values = new ContentValues();
-        values.put(LanguageTable.Cols.FULL_NAME,language.getFullName());
-        values.put(LanguageTable.Cols.SHORT_NAME,language.getShortName());
+        values.put(LanguageTable.Cols.FULL_NAME, language.getFullName());
+        values.put(LanguageTable.Cols.SHORT_NAME, language.getShortName());
 
         return values;
     }
@@ -119,11 +136,13 @@ public class Data
     private ContentValues getTranslationContentValues(Translation translation)
     {
         ContentValues values = new ContentValues();
-        values.put(HistoryTable.Cols.SHORT_FROM,translation.getShortFrom());
-        values.put(HistoryTable.Cols.SHORT_TO,translation.getShortTo());
-        values.put(HistoryTable.Cols.WORD_FROM,translation.getWordFrom());
-        values.put(HistoryTable.Cols.WORD_TO,translation.getWordTo());
-        values.put(HistoryTable.Cols.IS_FAVORITE,translation.isFavorite() ? 1:0);
+
+        values.put(HistoryTable.Cols.UUID, translation.getId().toString());
+        values.put(HistoryTable.Cols.SHORT_FROM, translation.getShortFrom());
+        values.put(HistoryTable.Cols.SHORT_TO, translation.getShortTo());
+        values.put(HistoryTable.Cols.WORD_FROM, translation.getWordFrom());
+        values.put(HistoryTable.Cols.WORD_TO, translation.getWordTo());
+        values.put(HistoryTable.Cols.IS_FAVORITE,translation.isFavorite() ? 1 : 0);
 
         return values;
     }
@@ -138,7 +157,9 @@ public class Data
 
     public void clearHistory()
     {
-
+        mDatabase.delete(HistoryTable.NAME, HistoryTable.Cols.IS_FAVORITE + "=0", null);
+        int b = 10;
+        //Не работает
     }
 
     private LanguageCursorWrapper queryLanguages()
@@ -155,13 +176,13 @@ public class Data
         return new LanguageCursorWrapper(cursor);
     }
 
-    private HistoryCursorWrapper queryHistory()
+    private HistoryCursorWrapper queryHistory(String selectClause, String[] selectArgs)
     {
         Cursor cursor = mDatabase.query(
                 HistoryTable.NAME,
                 null,
-                null,
-                null,
+                selectClause,
+                selectArgs,
                 null,
                 null,
                 null

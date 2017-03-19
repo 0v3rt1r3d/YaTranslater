@@ -28,6 +28,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
 
         db.execSQL("create table " + DataBaseScheme.HistoryTable.NAME + " (" +
                 " _id integer primary key autoincrement, " +
+                DataBaseScheme.HistoryTable.Cols.UUID + ", " +
                 DataBaseScheme.HistoryTable.Cols.SHORT_FROM + ", " +
                 DataBaseScheme.HistoryTable.Cols.SHORT_TO + ", " +
                 DataBaseScheme.HistoryTable.Cols.WORD_FROM + ", " +
