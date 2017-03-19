@@ -1,8 +1,10 @@
 package ru.overtired.yatranslater;
 
 import android.os.Bundle;
+import android.preference.PreferenceFragment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.preference.PreferenceFragmentCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +17,6 @@ public class SettingsFragment extends Fragment
 {
     public static SettingsFragment newInstance()
     {
-
 //        Bundle args = new Bundle();
 
         SettingsFragment fragment = new SettingsFragment();
@@ -27,7 +28,11 @@ public class SettingsFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
-        View v = inflater.inflate(R.layout.fragment_settings,container,false);
-        return v;
+        View view = inflater.inflate(R.layout.fragment_settings,container,false);
+        getFragmentManager().beginTransaction()
+                .add(R.id.settings_container,SettingsPreferenceFragment.newInstance())
+                .commit();
+
+        return view;
     }
 }

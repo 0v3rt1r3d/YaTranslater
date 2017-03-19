@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-
-  <PreferenceCategory android:title="Main Preferences">
     <CheckBoxPreference
+      android:key="should_update_languages"
       android:defaultValue="false"
-      android:title="UpdateLanguages"/>
-  </PreferenceCategory>
-
+      android:title="@string/settings_update_lang"/>
 </PreferenceScreen>
