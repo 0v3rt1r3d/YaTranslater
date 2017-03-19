@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,7 +42,7 @@ public class TranslateFragment extends Fragment
     private String mTextFrom;
     private String mTextTo;
 
-
+    private Translation mTranslation;
 
     //View, показывающие языки
     private TextView mFromLanguageTextView;
@@ -75,6 +77,7 @@ public class TranslateFragment extends Fragment
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
             {
+                //Тут происходит перевод, при нажатии "done" на клавиатуре
                 if(actionId == EditorInfo.IME_ACTION_DONE)
                 {
                     if(mTranslater == null)
@@ -90,6 +93,27 @@ public class TranslateFragment extends Fragment
                     hideKeyboard();
                 }
                 return false;
+            }
+        });
+        mFieldToTranslate.addTextChangedListener(new TextWatcher()
+        {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after)
+            {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count)
+            {
+                mSaveToHistoryButton.setImageDrawable(getResources()
+                        .getDrawable(R.drawable.ic_not_favorite));
+            }
+
+            @Override
+            public void afterTextChanged(Editable s)
+            {
+
             }
         });
 
@@ -138,15 +162,25 @@ public class TranslateFragment extends Fragment
             {
                 //тут добавление в избранное
                 mSaveToHistoryButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
+                mTranslation.setFavorite(true);
+                Data.get(getActivity()).updateTranslation(mTranslation);
+                // TODO: 19.03.17 Нужно сделать именно добавление в избранное
             }
         });
-
 
         return v;
     }
 
+//    AsynkTask для для перевода текста
     private class AsyncTranslater extends AsyncTask<String,Void,String[]>
     {
+        @Override
+        protected void onPreExecute()
+        {
+            // TODO: 19.03.17 Временно блокирую кнопку сохранения в избранное, не знаю зачем
+            mSaveToHistoryButton.setEnabled(false);
+        }
+
         @Override
         protected String[] doInBackground(String... params)
         {
@@ -158,10 +192,11 @@ public class TranslateFragment extends Fragment
         protected void onPostExecute(String[] strings)
         {
             mResultTextView.setText(strings[0]);
-            Translation translation = new Translation(mShortLangFrom,mShortLangTo,
+            mTranslation = new Translation(mShortLangFrom,mShortLangTo,
                     mFieldToTranslate.getText().toString(),
                     mResultTextView.getText().toString(),false);
-            Data.get(getActivity()).addTranslationToHistory(translation);
+            Data.get(getActivity()).addTranslationToHistory(mTranslation);
+            mSaveToHistoryButton.setEnabled(true);
             Toast.makeText(getActivity(),Integer.toString(Data.get(getActivity()).getHistory().size()),Toast.LENGTH_SHORT).show();
         }
     }
@@ -179,6 +214,7 @@ public class TranslateFragment extends Fragment
         return null;
     }
 
+//    Метод обновляет название языков в верхнем баре
     private void updateLanguagesView()
     {
         mToLanguageTextView.setText(getFullNameByShortName(mShortLangTo));
@@ -228,11 +264,10 @@ public class TranslateFragment extends Fragment
     private void hideKeyboard()
     {
         View view = getActivity().getCurrentFocus();
-        if (view != null) {
+        if (view != null)
+        {
             InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
-
-
 }

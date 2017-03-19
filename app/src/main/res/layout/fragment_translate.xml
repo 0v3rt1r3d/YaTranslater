@@ -72,13 +72,14 @@
   <TextView
     android:padding="8dp"
     android:id="@+id/translated_text_view"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    android:textSize="20sp"
     android:text="@string/result"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintLeft_toLeftOf="parent"
     app:layout_constraintTop_toBottomOf="@id/field_for_translate"
-    app:layout_constraintRight_toRightOf="@id/button_bookmark"/>
+    app:layout_constraintRight_toLeftOf="@id/button_bookmark"/>
 
   <!--<TextView-->
   <!--android:layout_width="wrap_content"-->

@@ -112,4 +112,9 @@ public abstract class HistoryFavoriteRecycler extends Fragment
     }
 
     abstract protected List<Translation> getTranslations();
+
+    public void updateRecycler()
+    {
+        mRecyclerView.setAdapter(new HistoryFavoriteAdapter(getTranslations()));
+    }
 }

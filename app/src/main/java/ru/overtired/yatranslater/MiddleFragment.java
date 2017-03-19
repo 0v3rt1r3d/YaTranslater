@@ -26,6 +26,9 @@ public class MiddleFragment extends Fragment
 {
     private static final String TAG = "MiddleFragment: ";
 
+    private HistoryFragment mHistoryFragment;
+    private FavoriteFragment mFavoriteFragment;
+
     private ImageButton mClearHistoryButton;
 
     private TextView mHistoryTextView;
@@ -46,6 +49,8 @@ public class MiddleFragment extends Fragment
     {
         View v = inflater.inflate(R.layout.fragment_middle, container, false);
 
+        mHistoryFragment = HistoryFragment.newInstance();
+        mFavoriteFragment = FavoriteFragment.newInstance();
 
         mViewPager = (ViewPager) v.findViewById(R.id.middle_view_pager);
 
@@ -56,10 +61,12 @@ public class MiddleFragment extends Fragment
             {
                 if(position == 0)
                 {
-                    return HistoryFragment.newInstance();
+//                    return HistoryFragment.newInstance();
+                    return mHistoryFragment;
                 } else
                 {
-                    return FavoriteFragment.newInstance();
+//                    return FavoriteFragment.newInstance();
+                    return mFavoriteFragment;
                 }
             }
 
@@ -106,6 +113,7 @@ public class MiddleFragment extends Fragment
             {
                 Toast.makeText(getActivity(),Integer.toString(Data.get(getActivity()).getHistory().size()),Toast.LENGTH_SHORT).show();
                 Data.get(getActivity()).clearHistory();
+                mHistoryFragment.updateRecycler();
             }
         });
 

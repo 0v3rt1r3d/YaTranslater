@@ -68,7 +68,7 @@ public class Data
     public List<Translation> getHistory()
     {
         List<Translation> translations = new ArrayList<>();
-        HistoryCursorWrapper cursor = queryHistory(null, null);
+        HistoryCursorWrapper cursor = queryHistory(HistoryTable.Cols.IS_FAVORITE + "=0", null);
         try
         {
             cursor.moveToFirst();
@@ -152,14 +152,12 @@ public class Data
 
     public void removeTranslationFromHistory(Translation translation)
     {
-
+        mDatabase.delete(HistoryTable.NAME,HistoryTable.Cols.UUID+"="+translation.getId().toString(),null);
     }
 
     public void clearHistory()
     {
         mDatabase.delete(HistoryTable.NAME, HistoryTable.Cols.IS_FAVORITE + "=0", null);
-        int b = 10;
-        //Не работает
     }
 
     private LanguageCursorWrapper queryLanguages()
@@ -188,5 +186,11 @@ public class Data
                 null
         );
         return new HistoryCursorWrapper(cursor);
+    }
+
+    public void updateTranslation(Translation translation)
+    {
+        ContentValues values = getTranslationContentValues(translation);
+        mDatabase.update(HistoryTable.NAME,values,HistoryTable.Cols.UUID+"=\""+translation.getId().toString()+"\"",null);
     }
 }
