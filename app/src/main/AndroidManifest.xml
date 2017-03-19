@@ -16,7 +16,7 @@
     android:theme="@style/AppTheme">
 
     <activity
-      android:name=".SplashActivity"
+      android:name=".activities.SplashActivity"
       android:theme="@style/AppTheme.Splash">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
@@ -25,11 +25,11 @@
       </intent-filter>
     </activity>
 
-    <activity android:name=".MainActivity">
+    <activity android:name=".activities.MainActivity">
     </activity>
 
     <activity
-      android:name=".LanguageChooserActivity"
+      android:name=".activities.LanguageChooseActivity"
       android:theme="@style/AppTheme.ActionBar">
     </activity>
 

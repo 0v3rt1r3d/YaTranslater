@@ -1,4 +1,4 @@
-package ru.overtired.yatranslater;
+package ru.overtired.yatranslater.activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -6,13 +6,16 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 
 import java.util.List;
 
+import ru.overtired.yatranslater.structure.Language;
+import ru.overtired.yatranslater.database.Translater;
 import ru.overtired.yatranslater.database.Data;
+import ru.overtired.yatranslater.structure.Translation;
 
 /**
  * Эта активность загружает языки с сервера и сохраняет их в базе данных
@@ -24,9 +27,13 @@ public class SplashActivity extends AppCompatActivity
     protected void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        Context context = SplashActivity.this;
+
+        boolean shouldUpdateLanguages = PreferenceManager
+                .getDefaultSharedPreferences(SplashActivity.this)
+                .getBoolean("should_update_languages",true);
 
         boolean hasInternetConnection = false;
-        Context context = SplashActivity.this;
 
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
@@ -45,11 +52,10 @@ public class SplashActivity extends AppCompatActivity
             hasInternetConnection = true;
         }
 
-        if (hasInternetConnection)
+        if (shouldUpdateLanguages && hasInternetConnection)
         {
-//            Data.get(SplashActivity.this).removeAllLanguages();
-//            new LanguageTaker().execute("ru");
-            startMainActivity(hasInternetConnection);
+            Data.get(SplashActivity.this).removeAllLanguages();
+            new LangAndDirTaker().execute("ru");
         }
         else
         {
@@ -57,22 +63,32 @@ public class SplashActivity extends AppCompatActivity
         }
     }
 
-    private class LanguageTaker extends AsyncTask<String, Void, List<Language>>
+    private class LangAndDirTaker extends AsyncTask<String, Void, String>
     {
         @Override
-        protected List<Language> doInBackground(String... params)
+        protected String doInBackground(String... params)
         {
             Translater translater = new Translater();
-            return translater.getLanguages(SplashActivity.this, params[0]);
+            return translater.getLangAndDirResponse("ru");
         }
 
         @Override
-        protected void onPostExecute(List<Language> languages)
+        protected void onPostExecute(String jsonResponse)
         {
+            List<Language> languages = Translater.getLanguages(SplashActivity.this,jsonResponse);
+
             for (int i = 0; i < languages.size(); i++)
             {
                 Data.get(SplashActivity.this).addLanguage(languages.get(i));
             }
+
+            List<String> directions = Translater.getDirections(SplashActivity.this,jsonResponse);
+
+            for (int i = 0; i < directions.size(); i++)
+            {
+                Data.get(SplashActivity.this).addDirection(directions.get(i));
+            }
+
             startMainActivity(true);
         }
     }
@@ -83,7 +99,4 @@ public class SplashActivity extends AppCompatActivity
         startActivity(intent);
         finish();
     }
-
-
-    //Сюда можно вставить обновление языков
 }

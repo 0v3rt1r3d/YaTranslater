@@ -4,20 +4,17 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.AsyncTask;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.overtired.yatranslater.Language;
-import ru.overtired.yatranslater.Translater;
-import ru.overtired.yatranslater.Translation;
+import ru.overtired.yatranslater.structure.Language;
+import ru.overtired.yatranslater.structure.Translation;
+import ru.overtired.yatranslater.database.DataBaseScheme.DirectionsTable;
 import ru.overtired.yatranslater.database.DataBaseScheme.HistoryTable;
-import ru.overtired.yatranslater.database.DataBaseScheme.LanguageTable;
+import ru.overtired.yatranslater.database.DataBaseScheme.LanguagesTable;
 
-/**
- * Created by overtired on 17.03.17.
- */
+//Этот класс - синглетон. Нужен для общего доступа к языкам и истории перевода из разных фрагментов
 
 public class Data
 {
@@ -39,8 +36,6 @@ public class Data
     {
         mContext = context.getApplicationContext();
         mDatabase = new DataBaseHelper(mContext).getWritableDatabase();
-//        Не так, но как-то нужно заполнять базу с языками, и не всегда
-//        new LanguageTaker().execute("ru");
     }
 
     public List<Language> getLanguages()
@@ -68,7 +63,8 @@ public class Data
     public List<Translation> getHistory()
     {
         List<Translation> translations = new ArrayList<>();
-        HistoryCursorWrapper cursor = queryHistory(HistoryTable.Cols.IS_FAVORITE + "=0", null);
+
+        TranslationCursorWrapper cursor = queryHistory(HistoryTable.Cols.IS_FAVORITE + "=0");
         try
         {
             cursor.moveToFirst();
@@ -88,9 +84,9 @@ public class Data
     public List<Translation> getFavorites()
     {
         List<Translation> translations = new ArrayList<>();
-        HistoryCursorWrapper cursor =
-                queryHistory(HistoryTable.Cols.IS_FAVORITE + "=1", null);
-        // надо переделать с условиями
+
+        TranslationCursorWrapper cursor =
+                queryHistory(HistoryTable.Cols.IS_FAVORITE + "=1");
         try
         {
             cursor.moveToFirst();
@@ -107,28 +103,65 @@ public class Data
         return translations;
     }
 
+    public List<String> getDirections()
+    {
+        List<String> directions = new ArrayList<>();
+
+        Cursor cursor = mDatabase.query(
+                DirectionsTable.NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+
+        try
+        {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast())
+            {
+                directions.add(cursor
+                        .getString(cursor.getColumnIndex(DirectionsTable.Cols.DIRECTION)));
+                cursor.moveToNext();
+            }
+        }
+        finally
+        {
+            cursor.close();
+        }
+        return directions;
+    }
+
     public void removeAllLanguages()
     {
-        mDatabase.delete(LanguageTable.NAME, null, null);
+        mDatabase.delete(LanguagesTable.NAME, null, null);
     }
 
     public void addLanguage(Language language)
     {
         ContentValues values = getLanguageContentValues(language);
-        mDatabase.insert(LanguageTable.NAME, null, values);
+        mDatabase.insert(LanguagesTable.NAME, null, values);
     }
 
-    public void addTranslationToHistory(Translation translation)
+    public void addTranslation(Translation translation)
     {
         ContentValues values = getTranslationContentValues(translation);
         mDatabase.insert(HistoryTable.NAME, null, values);
     }
 
+    public void addDirection(String direction)
+    {
+        ContentValues values = getDirectionContentValues(direction);
+        mDatabase.insert(DirectionsTable.NAME,null,values);
+    }
+
     private ContentValues getLanguageContentValues(Language language)
     {
         ContentValues values = new ContentValues();
-        values.put(LanguageTable.Cols.FULL_NAME, language.getFullName());
-        values.put(LanguageTable.Cols.SHORT_NAME, language.getShortName());
+
+        values.put(LanguagesTable.Cols.FULL_NAME, language.getFullLang());
+        values.put(LanguagesTable.Cols.SHORT_NAME, language.getShortLang());
 
         return values;
     }
@@ -138,19 +171,25 @@ public class Data
         ContentValues values = new ContentValues();
 
         values.put(HistoryTable.Cols.UUID, translation.getId().toString());
-        values.put(HistoryTable.Cols.SHORT_FROM, translation.getShortFrom());
-        values.put(HistoryTable.Cols.SHORT_TO, translation.getShortTo());
-        values.put(HistoryTable.Cols.WORD_FROM, translation.getWordFrom());
-        values.put(HistoryTable.Cols.WORD_TO, translation.getWordTo());
+        values.put(HistoryTable.Cols.LANG_FROM, translation.getLangFrom());
+        values.put(HistoryTable.Cols.LANG_TO, translation.getLangTo());
+        values.put(HistoryTable.Cols.TEXT_FROM, translation.getTextFrom());
+        values.put(HistoryTable.Cols.TEXT_TO, translation.getTextTo());
         values.put(HistoryTable.Cols.IS_FAVORITE,translation.isFavorite() ? 1 : 0);
 
         return values;
     }
 
-//    setFavorite() пока не думал, как это организовать
-//    Видимо придется таки вводить UUID
+    private ContentValues getDirectionContentValues(String direction)
+    {
+        ContentValues values = new ContentValues();
 
-    public void removeTranslationFromHistory(Translation translation)
+        values.put(DirectionsTable.Cols.DIRECTION,direction);
+
+        return values;
+    }
+
+    public void removeTranslation(Translation translation)
     {
         mDatabase.delete(HistoryTable.NAME,HistoryTable.Cols.UUID+"="+translation.getId().toString(),null);
     }
@@ -163,7 +202,7 @@ public class Data
     private LanguageCursorWrapper queryLanguages()
     {
         Cursor cursor = mDatabase.query(
-                LanguageTable.NAME,
+                LanguagesTable.NAME,
                 null,
                 null,
                 null,
@@ -171,21 +210,23 @@ public class Data
                 null,
                 null
         );
+
         return new LanguageCursorWrapper(cursor);
     }
 
-    private HistoryCursorWrapper queryHistory(String selectClause, String[] selectArgs)
+    private TranslationCursorWrapper queryHistory(String selectClause)
     {
         Cursor cursor = mDatabase.query(
                 HistoryTable.NAME,
                 null,
                 selectClause,
-                selectArgs,
+                null,
                 null,
                 null,
                 null
         );
-        return new HistoryCursorWrapper(cursor);
+
+        return new TranslationCursorWrapper(cursor);
     }
 
     public void updateTranslation(Translation translation)

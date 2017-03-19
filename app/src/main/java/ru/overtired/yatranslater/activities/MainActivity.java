@@ -1,4 +1,4 @@
-package ru.overtired.yatranslater;
+package ru.overtired.yatranslater.activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -6,15 +6,15 @@ import android.support.annotation.IdRes;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.roughike.bottombar.OnTabSelectListener;
 
+import ru.overtired.yatranslater.R;
 import ru.overtired.yatranslater.database.Data;
+import ru.overtired.yatranslater.fragments.MiddleFragment;
+import ru.overtired.yatranslater.fragments.SettingsFragment;
+import ru.overtired.yatranslater.fragments.TranslateFragment;
 
 //Главная активность, хост для всех фрагментов
 
@@ -38,10 +38,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         hasInternet = getIntent().getBooleanExtra(EXTRA_INTERENET,false);
-        if(!hasInternet)
-        {
-            Toast.makeText(MainActivity.this,R.string.no_internet,Toast.LENGTH_SHORT).show();
-        }
+
 
 //        Сразу инициализирую все фрагменты
         mTranslateFragment = TranslateFragment.newInstance();

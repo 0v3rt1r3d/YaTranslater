@@ -1,4 +1,4 @@
-package ru.overtired.yatranslater;
+package ru.overtired.yatranslater.activities;
 
 import android.app.Activity;
 import android.content.Context;
@@ -14,9 +14,11 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import ru.overtired.yatranslater.structure.Language;
+import ru.overtired.yatranslater.R;
 import ru.overtired.yatranslater.database.Data;
 
-public class LanguageChooserActivity extends AppCompatActivity
+public class LanguageChooseActivity extends AppCompatActivity
 {
     private RecyclerView mRecyclerView;
     private List<Language> mLanguages;
@@ -27,7 +29,7 @@ public class LanguageChooserActivity extends AppCompatActivity
 
     public static Intent newIntent(Context context,boolean isLanguageTo)
     {
-        Intent intent = new Intent(context,LanguageChooserActivity.class);
+        Intent intent = new Intent(context,LanguageChooseActivity.class);
         intent.putExtra(EXTRA_DIR,isLanguageTo);
         return intent;
     }
@@ -39,9 +41,9 @@ public class LanguageChooserActivity extends AppCompatActivity
         setContentView(R.layout.activity_language_chooser);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.language_recycler_view);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(LanguageChooserActivity.this));
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(LanguageChooseActivity.this));
 
-        mLanguages = Data.get(LanguageChooserActivity.this).getLanguages();
+        mLanguages = Data.get(LanguageChooseActivity.this).getLanguages();
 
         LanguageAdapter adapter = new LanguageAdapter(mLanguages);
 
@@ -75,14 +77,14 @@ public class LanguageChooserActivity extends AppCompatActivity
         public void bindLanguage(Language language)
         {
             mLanguage = language;
-            mTextView.setText(language.getFullName());
+            mTextView.setText(language.getFullLang());
         }
 
         @Override
         public void onClick(View v)
         {
             Intent intent = new Intent();
-            intent.putExtra(EXTRA_LANG,mLanguage.getShortName());
+            intent.putExtra(EXTRA_LANG,mLanguage.getShortLang());
             setResult(Activity.RESULT_OK,intent);
             finish();
         }
@@ -100,7 +102,7 @@ public class LanguageChooserActivity extends AppCompatActivity
         @Override
         public LanguageHolder onCreateViewHolder(ViewGroup parent, int viewType)
         {
-            LayoutInflater layoutInflater = LayoutInflater.from(LanguageChooserActivity.this);
+            LayoutInflater layoutInflater = LayoutInflater.from(LanguageChooseActivity.this);
             View v = layoutInflater.inflate(R.layout.list_language,parent,false);
             return new LanguageHolder(v);
         }

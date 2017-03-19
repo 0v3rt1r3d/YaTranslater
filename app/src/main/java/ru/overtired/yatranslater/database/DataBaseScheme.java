@@ -1,21 +1,19 @@
+//refactored
 package ru.overtired.yatranslater.database;
 
-import android.hardware.camera2.params.ColorSpaceTransform;
-
-/**
- * Created by overtired on 17.03.17.
- */
+//    История и избранное хранится в одной таблице,
+//    а для обозначения избранного используется поле IS_FAVORITE
 
 public class DataBaseScheme
 {
-    public static final class LanguageTable
+    public static final class LanguagesTable
     {
-        public static final String NAME = "language_table";
+        public static final String NAME = "languages_table";
 
         public static final class Cols
         {
-            public static final String SHORT_NAME = "short_name";
-            public static final String FULL_NAME = "full_name";
+            public static final String SHORT_NAME = "lang_short";
+            public static final String FULL_NAME = "lang_full";
         }
     }
 
@@ -26,11 +24,21 @@ public class DataBaseScheme
         public static final class Cols
         {
             public static final String UUID = "uuid";
-            public static final String SHORT_FROM = "short_from";
-            public static final String SHORT_TO = "short_to";
-            public static final String WORD_FROM = "word_from";
-            public static final String WORD_TO = "word_to";
+            public static final String LANG_FROM = "lang_from";
+            public static final String LANG_TO = "lang_to";
+            public static final String TEXT_FROM = "text_from";
+            public static final String TEXT_TO = "text_to";
             public static final String IS_FAVORITE = "is_favorite";
+        }
+    }
+
+    public static final class DirectionsTable
+    {
+        public static final String NAME = "directions_table";
+
+        public static final class Cols
+        {
+            public static final String DIRECTION = "direction";
         }
     }
 }

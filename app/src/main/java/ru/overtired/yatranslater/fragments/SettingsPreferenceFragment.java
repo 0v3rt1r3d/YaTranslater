@@ -1,7 +1,9 @@
-package ru.overtired.yatranslater;
+package ru.overtired.yatranslater.fragments;
 
 import android.os.Bundle;
 import android.support.v7.preference.PreferenceFragmentCompat;
+
+import ru.overtired.yatranslater.R;
 
 /**
  * Created by overtired on 19.03.17.

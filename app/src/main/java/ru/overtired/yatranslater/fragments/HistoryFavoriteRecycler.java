@@ -1,4 +1,4 @@
-package ru.overtired.yatranslater;
+package ru.overtired.yatranslater.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,9 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
+
+import ru.overtired.yatranslater.R;
+import ru.overtired.yatranslater.structure.Translation;
 
 /**
  * Created by overtired on 18.03.17.
@@ -67,9 +69,9 @@ public abstract class HistoryFavoriteRecycler extends Fragment
                 mBookmark.setImageDrawable(getResources().getDrawable(R.drawable.ic_not_favorite));
             }
             
-            mTextDirection.setText(mTranslation.getShortFrom()+"-"+mTranslation.getShortTo());
-            mTextFromView.setText(mTranslation.getWordFrom());
-            mTextToView.setText(mTranslation.getWordTo());
+            mTextDirection.setText(mTranslation.getLangFrom()+"-"+mTranslation.getLangTo());
+            mTextFromView.setText(mTranslation.getTextFrom());
+            mTextToView.setText(mTranslation.getTextTo());
         }
 
         @Override

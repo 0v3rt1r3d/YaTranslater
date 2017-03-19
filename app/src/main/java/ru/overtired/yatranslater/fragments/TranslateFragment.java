@@ -1,4 +1,4 @@
-package ru.overtired.yatranslater;
+package ru.overtired.yatranslater.fragments;
 
 import android.app.Activity;
 import android.content.Context;
@@ -9,7 +9,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -18,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -26,6 +24,11 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import ru.overtired.yatranslater.structure.Language;
+import ru.overtired.yatranslater.activities.LanguageChooseActivity;
+import ru.overtired.yatranslater.R;
+import ru.overtired.yatranslater.database.Translater;
+import ru.overtired.yatranslater.structure.Translation;
 import ru.overtired.yatranslater.database.Data;
 
 /**
@@ -123,7 +126,7 @@ public class TranslateFragment extends Fragment
             @Override
             public void onClick(View v)
             {
-                Intent intent = LanguageChooserActivity.newIntent(getActivity(),false);
+                Intent intent = LanguageChooseActivity.newIntent(getActivity(),false);
                 startActivityForResult(intent,REQUEST_LANG_FROM);
             }
         });
@@ -134,7 +137,7 @@ public class TranslateFragment extends Fragment
             @Override
             public void onClick(View v)
             {
-                Intent intent = LanguageChooserActivity.newIntent(getActivity(),true);
+                Intent intent = LanguageChooseActivity.newIntent(getActivity(),true);
                 startActivityForResult(intent,REQUEST_LANG_TO);
             }
         });
@@ -195,7 +198,7 @@ public class TranslateFragment extends Fragment
             mTranslation = new Translation(mShortLangFrom,mShortLangTo,
                     mFieldToTranslate.getText().toString(),
                     mResultTextView.getText().toString(),false);
-            Data.get(getActivity()).addTranslationToHistory(mTranslation);
+            Data.get(getActivity()).addTranslation(mTranslation);
             mSaveToHistoryButton.setEnabled(true);
             Toast.makeText(getActivity(),Integer.toString(Data.get(getActivity()).getHistory().size()),Toast.LENGTH_SHORT).show();
         }
@@ -206,9 +209,9 @@ public class TranslateFragment extends Fragment
         List<Language> mLanguages = Data.get(getActivity()).getLanguages();
         for (Language language:mLanguages)
         {
-            if(language.getShortName().equals(shortName))
+            if(language.getShortLang().equals(shortName))
             {
-                return language.getFullName();
+                return language.getFullLang();
             }
         }
         return null;
@@ -230,12 +233,12 @@ public class TranslateFragment extends Fragment
         }
         if(requestCode==REQUEST_LANG_FROM)
         {
-            mShortLangFrom = data.getStringExtra(LanguageChooserActivity.EXTRA_LANG);
+            mShortLangFrom = data.getStringExtra(LanguageChooseActivity.EXTRA_LANG);
             updateLanguagesView();
         }
         else if (requestCode == REQUEST_LANG_TO)
         {
-            mShortLangTo = data.getStringExtra(LanguageChooserActivity.EXTRA_LANG);
+            mShortLangTo = data.getStringExtra(LanguageChooseActivity.EXTRA_LANG);
             updateLanguagesView();
         }
     }

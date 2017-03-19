@@ -1,13 +1,13 @@
-package ru.overtired.yatranslater;
+package ru.overtired.yatranslater.fragments;
 
 import android.os.Bundle;
-import android.preference.PreferenceFragment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.preference.PreferenceFragmentCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import ru.overtired.yatranslater.R;
 
 /**
  * Created by overtired on 14.03.17.
@@ -30,7 +30,7 @@ public class SettingsFragment extends Fragment
     {
         View view = inflater.inflate(R.layout.fragment_settings,container,false);
         getFragmentManager().beginTransaction()
-                .add(R.id.settings_container,SettingsPreferenceFragment.newInstance())
+                .add(R.id.settings_container, SettingsPreferenceFragment.newInstance())
                 .commit();
 
         return view;
