@@ -17,7 +17,8 @@
 
     <activity
       android:name=".activities.SplashActivity"
-      android:theme="@style/AppTheme.Splash">
+      android:theme="@style/AppTheme.Splash"
+      android:autoRemoveFromRecents="true">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
 

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">ЯПереводчик</string>
+  <string name="close_app">Закрыть</string>
+  <string name="favorites">Избранное</string>
+  <string name="hint_for_translater_field">Введите текст для перевода</string>
+  <string name="history">История</string>
+  <string name="language_text">Язык текста</string>
+  <string name="no_internet">Не удается подключиться к интернету</string>
+  <string name="result_of_translation">Результат перевода</string>
+  <string name="settings">Настройки</string>
+  <string name="settings_update_lang">Обновить языки в следующий раз</string>
+  <string name="try_again">Пропробовать снова</string>
+  <string name="need_internet">Включите Интернет для загрузки языков</string>
+  <string name="language_translate">Язык перевода</string>
+</resources>

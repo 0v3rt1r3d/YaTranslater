@@ -22,8 +22,6 @@ import ru.overtired.yatranslater.structure.Translation;
 
 public class MainActivity extends AppCompatActivity implements HistoryFavoriteRecycler.Callbacks
 {
-    private static final String EXTRA_INTERENET = "ru.overtired.yatranslater.mainactivity.internet";
-
     private com.roughike.bottombar.BottomBar mBottomBar;
 
 //    Фрагменты
@@ -31,16 +29,11 @@ public class MainActivity extends AppCompatActivity implements HistoryFavoriteRe
     private TranslateFragment mTranslateFragment;
     private SettingsFragment mSettingsFragment;
 
-    private boolean hasInternet;
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        hasInternet = getIntent().getBooleanExtra(EXTRA_INTERENET,false);
-
 
 //        Сразу инициализирую все фрагменты
         mTranslateFragment = TranslateFragment.newInstance();
@@ -80,10 +73,9 @@ public class MainActivity extends AppCompatActivity implements HistoryFavoriteRe
         });
     }
 
-    public static Intent newIntent(Context context, boolean hasInternet)
+    public static Intent newIntent(Context context)
     {
         Intent intent = new Intent(context,MainActivity.class);
-        intent.putExtra(EXTRA_INTERENET,hasInternet);
         return intent;
     }
 

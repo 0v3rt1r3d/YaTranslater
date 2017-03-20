@@ -71,7 +71,7 @@ public class TranslateFragment extends Fragment
                 "ru",
                 "en",
                 getString(R.string.hint_for_translater_field),
-                getString(R.string.result),
+                getString(R.string.result_of_translation),
                 false);
 
         mResultTextView = (TextView) v.findViewById(R.id.translated_text_view);
