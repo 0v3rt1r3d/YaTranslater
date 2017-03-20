@@ -46,10 +46,9 @@
         android:layout_centerVertical="true"
         android:id="@+id/clear_history_button"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="8dp"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
-        android:scaleType="centerInside"
+        android:layout_marginRight="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:background="@android:color/transparent"
         android:src="@drawable/ic_delete"/>
 
