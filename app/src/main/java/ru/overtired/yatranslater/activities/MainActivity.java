@@ -12,13 +12,15 @@ import com.roughike.bottombar.OnTabSelectListener;
 
 import ru.overtired.yatranslater.R;
 import ru.overtired.yatranslater.database.Data;
+import ru.overtired.yatranslater.fragments.HistoryFavoriteRecycler;
 import ru.overtired.yatranslater.fragments.MiddleFragment;
 import ru.overtired.yatranslater.fragments.SettingsFragment;
 import ru.overtired.yatranslater.fragments.TranslateFragment;
+import ru.overtired.yatranslater.structure.Translation;
 
 //Главная активность, хост для всех фрагментов
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends AppCompatActivity implements HistoryFavoriteRecycler.Callbacks
 {
     private static final String EXTRA_INTERENET = "ru.overtired.yatranslater.mainactivity.internet";
 
@@ -83,5 +85,15 @@ public class MainActivity extends AppCompatActivity
         Intent intent = new Intent(context,MainActivity.class);
         intent.putExtra(EXTRA_INTERENET,hasInternet);
         return intent;
+    }
+
+    @Override
+    public void setTranslation(Translation translation)
+    {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container,mTranslateFragment)
+                .commit();
+        mTranslateFragment.setTranslation(translation);
     }
 }

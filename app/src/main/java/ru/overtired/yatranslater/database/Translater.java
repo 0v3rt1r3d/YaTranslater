@@ -64,7 +64,7 @@ public class Translater
         String[] shortages = context.getResources().getStringArray(R.array.languages);
         for (String shortage : shortages)
         {
-            languages.add(new Language(jsonObject.get(shortage).toString().replace("\"", ""), shortage));
+            languages.add(new Language(shortage,jsonObject.get(shortage).getAsString()));
         }
 
         return languages;

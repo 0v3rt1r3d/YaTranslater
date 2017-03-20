@@ -9,7 +9,10 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
+import android.util.Log;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import ru.overtired.yatranslater.structure.Language;
@@ -77,9 +80,19 @@ public class SplashActivity extends AppCompatActivity
         {
             List<Language> languages = Translater.getLanguages(SplashActivity.this,jsonResponse);
 
+            Collections.sort(languages, new Comparator<Language>()
+            {
+                @Override
+                public int compare(Language o1, Language o2)
+                {
+                    return o1.getFullLang().compareToIgnoreCase(o2.getFullLang());
+                }
+            });
+
             for (int i = 0; i < languages.size(); i++)
             {
                 Data.get(SplashActivity.this).addLanguage(languages.get(i));
+                Log.d("String: ",languages.get(i).getFullLang());
             }
 
             List<String> directions = Translater.getDirections(SplashActivity.this,jsonResponse);

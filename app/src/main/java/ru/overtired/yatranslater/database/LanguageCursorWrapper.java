@@ -21,6 +21,6 @@ public class LanguageCursorWrapper extends CursorWrapper
         String shortName = getString(getColumnIndex(DataBaseScheme.LanguagesTable.Cols.SHORT_NAME));
         String fullName = getString(getColumnIndex(DataBaseScheme.LanguagesTable.Cols.FULL_NAME));
 
-        return new Language(fullName,shortName);
+        return new Language(shortName,fullName);
     }
 }

@@ -40,11 +40,6 @@ public class TranslateFragment extends Fragment
     public final static int REQUEST_LANG_FROM = 0;
     public final static int REQUEST_LANG_TO = 1;
 
-    private String mShortLangFrom = "en";
-    private String mShortLangTo = "ru";
-    private String mTextFrom;
-    private String mTextTo;
-
     private Translation mTranslation;
 
     //View, показывающие языки
@@ -72,6 +67,13 @@ public class TranslateFragment extends Fragment
     {
         View v = inflater.inflate(R.layout.fragment_translate,container,false);
 
+        mTranslation = new Translation(
+                "ru",
+                "en",
+                getString(R.string.hint_for_translater_field),
+                getString(R.string.result),
+                false);
+
         mResultTextView = (TextView) v.findViewById(R.id.translated_text_view);
 
         mFieldToTranslate = (EditText) v.findViewById(R.id.field_for_translate);
@@ -92,7 +94,7 @@ public class TranslateFragment extends Fragment
                     }
                     mTranslater = new AsyncTranslater();
                     mTranslater.execute(mFieldToTranslate.getText().toString(),
-                            mShortLangFrom +"-"+mShortLangTo);
+                            mTranslation.getLangFrom() +"-"+mTranslation.getLangTo());
                     hideKeyboard();
                 }
                 return false;
@@ -150,9 +152,9 @@ public class TranslateFragment extends Fragment
             @Override
             public void onClick(View v)
             {
-                String temp = mShortLangFrom;
-                mShortLangFrom = mShortLangTo;
-                mShortLangTo = temp;
+                String temp = mTranslation.getLangFrom();
+                mTranslation.setLangFrom(mTranslation.getLangTo());
+                mTranslation.setLangTo(temp);
                 updateLanguagesView();
             }
         });
@@ -163,11 +165,16 @@ public class TranslateFragment extends Fragment
             @Override
             public void onClick(View v)
             {
-                //тут добавление в избранное
-                mSaveToHistoryButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
-                mTranslation.setFavorite(true);
+                if(mTranslation.isFavorite())
+                {
+                    mTranslation.setFavorite(false);
+                    mSaveToHistoryButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_not_favorite));
+                }else
+                {
+                    mTranslation.setFavorite(true);
+                    mSaveToHistoryButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
+                }
                 Data.get(getActivity()).updateTranslation(mTranslation);
-                // TODO: 19.03.17 Нужно сделать именно добавление в избранное
             }
         });
 
@@ -195,9 +202,12 @@ public class TranslateFragment extends Fragment
         protected void onPostExecute(String[] strings)
         {
             mResultTextView.setText(strings[0]);
-            mTranslation = new Translation(mShortLangFrom,mShortLangTo,
+            mTranslation = new Translation(
+                    mTranslation.getLangFrom(),
+                    mTranslation.getLangTo(),
                     mFieldToTranslate.getText().toString(),
-                    mResultTextView.getText().toString(),false);
+                    mResultTextView.getText().toString(),
+                    false);
             Data.get(getActivity()).addTranslation(mTranslation);
             mSaveToHistoryButton.setEnabled(true);
             Toast.makeText(getActivity(),Integer.toString(Data.get(getActivity()).getHistory().size()),Toast.LENGTH_SHORT).show();
@@ -217,13 +227,6 @@ public class TranslateFragment extends Fragment
         return null;
     }
 
-//    Метод обновляет название языков в верхнем баре
-    private void updateLanguagesView()
-    {
-        mToLanguageTextView.setText(getFullNameByShortName(mShortLangTo));
-        mFromLanguageTextView.setText(getFullNameByShortName(mShortLangFrom));
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
@@ -233,12 +236,12 @@ public class TranslateFragment extends Fragment
         }
         if(requestCode==REQUEST_LANG_FROM)
         {
-            mShortLangFrom = data.getStringExtra(LanguageChooseActivity.EXTRA_LANG);
+            mTranslation.setLangFrom(data.getStringExtra(LanguageChooseActivity.EXTRA_LANG));
             updateLanguagesView();
         }
         else if (requestCode == REQUEST_LANG_TO)
         {
-            mShortLangTo = data.getStringExtra(LanguageChooseActivity.EXTRA_LANG);
+            mTranslation.setLangTo(data.getStringExtra(LanguageChooseActivity.EXTRA_LANG));
             updateLanguagesView();
         }
     }
@@ -272,5 +275,19 @@ public class TranslateFragment extends Fragment
             InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
+    }
+
+    public void setTranslation(Translation translation)
+    {
+        mTranslation = translation;
+        mFieldToTranslate.setText(mTranslation.getTextFrom());
+        mResultTextView.setText(mTranslation.getTextTo());
+        updateLanguagesView();
+    }
+
+    public void updateLanguagesView()
+    {
+        mToLanguageTextView.setText(getFullNameByShortName(mTranslation.getLangTo()));
+        mFromLanguageTextView.setText(getFullNameByShortName(mTranslation.getLangFrom()));
     }
 }

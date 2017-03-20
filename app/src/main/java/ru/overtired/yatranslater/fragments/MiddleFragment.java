@@ -50,7 +50,6 @@ public class MiddleFragment extends Fragment
         mFavoriteFragment = FavoriteFragment.newInstance();
 
         mViewPager = (ViewPager) v.findViewById(R.id.middle_view_pager);
-
         mViewPager.setAdapter(new FragmentPagerAdapter(getChildFragmentManager())
         {
             @Override

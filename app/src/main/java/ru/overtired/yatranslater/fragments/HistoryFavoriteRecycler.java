@@ -1,10 +1,13 @@
 package ru.overtired.yatranslater.fragments;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +17,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import ru.overtired.yatranslater.R;
+import ru.overtired.yatranslater.database.Data;
 import ru.overtired.yatranslater.structure.Translation;
 
 /**
@@ -23,6 +27,19 @@ import ru.overtired.yatranslater.structure.Translation;
 public abstract class HistoryFavoriteRecycler extends Fragment
 {
     private RecyclerView mRecyclerView;
+    private Callbacks mCallbacks;
+
+    public interface Callbacks
+    {
+        void setTranslation(Translation translation);
+    }
+
+    @Override
+    public void onAttach(Context context)
+    {
+        super.onAttach(context);
+        mCallbacks = (Callbacks)getActivity();
+    }
 
     @Nullable
     @Override
@@ -50,9 +67,26 @@ public abstract class HistoryFavoriteRecycler extends Fragment
         {
             super(itemView);
             itemView.setOnClickListener(this);
-//            mBookmark.setOnClickListener();
-            
+
             mBookmark = (ImageButton) itemView.findViewById(R.id.list_translation_button_save);
+            mBookmark.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    if(mTranslation.isFavorite())
+                    {
+                        mTranslation.setFavorite(false);
+                        mBookmark.setImageDrawable(getResources().getDrawable(R.drawable.ic_not_favorite));
+                    }else
+                    {
+                        mTranslation.setFavorite(true);
+                        mBookmark.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
+                    }
+                    Data.get(getActivity()).updateTranslation(mTranslation);
+                }
+            });
+
             mTextDirection = (TextView) itemView.findViewById(R.id.list_translation_text_direction);
             mTextFromView = (TextView) itemView.findViewById(R.id.list_translation_text_from);
             mTextToView = (TextView) itemView.findViewById(R.id.list_translation_text_to);
@@ -77,9 +111,7 @@ public abstract class HistoryFavoriteRecycler extends Fragment
         @Override
         public void onClick(View v)
         {
-//            Этот метод переводит пользователя на фрагмент перевода, он одинаков и для избранного
-//            и для истории
-            // TODO: 18.03.17  
+            mCallbacks.setTranslation(mTranslation);
         }
     }
 

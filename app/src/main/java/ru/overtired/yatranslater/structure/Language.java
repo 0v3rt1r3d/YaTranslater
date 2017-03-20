@@ -3,7 +3,9 @@ package ru.overtired.yatranslater.structure;
 
 //Структура данных для одного языка
 
-public class Language
+import android.support.annotation.NonNull;
+
+public class Language implements Comparable<Language>
 {
     public Language(String shortLang,String fullLang)
     {
@@ -22,5 +24,11 @@ public class Language
     public String getShortLang()
     {
         return mShortLang;
+    }
+
+    @Override
+    public int compareTo(@NonNull Language o)
+    {
+        return mFullLang.compareToIgnoreCase(o.getFullLang());
     }
 }
