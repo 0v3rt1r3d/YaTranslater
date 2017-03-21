@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
+import java.util.UUID;
 
 import ru.overtired.yatranslater.structure.Language;
 import ru.overtired.yatranslater.activities.LanguageChooseActivity;
@@ -40,6 +41,14 @@ public class TranslateFragment extends Fragment
     public final static int REQUEST_LANG_FROM = 0;
     public final static int REQUEST_LANG_TO = 1;
 
+    private static final String ARG_LANG_TO = "arg_lang_to";
+    private static final String ARG_LANG_FROM = "arg_lang_from";
+    private static final String ARG_TEXT_TO = "arg_text_to";
+    private static final String ARG_TEXT_FROM = "arg_text_from";
+    private static final String ARG_IS_FAVORITE = "arg_is_favorite";
+    private static final String ARG_ID = "arg_id";
+
+
     private Translation mTranslation;
 
     //View, показывающие языки
@@ -52,13 +61,25 @@ public class TranslateFragment extends Fragment
 
     private AsyncTranslater mTranslater;
 
+    public static TranslateFragment newInstance(Translation translation)
+    {
+        TranslateFragment fragment = new TranslateFragment();
+        Bundle args = new Bundle();
+
+        args.putString(ARG_LANG_FROM,translation.getLangFrom());
+        args.putString(ARG_LANG_TO,translation.getLangTo());
+        args.putString(ARG_TEXT_FROM,translation.getTextFrom());
+        args.putString(ARG_TEXT_TO,translation.getTextTo());
+        args.putString(ARG_ID,translation.getId().toString());
+        args.putBoolean(ARG_IS_FAVORITE,translation.isFavorite());
+
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     public static TranslateFragment newInstance()
     {
-//        Bundle args = new Bundle();
-
-        TranslateFragment fragment = new TranslateFragment();
-//        fragment.setArguments(args);
-        return fragment;
+        return new TranslateFragment();
     }
 
     @Nullable
@@ -67,15 +88,46 @@ public class TranslateFragment extends Fragment
     {
         View v = inflater.inflate(R.layout.fragment_translate,container,false);
 
-        mTranslation = new Translation(
-                "ru",
-                "en",
-                getString(R.string.hint_for_translater_field),
-                getString(R.string.result_of_translation),
-                false);
+        if(getArguments()!=null)
+        {
+            String langFrom = getArguments().getString(ARG_LANG_FROM);
+            String langTo = getArguments().getString(ARG_LANG_TO);
+            String textFrom = getArguments().getString(ARG_TEXT_FROM);
+            String textTo = getArguments().getString(ARG_TEXT_TO);
+            String id = getArguments().getString(ARG_ID);
+            boolean isFavorite = getArguments().getBoolean(ARG_IS_FAVORITE);
+
+            mTranslation = new Translation(langFrom,langTo,textFrom,textTo, id, isFavorite);
+        }else
+        {
+            mTranslation = new Translation(
+                    "ru",
+                    "en",
+                    getString(R.string.hint_for_translater_field),
+                    getString(R.string.result_of_translation),
+                    false);
+        }
 
         mResultTextView = (TextView) v.findViewById(R.id.translated_text_view);
 
+        mSaveToHistoryButton = (ImageButton)v.findViewById(R.id.button_bookmark);
+        mSaveToHistoryButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                if(mTranslation.isFavorite())
+                {
+                    mTranslation.setFavorite(false);
+                    mSaveToHistoryButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_not_favorite));
+                }else
+                {
+                    mTranslation.setFavorite(true);
+                    mSaveToHistoryButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
+                }
+                Data.get(getActivity()).updateTranslation(mTranslation);
+            }
+        });
         mFieldToTranslate = (EditText) v.findViewById(R.id.field_for_translate);
         mFieldToTranslate.setOnEditorActionListener(new TextView.OnEditorActionListener()
         {
@@ -144,7 +196,7 @@ public class TranslateFragment extends Fragment
             }
         });
 
-        updateLanguagesView();
+        updateView();
 
         mSwapLanguagesButton = (ImageButton) v.findViewById(R.id.swap_languages_button);
         mSwapLanguagesButton.setOnClickListener(new View.OnClickListener()
@@ -155,28 +207,10 @@ public class TranslateFragment extends Fragment
                 String temp = mTranslation.getLangFrom();
                 mTranslation.setLangFrom(mTranslation.getLangTo());
                 mTranslation.setLangTo(temp);
-                updateLanguagesView();
+                updateView();
             }
         });
 
-        mSaveToHistoryButton = (ImageButton)v.findViewById(R.id.button_bookmark);
-        mSaveToHistoryButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                if(mTranslation.isFavorite())
-                {
-                    mTranslation.setFavorite(false);
-                    mSaveToHistoryButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_not_favorite));
-                }else
-                {
-                    mTranslation.setFavorite(true);
-                    mSaveToHistoryButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
-                }
-                Data.get(getActivity()).updateTranslation(mTranslation);
-            }
-        });
 
         return v;
     }
@@ -237,34 +271,13 @@ public class TranslateFragment extends Fragment
         if(requestCode==REQUEST_LANG_FROM)
         {
             mTranslation.setLangFrom(data.getStringExtra(LanguageChooseActivity.EXTRA_LANG));
-            updateLanguagesView();
+            updateView();
         }
         else if (requestCode == REQUEST_LANG_TO)
         {
             mTranslation.setLangTo(data.getStringExtra(LanguageChooseActivity.EXTRA_LANG));
-            updateLanguagesView();
+            updateView();
         }
-    }
-
-    public static boolean hasInternetConnection(final Context context)
-    {
-        ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        if (wifiInfo != null && wifiInfo.isConnected())
-        {
-            return true;
-        }
-        wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-        if (wifiInfo != null && wifiInfo.isConnected())
-        {
-            return true;
-        }
-        wifiInfo = cm.getActiveNetworkInfo();
-        if (wifiInfo != null && wifiInfo.isConnected())
-        {
-            return true;
-        }
-        return false;
     }
 
     private void hideKeyboard()
@@ -277,17 +290,19 @@ public class TranslateFragment extends Fragment
         }
     }
 
-    public void setTranslation(Translation translation)
-    {
-        mTranslation = translation;
-        mFieldToTranslate.setText(mTranslation.getTextFrom());
-        mResultTextView.setText(mTranslation.getTextTo());
-        updateLanguagesView();
-    }
-
-    public void updateLanguagesView()
+    public void updateView()
     {
         mToLanguageTextView.setText(getFullNameByShortName(mTranslation.getLangTo()));
         mFromLanguageTextView.setText(getFullNameByShortName(mTranslation.getLangFrom()));
+        mFieldToTranslate.setText(mTranslation.getTextFrom());
+        mResultTextView.setText(mTranslation.getTextTo());
+        if(mTranslation.isFavorite())
+        {
+            mSaveToHistoryButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
+        }else
+        {
+            mSaveToHistoryButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_not_favorite));
+        }
+
     }
 }

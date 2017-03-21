@@ -1,6 +1,5 @@
 package ru.overtired.yatranslater.activities;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,8 +11,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
-import android.util.Log;
-import android.widget.Toast;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -24,7 +21,6 @@ import ru.overtired.yatranslater.R;
 import ru.overtired.yatranslater.structure.Language;
 import ru.overtired.yatranslater.database.Translater;
 import ru.overtired.yatranslater.database.Data;
-import ru.overtired.yatranslater.structure.Translation;
 
 /**
  * Эта активность загружает языки с сервера и сохраняет их в базе данных
