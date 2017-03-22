@@ -85,7 +85,7 @@ public class SplashActivity extends AppCompatActivity
                 Data.get(SplashActivity.this).addLanguage(languages.get(i));
             }
 
-            List<String> directions = Translater.getDirections(SplashActivity.this, jsonResponse);
+            List<String> directions = Translater.getDirections(jsonResponse);
 
             for (int i = 0; i < directions.size(); i++)
             {

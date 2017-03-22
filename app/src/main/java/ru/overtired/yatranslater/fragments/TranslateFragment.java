@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +27,7 @@ import android.widget.Toast;
 import java.util.List;
 import java.util.UUID;
 
+import ru.overtired.yatranslater.structure.Dictionary;
 import ru.overtired.yatranslater.structure.Language;
 import ru.overtired.yatranslater.activities.LanguageChooseActivity;
 import ru.overtired.yatranslater.R;
@@ -48,7 +51,6 @@ public class TranslateFragment extends Fragment
     private static final String ARG_IS_FAVORITE = "arg_is_favorite";
     private static final String ARG_ID = "arg_id";
 
-
     private Translation mTranslation;
 
     //View, показывающие языки
@@ -58,8 +60,13 @@ public class TranslateFragment extends Fragment
     private TextView mResultTextView;
     private ImageButton mSwapLanguagesButton;
     private ImageButton mSaveToHistoryButton;
+    private ImageButton mTranslateButton;
 
     private AsyncTranslater mTranslater;
+
+    private ResultFragment mResultFragment;
+    private Dictionary mDictionary;
+
 
     public static TranslateFragment newInstance(Translation translation)
     {
@@ -103,12 +110,25 @@ public class TranslateFragment extends Fragment
             mTranslation = new Translation(
                     "ru",
                     "en",
-                    getString(R.string.hint_for_translater_field),
+                    "",
                     getString(R.string.result_of_translation),
                     false);
         }
 
+        mTranslateButton = (ImageButton) v.findViewById(R.id.button_translate);
+        mTranslateButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                new AsyncDictionary().execute(mFieldToTranslate.getText().toString(),
+                        mTranslation.getLangFrom() +"-"+mTranslation.getLangTo());
+                hideKeyboard();
+            }
+        });
+
         mResultTextView = (TextView) v.findViewById(R.id.translated_text_view);
+        mResultTextView.setVisibility(View.INVISIBLE);
 
         mSaveToHistoryButton = (ImageButton)v.findViewById(R.id.button_bookmark);
         mSaveToHistoryButton.setOnClickListener(new View.OnClickListener()
@@ -211,12 +231,16 @@ public class TranslateFragment extends Fragment
             }
         });
 
+        mResultFragment = ResultFragment.newInstance();
+        getFragmentManager().beginTransaction()
+                .add(R.id.translation_container,mResultFragment)
+                .commit();
 
         return v;
     }
 
 //    AsynkTask для для перевода текста
-    private class AsyncTranslater extends AsyncTask<String,Void,String[]>
+    private class AsyncTranslater extends AsyncTask<String,Void,String>
     {
         @Override
         protected void onPreExecute()
@@ -226,16 +250,16 @@ public class TranslateFragment extends Fragment
         }
 
         @Override
-        protected String[] doInBackground(String... params)
+        protected String doInBackground(String... params)
         {
             Translater translater = new Translater();
             return translater.getTranslation(params[0], params[1]);
         }
 
         @Override
-        protected void onPostExecute(String[] strings)
+        protected void onPostExecute(String string)
         {
-            mResultTextView.setText(strings[0]);
+            mResultTextView.setText(string);
             mTranslation = new Translation(
                     mTranslation.getLangFrom(),
                     mTranslation.getLangTo(),
@@ -245,6 +269,28 @@ public class TranslateFragment extends Fragment
             Data.get(getActivity()).addTranslation(mTranslation);
             mSaveToHistoryButton.setEnabled(true);
             Toast.makeText(getActivity(),Integer.toString(Data.get(getActivity()).getHistory().size()),Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private class AsyncDictionary extends AsyncTask<String,Void,Dictionary>
+    {
+        @Override
+        protected Dictionary doInBackground(String... params)
+        {
+            Translater translater = new Translater();
+
+            return translater.getDictionary(params[0],params[1]);
+        }
+
+        @Override
+        protected void onPostExecute(Dictionary dictionary)
+        {
+            mDictionary = dictionary;
+
+            mResultFragment.setDictionary(mDictionary);
+//            getFragmentManager().beginTransaction()
+//                    .replace(R.id.translation_container,mResultFragment)
+//                    .commit();
         }
     }
 
