@@ -150,6 +150,12 @@ public class Translater
                     .getAsJsonObject()
                     .getAsJsonArray("def");
 
+            if(jDefinitions.size() ==0)
+            {
+//                В случае, если в словаре ничего не найдено
+                return null;
+            }
+
             Log.d(TAG, response);
 
 //            Перебор дефиниций

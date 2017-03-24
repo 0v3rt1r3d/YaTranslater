@@ -10,7 +10,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -62,7 +64,8 @@ public class TranslateFragment extends Fragment
     private ImageButton mSaveToHistoryButton;
     private ImageButton mTranslateButton;
 
-    private AsyncTranslater mTranslater;
+    private AsyncTranslater mAsyncTranslater;
+    private AsyncDictionary mAsyncDictionary;
 
     private ResultFragment mResultFragment;
     private Dictionary mDictionary;
@@ -105,6 +108,16 @@ public class TranslateFragment extends Fragment
             boolean isFavorite = getArguments().getBoolean(ARG_IS_FAVORITE);
 
             mTranslation = new Translation(langFrom,langTo,textFrom,textTo, id, isFavorite);
+        }else if(savedInstanceState != null)
+        {
+            String textFrom = savedInstanceState.getString(ARG_TEXT_FROM);
+            String textTo = savedInstanceState.getString(ARG_TEXT_TO);
+            String langFrom = savedInstanceState.getString(ARG_LANG_FROM);
+            String langTo = savedInstanceState.getString(ARG_LANG_TO);
+            String id = savedInstanceState.getString(ARG_ID);
+            boolean isFavorite = savedInstanceState.getBoolean(ARG_IS_FAVORITE);
+
+            mTranslation = new Translation(langFrom,langTo,textFrom,textTo,id,isFavorite);
         }else
         {
             mTranslation = new Translation(
@@ -121,14 +134,12 @@ public class TranslateFragment extends Fragment
             @Override
             public void onClick(View v)
             {
-                new AsyncDictionary().execute(mFieldToTranslate.getText().toString(),
-                        mTranslation.getLangFrom() +"-"+mTranslation.getLangTo());
+                translate();
                 hideKeyboard();
             }
         });
 
         mResultTextView = (TextView) v.findViewById(R.id.translated_text_view);
-        mResultTextView.setVisibility(View.INVISIBLE);
 
         mSaveToHistoryButton = (ImageButton)v.findViewById(R.id.button_bookmark);
         mSaveToHistoryButton.setOnClickListener(new View.OnClickListener()
@@ -149,6 +160,8 @@ public class TranslateFragment extends Fragment
             }
         });
         mFieldToTranslate = (EditText) v.findViewById(R.id.field_for_translate);
+        mFieldToTranslate.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        mFieldToTranslate.setRawInputType(InputType.TYPE_CLASS_TEXT);
         mFieldToTranslate.setOnEditorActionListener(new TextView.OnEditorActionListener()
         {
             @Override
@@ -157,16 +170,7 @@ public class TranslateFragment extends Fragment
                 //Тут происходит перевод, при нажатии "done" на клавиатуре
                 if(actionId == EditorInfo.IME_ACTION_DONE)
                 {
-                    if(mTranslater == null)
-                    {
-                        mTranslater = new AsyncTranslater();
-                    }else
-                    {
-                        mTranslater.cancel(true);
-                    }
-                    mTranslater = new AsyncTranslater();
-                    mTranslater.execute(mFieldToTranslate.getText().toString(),
-                            mTranslation.getLangFrom() +"-"+mTranslation.getLangTo());
+                    translate();
                     hideKeyboard();
                 }
                 return false;
@@ -266,9 +270,10 @@ public class TranslateFragment extends Fragment
                     mFieldToTranslate.getText().toString(),
                     mResultTextView.getText().toString(),
                     false);
-            Data.get(getActivity()).addTranslation(mTranslation);
-            mSaveToHistoryButton.setEnabled(true);
-            Toast.makeText(getActivity(),Integer.toString(Data.get(getActivity()).getHistory().size()),Toast.LENGTH_SHORT).show();
+//            Data.get(getActivity()).addTranslation(mTranslation);
+//            mSaveToHistoryButton.setEnabled(true);
+//            mResultTextView.setText(mTranslation.getTextTo());
+//            updateView();
         }
     }
 
@@ -285,12 +290,14 @@ public class TranslateFragment extends Fragment
         @Override
         protected void onPostExecute(Dictionary dictionary)
         {
-            mDictionary = dictionary;
-
-            mResultFragment.setDictionary(mDictionary);
-//            getFragmentManager().beginTransaction()
-//                    .replace(R.id.translation_container,mResultFragment)
-//                    .commit();
+            if(dictionary!=null)
+            {
+                mDictionary = dictionary;
+                mResultFragment.setDictionary(mDictionary);
+            } else
+            {
+                useTranslaterAPI();
+            }
         }
     }
 
@@ -350,5 +357,52 @@ public class TranslateFragment extends Fragment
             mSaveToHistoryButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_not_favorite));
         }
 
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+        outState.putString(ARG_TEXT_FROM,mFieldToTranslate.getText().toString());
+        outState.putString(ARG_TEXT_TO,mResultTextView.getText().toString());
+        outState.putString(ARG_LANG_FROM,mTranslation.getLangFrom());
+        outState.putString(ARG_LANG_TO,mTranslation.getLangTo());
+        outState.putBoolean(ARG_IS_FAVORITE,mTranslation.isFavorite());
+        outState.putString(ARG_ID,mTranslation.getId().toString());
+    }
+
+    private void translate()
+    {
+        int countOfWords = mFieldToTranslate.getText().toString().split(" ").length;
+        if(countOfWords>2)
+        {
+            useTranslaterAPI();
+        } else
+        {
+            useDictionaryAPI();
+        }
+        hideKeyboard();
+    }
+
+    private void useTranslaterAPI()
+    {
+        if(mAsyncTranslater != null)
+        {
+            mAsyncTranslater.cancel(true);
+        }
+        mAsyncTranslater = new AsyncTranslater();
+        mAsyncTranslater.execute(mFieldToTranslate.getText().toString(),
+                mTranslation.getLangFrom()+"-"+mTranslation.getLangTo());
+    }
+
+    private void useDictionaryAPI()
+    {
+        if(mAsyncDictionary != null)
+        {
+            mAsyncDictionary.cancel(true);
+        }
+        mAsyncDictionary = new AsyncDictionary();
+        mAsyncDictionary.execute(mFieldToTranslate.getText().toString(),
+            mTranslation.getLangFrom() +"-"+mTranslation.getLangTo());
     }
 }
