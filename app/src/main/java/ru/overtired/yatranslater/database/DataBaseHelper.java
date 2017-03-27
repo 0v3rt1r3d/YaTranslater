@@ -29,6 +29,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
                 DataBaseScheme.HistoryTable.Cols.LANG_TO + ", " +
                 DataBaseScheme.HistoryTable.Cols.TEXT_FROM + ", " +
                 DataBaseScheme.HistoryTable.Cols.TEXT_TO + ", " +
+                DataBaseScheme.HistoryTable.Cols.IS_IN_HISTORY+", "+
                 DataBaseScheme.HistoryTable.Cols.IS_FAVORITE + ")");
 
         db.execSQL("create table " + DataBaseScheme.DirectionsTable.NAME + " (" +

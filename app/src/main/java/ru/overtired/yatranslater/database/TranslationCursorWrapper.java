@@ -24,7 +24,8 @@ public class TranslationCursorWrapper extends CursorWrapper
         String wordFrom = getString(getColumnIndex(DataBaseScheme.HistoryTable.Cols.TEXT_FROM));
         String wordTo = getString(getColumnIndex(DataBaseScheme.HistoryTable.Cols.TEXT_TO));
         boolean isFavorite = getInt(getColumnIndex(DataBaseScheme.HistoryTable.Cols.IS_FAVORITE))!=0;
+        boolean inHistory = getInt(getColumnIndex(DataBaseScheme.HistoryTable.Cols.IS_IN_HISTORY))!=0;
 
-        return new Translation(shortFrom,shortTo,wordFrom,wordTo,uuid,isFavorite);
+        return new Translation(shortFrom,shortTo,wordFrom,wordTo,uuid,isFavorite,inHistory);
     }
 }

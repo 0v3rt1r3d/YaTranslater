@@ -154,7 +154,7 @@ public class Translater
 //                В случае, если в словаре ничего не найдено
                 return null;
             }
-             dictionary = new Dictionary(text,jDefinitions.get(0).getAsJsonObject().get("ts").getAsString() ,direction);
+            dictionary = new Dictionary(text,jDefinitions.get(0).getAsJsonObject().get("ts").getAsString() ,direction);
 
             Log.d(TAG, response);
 

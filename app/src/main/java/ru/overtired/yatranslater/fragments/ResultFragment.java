@@ -55,7 +55,6 @@ public class ResultFragment extends Fragment
         return fragment;
     }
 
-
 //    Метод setDictionary меняет содержимое этого фрагмента, обновляет информацию
     public void setDictionary(Dictionary dictionary)
     {
@@ -98,7 +97,8 @@ public class ResultFragment extends Fragment
 
             mTranslation = translation;
 
-            mNumberText.setText(number+". ");
+            mNumberText.setText((number+1)+". ");
+            setTextViewSynonymStyle(mNumberText);
 
             FlexboxLayout.LayoutParams params = new FlexboxLayout.LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -107,7 +107,7 @@ public class ResultFragment extends Fragment
             TextView textView = new TextView(getActivity());
             textView.setLayoutParams(params);
             textView.setText(mTranslation.getText());
-            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP,26);
+            setTextViewSynonymStyle(textView);
 
             mFlexSynonyms.addView(textView);
 
@@ -115,9 +115,9 @@ public class ResultFragment extends Fragment
             {
                 textView = new TextView(getActivity());
                 textView.setLayoutParams(params);
-                textView.setText(",");
+                textView.setText(", ");
                 textView.setLines(1);
-                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP,26);
+                setTextViewSynonymStyle(textView);
 
                 mFlexSynonyms.addView(textView);
 
@@ -126,7 +126,7 @@ public class ResultFragment extends Fragment
                     textView = new TextView(getActivity());
                     textView.setLayoutParams(params);
                     textView.setText(translation.getSynonyms().get(i));
-                    textView.setTextSize(TypedValue.COMPLEX_UNIT_SP,26);
+                    setTextViewSynonymStyle(textView);
 
                     mFlexSynonyms.addView(textView);
                     if(i+1!=translation.getSynonyms().size())
@@ -134,7 +134,7 @@ public class ResultFragment extends Fragment
                         textView = new TextView(getActivity());
                         textView.setLayoutParams(params);
                         textView.setText(", ");
-                        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP,26);
+                        setTextViewSynonymStyle(textView);
                         mFlexSynonyms.addView(textView);
                     }
                 }
@@ -147,6 +147,7 @@ public class ResultFragment extends Fragment
                     textView = new TextView(getActivity());
                     textView.setLayoutParams(params);
                     textView.setText(translation.getMeans().get(i));
+                    setTextViewMeanStyle(textView);
 
                     mFlexMeans.addView(textView);
 
@@ -154,6 +155,7 @@ public class ResultFragment extends Fragment
                     {
                         textView = new TextView(getActivity());
                         textView.setLayoutParams(params);
+                        setTextViewMeanStyle(textView);
                         textView.setText(", ");
                         mFlexMeans.addView(textView);
                     }
@@ -168,6 +170,7 @@ public class ResultFragment extends Fragment
                     textView.setLayoutParams(params);
                     textView.setText(translation.getExamples().get(i).getText()+" - "+
                             translation.getExamples().get(i).getTranslation());
+                    setTextViewExampleStyle(textView);
 
                     mFlexExamples.addView(textView);
                 }
@@ -203,5 +206,23 @@ public class ResultFragment extends Fragment
         {
             return mTranslations.size();
         }
+    }
+
+    private void setTextViewSynonymStyle(TextView textView)
+    {
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP,18);
+        textView.setTextColor(getResources().getColor(R.color.colorBlack));
+    }
+
+    private void setTextViewMeanStyle(TextView textView)
+    {
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP,18);
+        textView.setTextColor(getResources().getColor(R.color.colorPrimary));
+    }
+
+    private void setTextViewExampleStyle(TextView textView)
+    {
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP,18);
+        textView.setTextColor(getResources().getColor(R.color.colorGrey));
     }
 }

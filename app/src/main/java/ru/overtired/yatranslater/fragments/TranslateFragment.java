@@ -47,11 +47,6 @@ public class TranslateFragment extends Fragment
     public final static int REQUEST_LANG_FROM = 0;
     public final static int REQUEST_LANG_TO = 1;
 
-    private static final String ARG_LANG_TO = "arg_lang_to";
-    private static final String ARG_LANG_FROM = "arg_lang_from";
-    private static final String ARG_TEXT_TO = "arg_text_to";
-    private static final String ARG_TEXT_FROM = "arg_text_from";
-    private static final String ARG_IS_FAVORITE = "arg_is_favorite";
     private static final String ARG_ID = "arg_id";
 
     private Translation mTranslation;
@@ -75,17 +70,12 @@ public class TranslateFragment extends Fragment
     private ScrollView mScrollView;
 
 
-    public static TranslateFragment newInstance(Translation translation)
+    public static TranslateFragment newInstance(String id)
     {
         TranslateFragment fragment = new TranslateFragment();
         Bundle args = new Bundle();
 
-        args.putString(ARG_LANG_FROM,translation.getLangFrom());
-        args.putString(ARG_LANG_TO,translation.getLangTo());
-        args.putString(ARG_TEXT_FROM,translation.getTextFrom());
-        args.putString(ARG_TEXT_TO,translation.getTextTo());
-        args.putString(ARG_ID,translation.getId().toString());
-        args.putBoolean(ARG_IS_FAVORITE,translation.isFavorite());
+        args.putString(ARG_ID,id);
 
         fragment.setArguments(args);
         return fragment;
@@ -104,24 +94,12 @@ public class TranslateFragment extends Fragment
 
         if(getArguments()!=null)
         {
-            String langFrom = getArguments().getString(ARG_LANG_FROM);
-            String langTo = getArguments().getString(ARG_LANG_TO);
-            String textFrom = getArguments().getString(ARG_TEXT_FROM);
-            String textTo = getArguments().getString(ARG_TEXT_TO);
             String id = getArguments().getString(ARG_ID);
-            boolean isFavorite = getArguments().getBoolean(ARG_IS_FAVORITE);
-
-            mTranslation = new Translation(langFrom,langTo,textFrom,textTo, id, isFavorite);
+            mTranslation = Data.get(getActivity()).getTranslation(id);
         }else if(savedInstanceState != null)
         {
-            String textFrom = savedInstanceState.getString(ARG_TEXT_FROM);
-            String textTo = savedInstanceState.getString(ARG_TEXT_TO);
-            String langFrom = savedInstanceState.getString(ARG_LANG_FROM);
-            String langTo = savedInstanceState.getString(ARG_LANG_TO);
             String id = savedInstanceState.getString(ARG_ID);
-            boolean isFavorite = savedInstanceState.getBoolean(ARG_IS_FAVORITE);
-
-            mTranslation = new Translation(langFrom,langTo,textFrom,textTo,id,isFavorite);
+            mTranslation = Data.get(getActivity()).getTranslation(id);
         }else
         {
             mTranslation = new Translation(
@@ -129,6 +107,7 @@ public class TranslateFragment extends Fragment
                     "en",
                     "",
                     getString(R.string.result_of_translation),
+                    false,
                     false);
         }
 
@@ -270,12 +249,12 @@ public class TranslateFragment extends Fragment
                     mTranslation.getLangTo(),
                     mFieldToTranslate.getText().toString(),
                     mResultTextView.getText().toString(),
-                    false);
+                    false,
+                    true);
             setVisibleDictionaryFragment(false);
-//            Data.get(getActivity()).addTranslation(mTranslation);
-//            mSaveToHistoryButton.setEnabled(true);
-//            mResultTextView.setText(mTranslation.getTextTo());
-//            updateView();
+            Data.get(getActivity()).addTranslation(mTranslation);
+            mSaveToHistoryButton.setEnabled(true);
+            mResultTextView.setText(mTranslation.getTextTo());
         }
     }
 
@@ -295,7 +274,18 @@ public class TranslateFragment extends Fragment
             {
                 mDictionary = dictionary;
                 mResultFragment.setDictionary(mDictionary);
+
+                mTranslation = new Translation(
+                        mTranslation.getLangFrom(),
+                        mTranslation.getLangTo(),
+                        mFieldToTranslate.getText().toString(),
+                        mDictionary.getTranslations().get(0).getText(),
+                        false,
+                        true);
+                Data.get(getActivity()).addTranslation(mTranslation);
+
                 setVisibleDictionaryFragment(true);
+                mSaveToHistoryButton.setEnabled(true);
             } else
             {
                 setVisibleDictionaryFragment(false);
@@ -366,21 +356,17 @@ public class TranslateFragment extends Fragment
     public void onSaveInstanceState(Bundle outState)
     {
         super.onSaveInstanceState(outState);
-        outState.putString(ARG_TEXT_FROM,mFieldToTranslate.getText().toString());
-        outState.putString(ARG_TEXT_TO,mResultTextView.getText().toString());
-        outState.putString(ARG_LANG_FROM,mTranslation.getLangFrom());
-        outState.putString(ARG_LANG_TO,mTranslation.getLangTo());
-        outState.putBoolean(ARG_IS_FAVORITE,mTranslation.isFavorite());
         outState.putString(ARG_ID,mTranslation.getId().toString());
     }
 
     private void translate()
     {
+        mTranslateButton.setEnabled(false);
+
         int countOfWords = mFieldToTranslate.getText().toString().split(" ").length;
         if(countOfWords>2)
         {
             useTranslaterAPI();
-
         } else
         {
             useDictionaryAPI();

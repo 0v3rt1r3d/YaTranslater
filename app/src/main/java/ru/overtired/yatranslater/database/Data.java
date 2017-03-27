@@ -4,9 +4,11 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import ru.overtired.yatranslater.structure.Language;
 import ru.overtired.yatranslater.structure.Translation;
@@ -64,14 +66,14 @@ public class Data
     {
         List<Translation> translations = new ArrayList<>();
 
-        TranslationCursorWrapper cursor = queryHistory(HistoryTable.Cols.IS_FAVORITE + "=0");
+        TranslationCursorWrapper cursor = queryHistory(null);
         try
         {
-            cursor.moveToFirst();
-            while (!cursor.isAfterLast())
+            cursor.moveToLast();
+            while (!cursor.isBeforeFirst())
             {
                 translations.add(cursor.getTranslation());
-                cursor.moveToNext();
+                cursor.moveToPrevious();
             }
         }
         finally
@@ -89,11 +91,11 @@ public class Data
                 queryHistory(HistoryTable.Cols.IS_FAVORITE + "=1");
         try
         {
-            cursor.moveToFirst();
-            while (!cursor.isAfterLast())
+            cursor.moveToLast();
+            while (!cursor.isBeforeFirst())
             {
                 translations.add(cursor.getTranslation());
-                cursor.moveToNext();
+                cursor.moveToPrevious();
             }
         }
         finally
@@ -153,7 +155,7 @@ public class Data
     public void addDirection(String direction)
     {
         ContentValues values = getDirectionContentValues(direction);
-        mDatabase.insert(DirectionsTable.NAME,null,values);
+        mDatabase.insert(DirectionsTable.NAME, null, values);
     }
 
     private ContentValues getLanguageContentValues(Language language)
@@ -175,7 +177,8 @@ public class Data
         values.put(HistoryTable.Cols.LANG_TO, translation.getLangTo());
         values.put(HistoryTable.Cols.TEXT_FROM, translation.getTextFrom());
         values.put(HistoryTable.Cols.TEXT_TO, translation.getTextTo());
-        values.put(HistoryTable.Cols.IS_FAVORITE,translation.isFavorite() ? 1 : 0);
+        values.put(HistoryTable.Cols.IS_FAVORITE, translation.isFavorite() ? 1 : 0);
+        values.put(HistoryTable.Cols.IS_IN_HISTORY, translation.isInHistory()? 1 : 0);
 
         return values;
     }
@@ -184,14 +187,14 @@ public class Data
     {
         ContentValues values = new ContentValues();
 
-        values.put(DirectionsTable.Cols.DIRECTION,direction);
+        values.put(DirectionsTable.Cols.DIRECTION, direction);
 
         return values;
     }
 
     public void removeTranslation(Translation translation)
     {
-        mDatabase.delete(HistoryTable.NAME,HistoryTable.Cols.UUID+"="+translation.getId().toString(),null);
+        mDatabase.delete(HistoryTable.NAME, HistoryTable.Cols.UUID + "=" + translation.getId().toString(), null);
     }
 
     public void clearHistory()
@@ -232,6 +235,22 @@ public class Data
     public void updateTranslation(Translation translation)
     {
         ContentValues values = getTranslationContentValues(translation);
-        mDatabase.update(HistoryTable.NAME,values,HistoryTable.Cols.UUID+"=\""+translation.getId().toString()+"\"",null);
+        mDatabase.update(HistoryTable.NAME, values, HistoryTable.Cols.UUID + "=\"" + translation.getId().toString() + "\"", null);
+    }
+
+    public Translation getTranslation(String id)
+    {
+        TranslationCursorWrapper cursorWrapper =
+                queryHistory("\""+HistoryTable.Cols.UUID + "=" + id+"\"");
+        try
+        {
+            cursorWrapper.moveToFirst();
+            return cursorWrapper.getTranslation();
+        }
+        catch (Exception e)
+        {
+            Log.d("Exception: ",e.getMessage());
+        }
+        return null;
     }
 }

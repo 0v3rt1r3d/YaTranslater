@@ -17,7 +17,7 @@ public class Dictionary
     {
         mText = text;
         mDirection = direction;
-        mTranscription = transcription;
+        mTranscription = "["+transcription+"]";
         mTranslations = new ArrayList<>();
     }
 

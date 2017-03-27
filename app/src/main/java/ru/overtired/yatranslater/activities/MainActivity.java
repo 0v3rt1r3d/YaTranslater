@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements HistoryFavoriteRe
     @Override
     public void setTranslation(Translation translation)
     {
-        mTranslateFragment = TranslateFragment.newInstance(translation);
+        mTranslateFragment = TranslateFragment.newInstance(translation.getId().toString());
         mBottomBar.selectTabAtPosition(0);
     }
 }

@@ -20,11 +20,26 @@
   </style>
   
   <style name="AppBarTitle">
-    <item name="android:textSize">22sp</item>
+    <item name="android:textSize">18sp</item>
     <item name="android:layout_gravity">center_vertical</item>
     <item name="android:gravity">center_vertical</item>
     <item name="android:textColor">@color/colorWhite</item>
     <item name="android:layout_centerVertical">true</item>
+  </style>
+
+  <style name="Synonym">
+    <item name="android:textSize">18sp</item>
+    <item name="android:textColor">@color/colorBlack</item>
+  </style>
+
+  <style name="Example">
+    <item name="android:textSize">18sp</item>
+    <item name="android:textColor">@color/colorGrey</item>
+  </style>
+
+  <style name="Mean">
+    <item name="android:textSize">18sp</item>
+    <item name="android:textColor">@color/colorAccent</item>
   </style>
 
 </resources>

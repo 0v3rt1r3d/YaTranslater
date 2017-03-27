@@ -9,13 +9,20 @@ public class Translation
 {
     private UUID mId;
     private boolean mIsFavorite;
+    private boolean mInHistory;
 
     private String mLangFrom;
     private String mLangTo;
     private String mTextFrom;
     private String mTextTo;
 
-    public Translation(String langFrom, String langTo, String textFrom, String textTo, String uuid, boolean isFavorite)
+    public Translation(String langFrom,
+                       String langTo,
+                       String textFrom,
+                       String textTo,
+                       String uuid,
+                       boolean isFavorite,
+                       boolean inHistory)
     {
         mLangFrom = langFrom;
         mLangTo = langTo;
@@ -23,10 +30,15 @@ public class Translation
         mTextTo = textTo;
         mIsFavorite = isFavorite;
         mId = UUID.fromString(uuid);
-
+        mInHistory = inHistory;
     }
 
-    public Translation(String langFrom, String langTo, String textFrom, String textTo, boolean isFavorite)
+    public Translation(String langFrom,
+                       String langTo,
+                       String textFrom,
+                       String textTo,
+                       boolean isFavorite,
+                       boolean inHistory)
     {
         mLangFrom = langFrom;
         mLangTo = langTo;
@@ -34,6 +46,7 @@ public class Translation
         mTextTo = textTo;
         mIsFavorite = isFavorite;
         mId = UUID.randomUUID();
+        mInHistory = inHistory;
     }
 
     public UUID getId()
@@ -89,5 +102,15 @@ public class Translation
     public void setTextTo(String textTo)
     {
         mTextTo = textTo;
+    }
+
+    public boolean isInHistory()
+    {
+        return mInHistory;
+    }
+
+    public void setInHistory(boolean inHistory)
+    {
+        mInHistory = inHistory;
     }
 }
