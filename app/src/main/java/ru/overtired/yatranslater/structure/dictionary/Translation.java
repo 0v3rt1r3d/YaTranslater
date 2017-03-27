@@ -11,7 +11,13 @@ public class Translation
 {
     private String mText;
 
+    public String getText()
+    {
+        return mText;
+    }
+
     public List<String> getSynonyms()
+
     {
         return mSynonyms;
     }

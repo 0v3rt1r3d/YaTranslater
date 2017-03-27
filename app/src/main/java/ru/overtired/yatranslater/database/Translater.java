@@ -22,7 +22,6 @@ import retrofit2.http.Query;
 import ru.overtired.yatranslater.R;
 import ru.overtired.yatranslater.structure.Dictionary;
 import ru.overtired.yatranslater.structure.Language;
-import ru.overtired.yatranslater.structure.dictionary.Definition;
 import ru.overtired.yatranslater.structure.dictionary.Example;
 import ru.overtired.yatranslater.structure.dictionary.Translation;
 
@@ -131,7 +130,7 @@ public class Translater
 
     public Dictionary getDictionary(String text, String direction)
     {
-        Dictionary dictionary = new Dictionary(text, direction);
+        Dictionary dictionary = new Dictionary(null,null,null);
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL_DICTIONARY)
@@ -155,6 +154,7 @@ public class Translater
 //                В случае, если в словаре ничего не найдено
                 return null;
             }
+             dictionary = new Dictionary(text,jDefinitions.get(0).getAsJsonObject().get("ts").getAsString() ,direction);
 
             Log.d(TAG, response);
 
@@ -162,8 +162,6 @@ public class Translater
             for (int i = 0; i < jDefinitions.size(); i++)
             {
                 JsonObject jDefinition = jDefinitions.get(i).getAsJsonObject();
-                Definition definition = new Definition(jDefinition.get("ts").getAsString());
-
                 JsonArray jTranslations = jDefinition.get("tr").getAsJsonArray();
 
 //                Перебор переводов
@@ -211,9 +209,8 @@ public class Translater
                         }
                     }
 
-                    definition.addTranslation(translation);
+                    dictionary.addTranslation(translation);
                 }
-                dictionary.addDefinition(definition);
             }
         }
         catch (IOException ioe)

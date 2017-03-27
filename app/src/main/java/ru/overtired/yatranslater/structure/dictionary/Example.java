@@ -9,7 +9,18 @@ public class Example
     private String mText;
     private String mTranslation;
 
-    public Example(String text,String translation)
+    public String getText()
+    {
+        return mText;
+    }
+
+    public String getTranslation()
+    {
+        return mTranslation;
+    }
+
+    public Example(String text, String translation)
+
     {
         mText = text;
         mTranslation = translation;

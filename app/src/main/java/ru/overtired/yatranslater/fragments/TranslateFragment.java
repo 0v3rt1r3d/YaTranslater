@@ -23,6 +23,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -67,8 +68,11 @@ public class TranslateFragment extends Fragment
     private AsyncTranslater mAsyncTranslater;
     private AsyncDictionary mAsyncDictionary;
 
+    private FrameLayout mFrameForDictionary;
     private ResultFragment mResultFragment;
     private Dictionary mDictionary;
+
+    private ScrollView mScrollView;
 
 
     public static TranslateFragment newInstance(Translation translation)
@@ -127,6 +131,9 @@ public class TranslateFragment extends Fragment
                     getString(R.string.result_of_translation),
                     false);
         }
+
+        mScrollView = (ScrollView) v.findViewById(R.id.translate_fragment_scroll_view);
+        mFrameForDictionary = (FrameLayout) v.findViewById(R.id.translation_container);
 
         mTranslateButton = (ImageButton) v.findViewById(R.id.button_translate);
         mTranslateButton.setOnClickListener(new View.OnClickListener()
@@ -235,6 +242,7 @@ public class TranslateFragment extends Fragment
             }
         });
 
+//        Фрагмент для вывода информации, запрошенной из словаря
         mResultFragment = ResultFragment.newInstance();
         getFragmentManager().beginTransaction()
                 .add(R.id.translation_container,mResultFragment)
@@ -246,13 +254,6 @@ public class TranslateFragment extends Fragment
 //    AsynkTask для для перевода текста
     private class AsyncTranslater extends AsyncTask<String,Void,String>
     {
-        @Override
-        protected void onPreExecute()
-        {
-            // TODO: 19.03.17 Временно блокирую кнопку сохранения в избранное, не знаю зачем
-            mSaveToHistoryButton.setEnabled(false);
-        }
-
         @Override
         protected String doInBackground(String... params)
         {
@@ -270,6 +271,7 @@ public class TranslateFragment extends Fragment
                     mFieldToTranslate.getText().toString(),
                     mResultTextView.getText().toString(),
                     false);
+            setVisibleDictionaryFragment(false);
 //            Data.get(getActivity()).addTranslation(mTranslation);
 //            mSaveToHistoryButton.setEnabled(true);
 //            mResultTextView.setText(mTranslation.getTextTo());
@@ -283,7 +285,6 @@ public class TranslateFragment extends Fragment
         protected Dictionary doInBackground(String... params)
         {
             Translater translater = new Translater();
-
             return translater.getDictionary(params[0],params[1]);
         }
 
@@ -294,8 +295,10 @@ public class TranslateFragment extends Fragment
             {
                 mDictionary = dictionary;
                 mResultFragment.setDictionary(mDictionary);
+                setVisibleDictionaryFragment(true);
             } else
             {
+                setVisibleDictionaryFragment(false);
                 useTranslaterAPI();
             }
         }
@@ -377,6 +380,7 @@ public class TranslateFragment extends Fragment
         if(countOfWords>2)
         {
             useTranslaterAPI();
+
         } else
         {
             useDictionaryAPI();
@@ -404,5 +408,18 @@ public class TranslateFragment extends Fragment
         mAsyncDictionary = new AsyncDictionary();
         mAsyncDictionary.execute(mFieldToTranslate.getText().toString(),
             mTranslation.getLangFrom() +"-"+mTranslation.getLangTo());
+    }
+
+    private void setVisibleDictionaryFragment(boolean visible)
+    {
+        if(visible)
+        {
+            mScrollView.setVisibility(View.GONE);
+            mFrameForDictionary.setVisibility(View.VISIBLE);
+        }else
+        {
+            mScrollView.setVisibility(View.VISIBLE);
+            mFrameForDictionary.setVisibility(View.GONE);
+        }
     }
 }
