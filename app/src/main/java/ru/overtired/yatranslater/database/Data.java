@@ -148,6 +148,10 @@ public class Data
 
     public void addTranslation(Translation translation)
     {
+        if(hasTranslation(translation))
+        {
+            removeTranslation(translation);
+        }
         ContentValues values = getTranslationContentValues(translation);
         mDatabase.insert(HistoryTable.NAME, null, values);
     }
@@ -194,12 +198,17 @@ public class Data
 
     public void removeTranslation(Translation translation)
     {
-        mDatabase.delete(HistoryTable.NAME, HistoryTable.Cols.UUID + "=" + translation.getId().toString(), null);
+        mDatabase.delete(HistoryTable.NAME,
+                HistoryTable.Cols.LANG_FROM+"=\""+translation.getLangFrom()+"\" and "+
+                        HistoryTable.Cols.LANG_TO+"=\""+translation.getLangTo()+"\" and "+
+                        HistoryTable.Cols.TEXT_FROM+"=\""+translation.getTextFrom()+"\""
+                , null);
     }
 
-    public void clearHistory()
+    public void updateHistory()
     {
-        mDatabase.delete(HistoryTable.NAME, HistoryTable.Cols.IS_FAVORITE + "=0", null);
+        mDatabase.delete(HistoryTable.NAME, HistoryTable.Cols.IS_IN_HISTORY+ "=0 and "+
+                HistoryTable.Cols.IS_FAVORITE+"!=0", null);
     }
 
     private LanguageCursorWrapper queryLanguages()
@@ -241,7 +250,7 @@ public class Data
     public Translation getTranslation(String id)
     {
         TranslationCursorWrapper cursorWrapper =
-                queryHistory("\""+HistoryTable.Cols.UUID + "=" + id+"\"");
+                queryHistory(HistoryTable.Cols.UUID + "=\""+ id+"\"");
         try
         {
             cursorWrapper.moveToFirst();
@@ -252,5 +261,66 @@ public class Data
             Log.d("Exception: ",e.getMessage());
         }
         return null;
+    }
+
+    public boolean hasTranslation(Translation translation)
+    {
+        TranslationCursorWrapper cursorWrapper =
+                queryHistory(HistoryTable.Cols.TEXT_FROM+"=\""+translation.getTextFrom()+"\" and "+
+                HistoryTable.Cols.LANG_FROM+"=\""+translation.getLangFrom()+"\" and "+
+                HistoryTable.Cols.LANG_TO+"=\""+translation.getLangTo()+"\"");
+        return cursorWrapper.getCount()>0;
+    }
+
+    public List<Translation> getFindHistory(String text)
+    {
+        List<Translation> translations = new ArrayList<>();
+
+        TranslationCursorWrapper cursorWrapper =
+                queryHistory(HistoryTable.Cols.IS_IN_HISTORY+"=1 and ("+
+                HistoryTable.Cols.TEXT_FROM+" like \"%"+text+"%\" or "+
+                HistoryTable.Cols.TEXT_TO+" like\"%"+text+"%\")");
+
+        try
+        {
+            cursorWrapper.moveToLast();
+            while (!cursorWrapper.isBeforeFirst())
+            {
+                translations.add(cursorWrapper.getTranslation());
+                cursorWrapper.moveToPrevious();
+            }
+        }
+        catch (Exception e)
+        {
+            Log.d("Error",e.getMessage());
+        }
+
+        return translations;
+    }
+
+    public List<Translation> getFindFavorites(String text)
+    {
+        List<Translation> translations = new ArrayList<>();
+
+        TranslationCursorWrapper cursorWrapper =
+                queryHistory(HistoryTable.Cols.IS_FAVORITE+"=1 and ("+
+                        HistoryTable.Cols.TEXT_FROM+" like \"%"+text+"%\" or "+
+                        HistoryTable.Cols.TEXT_TO+" like\"%"+text+"%\")");
+
+        try
+        {
+            cursorWrapper.moveToLast();
+            while (!cursorWrapper.isBeforeFirst())
+            {
+                translations.add(cursorWrapper.getTranslation());
+                cursorWrapper.moveToPrevious();
+            }
+        }
+        catch (Exception e)
+        {
+            Log.d("Error",e.getMessage());
+        }
+
+        return translations;
     }
 }

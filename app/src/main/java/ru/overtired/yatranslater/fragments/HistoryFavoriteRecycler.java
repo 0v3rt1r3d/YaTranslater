@@ -26,8 +26,9 @@ import ru.overtired.yatranslater.structure.Translation;
 
 public abstract class HistoryFavoriteRecycler extends Fragment
 {
-    private RecyclerView mRecyclerView;
-    private Callbacks mCallbacks;
+    protected RecyclerView mRecyclerView;
+    protected Callbacks mCallbacks;
+    protected View mView;
 
     public interface Callbacks
     {
@@ -45,15 +46,15 @@ public abstract class HistoryFavoriteRecycler extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
-        View view = inflater.inflate(R.layout.fragment_history_favorite,container,false);
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.history_favorite_recycler_view);
+        mView = inflater.inflate(R.layout.fragment_history_favorite,container,false);
+        mRecyclerView = (RecyclerView) mView.findViewById(R.id.history_favorite_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(new HistoryFavoriteAdapter(getTranslations()));
 
-        return view;
+        return mView;
     }
 
-    private class HistoryFavoriteHolder extends RecyclerView.ViewHolder 
+    protected class HistoryFavoriteHolder extends RecyclerView.ViewHolder
             implements View.OnClickListener
     {
         private Translation mTranslation;
@@ -115,7 +116,7 @@ public abstract class HistoryFavoriteRecycler extends Fragment
         }
     }
 
-    private class HistoryFavoriteAdapter extends RecyclerView.Adapter<HistoryFavoriteHolder>
+    protected class HistoryFavoriteAdapter extends RecyclerView.Adapter<HistoryFavoriteHolder>
     {
         private List<Translation> mTranslations;
 

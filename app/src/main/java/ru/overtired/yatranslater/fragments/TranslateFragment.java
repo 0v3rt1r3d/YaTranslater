@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -30,6 +31,7 @@ import android.widget.Toast;
 import java.util.List;
 import java.util.UUID;
 
+import ru.overtired.yatranslater.database.PreferencesScheme;
 import ru.overtired.yatranslater.structure.Dictionary;
 import ru.overtired.yatranslater.structure.Language;
 import ru.overtired.yatranslater.activities.LanguageChooseActivity;
@@ -58,7 +60,6 @@ public class TranslateFragment extends Fragment
     private TextView mResultTextView;
     private ImageButton mSwapLanguagesButton;
     private ImageButton mSaveToHistoryButton;
-    private ImageButton mTranslateButton;
 
     private AsyncTranslater mAsyncTranslater;
     private AsyncDictionary mAsyncDictionary;
@@ -103,8 +104,10 @@ public class TranslateFragment extends Fragment
         }else
         {
             mTranslation = new Translation(
-                    "ru",
-                    "en",
+                    PreferenceManager.getDefaultSharedPreferences(getActivity())
+                            .getString(PreferencesScheme.PREF_LANG_FROM,"ru"),
+                    PreferenceManager.getDefaultSharedPreferences(getActivity())
+                            .getString(PreferencesScheme.PREF_LANG_TO,"en"),
                     "",
                     getString(R.string.result_of_translation),
                     false,
@@ -113,17 +116,6 @@ public class TranslateFragment extends Fragment
 
         mScrollView = (ScrollView) v.findViewById(R.id.translate_fragment_scroll_view);
         mFrameForDictionary = (FrameLayout) v.findViewById(R.id.translation_container);
-
-        mTranslateButton = (ImageButton) v.findViewById(R.id.button_translate);
-        mTranslateButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                translate();
-                hideKeyboard();
-            }
-        });
 
         mResultTextView = (TextView) v.findViewById(R.id.translated_text_view);
 
@@ -324,6 +316,7 @@ public class TranslateFragment extends Fragment
             mTranslation.setLangTo(data.getStringExtra(LanguageChooseActivity.EXTRA_LANG));
             updateView();
         }
+        saveLangsToPrefs();
     }
 
     private void hideKeyboard()
@@ -361,8 +354,6 @@ public class TranslateFragment extends Fragment
 
     private void translate()
     {
-        mTranslateButton.setEnabled(false);
-
         int countOfWords = mFieldToTranslate.getText().toString().split(" ").length;
         if(countOfWords>2)
         {
@@ -407,5 +398,20 @@ public class TranslateFragment extends Fragment
             mScrollView.setVisibility(View.VISIBLE);
             mFrameForDictionary.setVisibility(View.GONE);
         }
+    }
+
+    private void saveLangsToPrefs()
+    {
+        PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
+                .putString(PreferencesScheme.PREF_LANG_FROM,mTranslation.getLangFrom())
+                .putString(PreferencesScheme.PREF_LANG_TO,mTranslation.getLangTo())
+                .apply();
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        saveLangsToPrefs();
     }
 }

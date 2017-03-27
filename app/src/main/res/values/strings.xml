@@ -17,5 +17,8 @@
   <string name="try_again">Try again</string>
   <string name="close_app">Close</string>
   <string name="no_internet">Couldn\'t connect to the Internet</string>
+  <string name="dialog_delete_history">Do you really want do delete history?</string>
+  <string name="dialog_delete_favorite">Do you really want to delete favorites?</string>
+  <string name="search_view">Enter the text to find</string>
 
 </resources>

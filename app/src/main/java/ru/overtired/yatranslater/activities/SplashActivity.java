@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Locale;
 
 import ru.overtired.yatranslater.R;
+import ru.overtired.yatranslater.database.PreferencesScheme;
 import ru.overtired.yatranslater.structure.Language;
 import ru.overtired.yatranslater.database.Translater;
 import ru.overtired.yatranslater.database.Data;
@@ -29,9 +30,6 @@ import ru.overtired.yatranslater.database.Data;
 
 public class SplashActivity extends AppCompatActivity
 {
-    private static final String PREF_FIRST_START = "is_it_first_start";
-    private static final String PREF_LOCALE = "locale";
-
     private String mCurrentLocale;
 
     @Override
@@ -41,10 +39,10 @@ public class SplashActivity extends AppCompatActivity
         final Context context = SplashActivity.this;
 
         boolean isFirstStart = PreferenceManager.getDefaultSharedPreferences(context)
-                .getBoolean(PREF_FIRST_START, true);
+                .getBoolean(PreferencesScheme.PREF_FIRST_START, true);
 
         String locale = PreferenceManager.getDefaultSharedPreferences(context)
-                .getString(PREF_LOCALE, "");
+                .getString(PreferencesScheme.PREF_LOCALE, "");
         mCurrentLocale = Locale.getDefault().toString().substring(0, 2);
 
         if (isFirstStart || !mCurrentLocale.equals(locale))
@@ -94,8 +92,8 @@ public class SplashActivity extends AppCompatActivity
 
             PreferenceManager.getDefaultSharedPreferences(SplashActivity.this)
                     .edit()
-                    .putBoolean(PREF_FIRST_START, false)
-                    .putString(PREF_LOCALE, mCurrentLocale)
+                    .putBoolean(PreferencesScheme.PREF_FIRST_START, false)
+                    .putString(PreferencesScheme.PREF_LOCALE, mCurrentLocale)
                     .apply();
 
             startMainActivity();

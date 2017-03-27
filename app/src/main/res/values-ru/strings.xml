@@ -13,4 +13,7 @@
   <string name="try_again">Пропробовать снова</string>
   <string name="need_internet">Включите Интернет для загрузки языков</string>
   <string name="language_translate">Язык перевода</string>
+  <string name="dialog_delete_history">Вы действительно хотите очистить историю перевода?</string>
+  <string name="dialog_delete_favorite">Вы действительно хотите очистить избранное?</string>
+  <string name="search_view">Введите текст для поиска</string>
 </resources>
