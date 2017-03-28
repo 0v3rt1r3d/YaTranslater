@@ -18,19 +18,25 @@ import ru.overtired.yatranslater.structure.Language;
 import ru.overtired.yatranslater.R;
 import ru.overtired.yatranslater.database.Data;
 
+/**
+ * Активность используется для выбора языка из верхнего бара
+ */
+
 public class LanguageChooseActivity extends AppCompatActivity
 {
     private RecyclerView mRecyclerView;
-    private List<Language> mLanguages;
+    private List<Language> mListLanguages;
 
-    private static final String EXTRA_DIR = "ru.overtired.yatranslater.direction";
-
+    /* EXTRA_FROM_OR_TO_LANG - это направление перевода, от него зависит заголовок активности
+    *  EXTRA_LANG - собственно аргумент перевода, там будет что-то типа "ru"
+    * */
     public static final String EXTRA_LANG = "ru.overtired.yatranslater.lang";
+    private static final String EXTRA_FROM_OR_TO_LANG = "ru.overtired.yatranslater.direction";
 
     public static Intent newIntent(Context context,boolean isLanguageTo)
     {
         Intent intent = new Intent(context,LanguageChooseActivity.class);
-        intent.putExtra(EXTRA_DIR,isLanguageTo);
+        intent.putExtra(EXTRA_FROM_OR_TO_LANG,isLanguageTo);
         return intent;
     }
 
@@ -40,18 +46,17 @@ public class LanguageChooseActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_language_chooser);
 
+        /*Здесь все прозрачно, из заполняю список языков из синглетона*/
+
         mRecyclerView = (RecyclerView) findViewById(R.id.language_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(LanguageChooseActivity.this));
-
-        mLanguages = Data.get(LanguageChooseActivity.this).getLanguages();
-
-        LanguageAdapter adapter = new LanguageAdapter(mLanguages);
-
+        mListLanguages = Data.get(LanguageChooseActivity.this).getLanguages();
+        LanguageAdapter adapter = new LanguageAdapter(mListLanguages);
         mRecyclerView.setAdapter(adapter);
 
+        /*Вот здесь как раз меняется заголовок ActionBar-a*/
         AppCompatActivity activity = (AppCompatActivity)this;
-
-        if(getIntent().getBooleanExtra(EXTRA_DIR,false))
+        if(getIntent().getBooleanExtra(EXTRA_FROM_OR_TO_LANG,false))
         {
             activity.getSupportActionBar().setTitle(R.string.language_translate);
         }else
@@ -63,14 +68,13 @@ public class LanguageChooseActivity extends AppCompatActivity
     private class LanguageHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
         private Language mLanguage;
-
         private TextView mTextView;
 
         public LanguageHolder(View itemView)
         {
             super(itemView);
-            itemView.setOnClickListener(this);
 
+            itemView.setOnClickListener(this);
             mTextView = (TextView) itemView.findViewById(R.id.list_language_text_view);
         }
 
@@ -83,6 +87,7 @@ public class LanguageChooseActivity extends AppCompatActivity
         @Override
         public void onClick(View v)
         {
+            /*При выборе языка - закрыть активность и передать данные родительской*/
             Intent intent = new Intent();
             intent.putExtra(EXTRA_LANG,mLanguage.getShortLang());
             setResult(Activity.RESULT_OK,intent);

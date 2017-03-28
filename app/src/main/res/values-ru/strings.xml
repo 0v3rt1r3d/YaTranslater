@@ -16,4 +16,6 @@
   <string name="dialog_delete_history">Вы действительно хотите очистить историю перевода?</string>
   <string name="dialog_delete_favorite">Вы действительно хотите очистить избранное?</string>
   <string name="search_view">Введите текст для поиска</string>
+  <string name="dialog_delete">Вы хотите удалить этот элемент?</string>
+  <string name="button_delete">Удалить</string>
 </resources>

@@ -2,9 +2,11 @@ package ru.overtired.yatranslater.fragments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
@@ -55,7 +57,7 @@ public abstract class HistoryFavoriteRecycler extends Fragment
     }
 
     protected class HistoryFavoriteHolder extends RecyclerView.ViewHolder
-            implements View.OnClickListener
+            implements View.OnClickListener,View.OnLongClickListener
     {
         private Translation mTranslation;
         
@@ -68,6 +70,7 @@ public abstract class HistoryFavoriteRecycler extends Fragment
         {
             super(itemView);
             itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
 
             mBookmark = (ImageButton) itemView.findViewById(R.id.list_translation_button_save);
             mBookmark.setOnClickListener(new View.OnClickListener()
@@ -113,6 +116,26 @@ public abstract class HistoryFavoriteRecycler extends Fragment
         public void onClick(View v)
         {
             mCallbacks.setTranslation(mTranslation);
+        }
+
+        @Override
+        public boolean onLongClick(View v)
+        {
+            new AlertDialog.Builder(getActivity())
+                    .setMessage(R.string.dialog_delete)
+                    .setPositiveButton(R.string.button_delete, new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            Data.get(getActivity()).removeTranslation(mTranslation);
+                            mRecyclerView.setAdapter(new HistoryFavoriteAdapter(getTranslations()));
+                        }
+                    })
+                    .setNegativeButton(android.R.string.cancel,null)
+                    .show();
+
+            return true;
         }
     }
 

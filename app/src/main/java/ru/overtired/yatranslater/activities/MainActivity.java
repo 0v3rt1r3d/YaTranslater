@@ -18,13 +18,14 @@ import ru.overtired.yatranslater.fragments.SettingsFragment;
 import ru.overtired.yatranslater.fragments.TranslateFragment;
 import ru.overtired.yatranslater.structure.Translation;
 
-//Главная активность, хост для всех фрагментов
+/**
+ * Главная активность, хост для всех фрагментов
+ */
 
 public class MainActivity extends AppCompatActivity implements HistoryFavoriteRecycler.Callbacks
 {
     private com.roughike.bottombar.BottomBar mBottomBar;
 
-//    Фрагменты
     private MiddleFragment mMiddleFragment;
     private TranslateFragment mTranslateFragment;
     private SettingsFragment mSettingsFragment;

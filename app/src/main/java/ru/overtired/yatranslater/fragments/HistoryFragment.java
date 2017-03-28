@@ -23,6 +23,7 @@ import ru.overtired.yatranslater.database.Data;
 public class HistoryFragment extends HistoryFavoriteRecycler
 {
     private EditText mSearchEditText;
+    private boolean mIsSearchActivated = false;
 
     public static HistoryFragment newInstance()
     {
@@ -52,11 +53,13 @@ public class HistoryFragment extends HistoryFavoriteRecycler
             {
                 if(s.equals(""))
                 {
-                    mRecyclerView.setAdapter(new HistoryFavoriteAdapter(Data.get(getActivity()).getHistory()));
+                    mIsSearchActivated = false;
+
                 }else
                 {
-                    mRecyclerView.setAdapter(new HistoryFavoriteAdapter(Data.get(getActivity()).getFindHistory(s.toString())));
+                    mIsSearchActivated = true;
                 }
+                mRecyclerView.setAdapter(new HistoryFavoriteAdapter(getTranslations()));
             }
 
             @Override
@@ -72,6 +75,10 @@ public class HistoryFragment extends HistoryFavoriteRecycler
     @Override
     protected List<Translation> getTranslations()
     {
+        if(mIsSearchActivated)
+        {
+            return Data.get(getActivity()).getFindHistory(mSearchEditText.getText().toString());
+        }
         return Data.get(getActivity()).getHistory();
     }
 }

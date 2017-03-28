@@ -45,6 +45,7 @@ public class SplashActivity extends AppCompatActivity
                 .getString(PreferencesScheme.PREF_LOCALE, "");
         mCurrentLocale = Locale.getDefault().toString().substring(0, 2);
 
+//        Перезагружает языки, если другая локаль или первый запуск
         if (isFirstStart || !mCurrentLocale.equals(locale))
         {
             tryToDownloadLanguages();
@@ -109,6 +110,7 @@ public class SplashActivity extends AppCompatActivity
 
     public static boolean hasInternetConnection(Context context)
     {
+//        Проверяет наличие сети
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         if (wifiInfo != null && wifiInfo.isConnected())

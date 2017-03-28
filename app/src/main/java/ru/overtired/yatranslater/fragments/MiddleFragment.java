@@ -79,7 +79,8 @@ public class MiddleFragment extends Fragment
                                         @Override
                                         public void onClick(DialogInterface dialog, int which)
                                         {
-                                            //// TODO: 27.03.17 очитстить историю
+                                            Data.get(getActivity()).clearHistory();
+                                            mHistoryFragment.updateRecycler();
                                         }
                                     })
                             .setNegativeButton(android.R.string.cancel, null)
@@ -94,7 +95,8 @@ public class MiddleFragment extends Fragment
                                         @Override
                                         public void onClick(DialogInterface dialog, int which)
                                         {
-                                            //// TODO: 27.03.17 очитстить историю
+                                            Data.get(getActivity()).clearFavorites();
+                                            mHistoryFragment.updateRecycler();
                                         }
                                     })
                             .setNegativeButton(android.R.string.cancel, null)

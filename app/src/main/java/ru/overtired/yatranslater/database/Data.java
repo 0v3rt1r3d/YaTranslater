@@ -66,7 +66,7 @@ public class Data
     {
         List<Translation> translations = new ArrayList<>();
 
-        TranslationCursorWrapper cursor = queryHistory(null);
+        TranslationCursorWrapper cursor = queryHistory(HistoryTable.Cols.IS_IN_HISTORY + "=1");
         try
         {
             cursor.moveToLast();
@@ -205,10 +205,23 @@ public class Data
                 , null);
     }
 
-    public void updateHistory()
+    public void clearFavorites()
     {
-        mDatabase.delete(HistoryTable.NAME, HistoryTable.Cols.IS_IN_HISTORY+ "=0 and "+
-                HistoryTable.Cols.IS_FAVORITE+"!=0", null);
+        mDatabase.delete(HistoryTable.NAME,HistoryTable.Cols.IS_FAVORITE+"=1 and "+
+                HistoryTable.Cols.IS_IN_HISTORY +"=0",null);
+
+        ContentValues values = new ContentValues();
+        values.put(HistoryTable.Cols.IS_FAVORITE,0);
+        mDatabase.update(HistoryTable.NAME,values,HistoryTable.Cols.IS_FAVORITE+"=1",null);
+    }
+
+    public void clearHistory()
+    {
+        mDatabase.delete(HistoryTable.NAME, HistoryTable.Cols.IS_IN_HISTORY+ "=1 and "+
+                HistoryTable.Cols.IS_FAVORITE+"=0", null);
+        ContentValues values = new ContentValues();
+        values.put(HistoryTable.Cols.IS_IN_HISTORY,0);
+        mDatabase.update(HistoryTable.NAME,values,HistoryTable.Cols.IS_IN_HISTORY+"=1",null);
     }
 
     private LanguageCursorWrapper queryLanguages()
@@ -323,4 +336,6 @@ public class Data
 
         return translations;
     }
+
+
 }
