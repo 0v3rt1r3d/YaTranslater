@@ -292,17 +292,27 @@ public class TranslateFragment extends Fragment
         {
             if (dictionary != null)
             {
+                //Если такое слово уже есть, то проверяется есть ли оно в избранном
                 mDictionary = dictionary;
                 mResultFragment.setDictionary(mDictionary);
 
-                mTranslation = new Translation(
+                Translation temp = new Translation(
                         mTranslation.getLangFrom(),
                         mTranslation.getLangTo(),
                         mFieldToTranslate.getText().toString(),
                         mDictionary.getTranslations().get(0).getText(),
                         false,
                         true);
+
+                mTranslation = new Translation(temp.getLangFrom(),
+                        temp.getLangTo(),
+                        temp.getTextFrom(),
+                        temp.getTextTo(),
+                        Data.get(getActivity()).isTranslationFavorite(temp),
+                        true);
+
                 Data.get(getActivity()).addTranslation(mTranslation);
+                updateView();
 
                 setVisibleDictionaryFragment(true);
                 mSaveToHistoryButton.setEnabled(true);
@@ -364,14 +374,7 @@ public class TranslateFragment extends Fragment
         mFromLanguageTextView.setText(getFullNameByShortName(mTranslation.getLangFrom()));
         mFieldToTranslate.setText(mTranslation.getTextFrom());
         mResultTextView.setText(mTranslation.getTextTo());
-        if (mTranslation.isFavorite())
-        {
-            mSaveToHistoryButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
-        }
-        else
-        {
-            mSaveToHistoryButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_not_favorite));
-        }
+        setBookmarkIcon(mTranslation.isFavorite());
     }
 
     @Override
@@ -475,5 +478,17 @@ public class TranslateFragment extends Fragment
                 getString(R.string.result_of_translation),
                 false,
                 false);
+    }
+
+    private void setBookmarkIcon(boolean set)
+    {
+        if (set)
+        {
+            mSaveToHistoryButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
+        }
+        else
+        {
+            mSaveToHistoryButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_not_favorite));
+        }
     }
 }

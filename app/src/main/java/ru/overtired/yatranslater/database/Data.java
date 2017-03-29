@@ -418,4 +418,18 @@ public class Data
         return direction.contains(direction);
     }
 
+    public boolean isTranslationFavorite(Translation translation)
+    {
+        if(!hasTranslation(translation))
+        {
+            return false;
+        }
+        TranslationCursorWrapper cursor = queryHistory(
+                HistoryTable.Cols.LANG_FROM+"=\""+translation.getLangFrom()+"\" and "+
+        HistoryTable.Cols.LANG_TO+"=\""+translation.getLangTo()+"\" and "+
+        HistoryTable.Cols.TEXT_FROM+"=\""+translation.getTextFrom()+"\"");
+
+        cursor.moveToFirst();
+        return cursor.getTranslation().isFavorite();
+    }
 }
