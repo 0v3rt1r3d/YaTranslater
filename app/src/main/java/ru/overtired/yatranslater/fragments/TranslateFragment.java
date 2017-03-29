@@ -11,6 +11,7 @@ import android.support.v7.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -88,8 +89,6 @@ public class TranslateFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
         View v = inflater.inflate(R.layout.fragment_translate, container, false);
-
-
 
         mScrollView = (ScrollView) v.findViewById(R.id.translate_fragment_scroll_view);
         mFrameForDictionary = (FrameLayout) v.findViewById(R.id.translation_container);
@@ -274,7 +273,7 @@ public class TranslateFragment extends Fragment
         protected Dictionary doInBackground(String... params)
         {
             Translater translater = new Translater();
-            return translater.getDictionary(params[0], params[1]);
+            return translater.getDictionary(getActivity(),params[0], params[1]);
         }
 
         @Override

@@ -18,4 +18,5 @@
   <string name="search_view">Введите текст для поиска</string>
   <string name="dialog_delete">Вы хотите удалить этот элемент?</string>
   <string name="button_delete">Удалить</string>
+  <string name="no_transcription">Нет транскрипции</string>
 </resources>

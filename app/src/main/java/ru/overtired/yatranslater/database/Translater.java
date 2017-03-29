@@ -128,7 +128,7 @@ public class Translater
         return translation;
     }
 
-    public Dictionary getDictionary(String text, String direction)
+    public Dictionary getDictionary(Context context, String text, String direction)
     {
         Dictionary dictionary = new Dictionary(null,null,null);
 
@@ -149,12 +149,19 @@ public class Translater
                     .getAsJsonObject()
                     .getAsJsonArray("def");
 
-            if(jDefinitions.size() ==0)
+            if(jDefinitions.size() == 0)
             {
 //                В случае, если в словаре ничего не найдено
                 return null;
             }
-            dictionary = new Dictionary(text,jDefinitions.get(0).getAsJsonObject().get("ts").getAsString() ,direction);
+
+            if(jDefinitions.get(0).getAsJsonObject().has("ts"))
+            {
+                dictionary = new Dictionary(text, jDefinitions.get(0).getAsJsonObject().get("ts").getAsString(), direction);
+            }else
+            {
+                dictionary = new Dictionary(text, context.getString(R.string.no_transcription), direction);
+            }
 
             Log.d(TAG, response);
 
