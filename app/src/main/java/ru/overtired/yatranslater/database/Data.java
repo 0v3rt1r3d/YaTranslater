@@ -44,7 +44,7 @@ public class Data
     {
         List<Language> languages = new ArrayList<>();
 
-        LanguageCursorWrapper cursor = queryLanguages();
+        LanguageCursorWrapper cursor = queryLanguages(null);
         try
         {
             cursor.moveToFirst();
@@ -262,12 +262,12 @@ public class Data
         mDatabase.update(HistoryTable.NAME, values, HistoryTable.Cols.IS_IN_HISTORY + "=1", null);
     }
 
-    private LanguageCursorWrapper queryLanguages()
+    private LanguageCursorWrapper queryLanguages(String clause)
     {
         Cursor cursor = mDatabase.query(
                 LanguagesTable.NAME,
                 null,
-                null,
+                clause,
                 null,
                 null,
                 null,
@@ -290,6 +290,36 @@ public class Data
         );
 
         return new TranslationCursorWrapper(cursor);
+    }
+
+    private List<String> queryDirections()
+    {
+        List<String> directions = new ArrayList<>();
+        Cursor cursor = mDatabase.query(DirectionsTable.NAME,
+                new String[]{DirectionsTable.Cols.DIRECTION},
+                null,
+                null,
+                null,
+                null,
+                null);
+
+        if(cursor.getCount()==0)
+        {
+            return null;
+        }
+
+        try
+        {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast())
+            {
+                directions.add(cursor.getString(cursor.getColumnIndex(DirectionsTable.Cols.DIRECTION)));
+            }
+        }finally
+        {
+            cursor.close();
+        }
+        return directions;
     }
 
     public void updateTranslation(Translation translation)
@@ -382,5 +412,10 @@ public class Data
         return translations;
     }
 
+    public boolean hasDirection(String direction)
+    {
+        List<String> directions = getDirections();
+        return direction.contains(direction);
+    }
 
 }

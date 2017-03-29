@@ -19,4 +19,5 @@
   <string name="dialog_delete">Вы хотите удалить этот элемент?</string>
   <string name="button_delete">Удалить</string>
   <string name="no_transcription">Нет транскрипции</string>
+  <string name="no_direction">Не удается перевести в этом направлении, выберете другой язык</string>
 </resources>

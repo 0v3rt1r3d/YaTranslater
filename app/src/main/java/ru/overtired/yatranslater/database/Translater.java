@@ -144,6 +144,10 @@ public class Translater
         try
         {
             response = service.getFromDictionary(text, direction).execute().body();
+            if(response == null)
+            {
+                return null;
+            }
             JsonArray jDefinitions = new JsonParser()
                     .parse(response)
                     .getAsJsonObject()

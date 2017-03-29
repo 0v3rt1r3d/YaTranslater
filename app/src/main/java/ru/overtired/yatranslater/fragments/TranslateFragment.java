@@ -222,7 +222,7 @@ public class TranslateFragment extends Fragment
                 {
                     setVisibleDictionaryFragment(true);
                     mResultFragment.setDictionary(mDictionary);
-                    // TODO: 29.03.17 Разобраться с восстановлением данных из словаря 
+                    // TODO: 29.03.17 Разобраться с восстановлением данных из словаря
                     
                 }//elseif
                 updateView();
@@ -387,21 +387,29 @@ public class TranslateFragment extends Fragment
 
     private void translate()
     {
-        if(SplashActivity.hasInternetConnection(getActivity()))
+        if(Data.get(getActivity()).hasDirection(mTranslation.getLangFrom()+
+            "-"+mTranslation.getLangTo()))
         {
-            int countOfWords = mFieldToTranslate.getText().toString().split(" ").length;
-            if (countOfWords > 2)
+            if (SplashActivity.hasInternetConnection(getActivity()))
             {
-                useTranslaterAPI();
+                int countOfWords = mFieldToTranslate.getText().toString().split(" ").length;
+                if (countOfWords > 2)
+                {
+                    useTranslaterAPI();
+                }
+                else
+                {
+                    useDictionaryAPI();
+                }
+                hideKeyboard();
             }
             else
             {
-                useDictionaryAPI();
+                Toast.makeText(getActivity(), R.string.no_internet, Toast.LENGTH_SHORT).show();
             }
-            hideKeyboard();
-        }else
+        } else
         {
-            Toast.makeText(getActivity(),R.string.no_internet,Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(),R.string.no_direction,Toast.LENGTH_SHORT).show();
         }
     }
 
