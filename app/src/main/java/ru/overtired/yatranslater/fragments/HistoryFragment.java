@@ -81,4 +81,11 @@ public class HistoryFragment extends HistoryFavoriteRecycler
         }
         return Data.get(getActivity()).getHistory();
     }
+
+    @Override
+    protected void updateOtherRecycler()
+    {
+        MiddleFragment parentFragment = (MiddleFragment)getParentFragment();
+        parentFragment.updateFavoriteRecyclerView();
+    }
 }

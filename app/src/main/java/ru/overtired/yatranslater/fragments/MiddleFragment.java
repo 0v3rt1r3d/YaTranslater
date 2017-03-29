@@ -28,7 +28,7 @@ import ru.overtired.yatranslater.database.Data;
 
 public class MiddleFragment extends Fragment
 {
-    private static final String TAG = "MiddleFragment: ";
+    public static final String TAG = "MiddleFragment";
 
     private HistoryFragment mHistoryFragment;
     private FavoriteFragment mFavoriteFragment;
@@ -150,5 +150,15 @@ public class MiddleFragment extends Fragment
         {
             return mTitles[position];
         }
+    }
+
+    public void updateFavoriteRecyclerView()
+    {
+        mFavoriteFragment.updateRecycler();
+    }
+
+    public void updateHistoryRecyclerView()
+    {
+        mHistoryFragment.updateRecycler();
     }
 }

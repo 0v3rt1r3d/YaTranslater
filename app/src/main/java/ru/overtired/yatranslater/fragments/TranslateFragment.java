@@ -3,8 +3,6 @@ package ru.overtired.yatranslater.fragments;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,8 +11,6 @@ import android.support.v7.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,10 +25,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
-import java.util.UUID;
 
+import ru.overtired.yatranslater.activities.SplashActivity;
 import ru.overtired.yatranslater.database.PreferencesScheme;
-import ru.overtired.yatranslater.structure.Dictionary;
+import ru.overtired.yatranslater.structure.dictionary.Dictionary;
 import ru.overtired.yatranslater.structure.Language;
 import ru.overtired.yatranslater.activities.LanguageChooseActivity;
 import ru.overtired.yatranslater.R;
@@ -76,7 +72,7 @@ public class TranslateFragment extends Fragment
         TranslateFragment fragment = new TranslateFragment();
         Bundle args = new Bundle();
 
-        args.putString(ARG_ID,id);
+        args.putString(ARG_ID, id);
 
         fragment.setArguments(args);
         return fragment;
@@ -91,45 +87,27 @@ public class TranslateFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
-        View v = inflater.inflate(R.layout.fragment_translate,container,false);
+        View v = inflater.inflate(R.layout.fragment_translate, container, false);
 
-        if(getArguments()!=null)
-        {
-            String id = getArguments().getString(ARG_ID);
-            mTranslation = Data.get(getActivity()).getTranslation(id);
-        }else if(savedInstanceState != null)
-        {
-            String id = savedInstanceState.getString(ARG_ID);
-            mTranslation = Data.get(getActivity()).getTranslation(id);
-        }else
-        {
-            mTranslation = new Translation(
-                    PreferenceManager.getDefaultSharedPreferences(getActivity())
-                            .getString(PreferencesScheme.PREF_LANG_FROM,"ru"),
-                    PreferenceManager.getDefaultSharedPreferences(getActivity())
-                            .getString(PreferencesScheme.PREF_LANG_TO,"en"),
-                    "",
-                    getString(R.string.result_of_translation),
-                    false,
-                    false);
-        }
+
 
         mScrollView = (ScrollView) v.findViewById(R.id.translate_fragment_scroll_view);
         mFrameForDictionary = (FrameLayout) v.findViewById(R.id.translation_container);
 
         mResultTextView = (TextView) v.findViewById(R.id.translated_text_view);
 
-        mSaveToHistoryButton = (ImageButton)v.findViewById(R.id.button_bookmark);
+        mSaveToHistoryButton = (ImageButton) v.findViewById(R.id.button_bookmark);
         mSaveToHistoryButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                if(mTranslation.isFavorite())
+                if (mTranslation.isFavorite())
                 {
                     mTranslation.setFavorite(false);
                     mSaveToHistoryButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_not_favorite));
-                }else
+                }
+                else
                 {
                     mTranslation.setFavorite(true);
                     mSaveToHistoryButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
@@ -146,7 +124,7 @@ public class TranslateFragment extends Fragment
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
             {
                 //Тут происходит перевод, при нажатии "done" на клавиатуре
-                if(actionId == EditorInfo.IME_ACTION_DONE)
+                if (actionId == EditorInfo.IME_ACTION_DONE)
                 {
                     translate();
                     hideKeyboard();
@@ -182,8 +160,8 @@ public class TranslateFragment extends Fragment
             @Override
             public void onClick(View v)
             {
-                Intent intent = LanguageChooseActivity.newIntent(getActivity(),false);
-                startActivityForResult(intent,REQUEST_LANG_FROM);
+                Intent intent = LanguageChooseActivity.newIntent(getActivity(), false);
+                startActivityForResult(intent, REQUEST_LANG_FROM);
             }
         });
 
@@ -193,12 +171,10 @@ public class TranslateFragment extends Fragment
             @Override
             public void onClick(View v)
             {
-                Intent intent = LanguageChooseActivity.newIntent(getActivity(),true);
-                startActivityForResult(intent,REQUEST_LANG_TO);
+                Intent intent = LanguageChooseActivity.newIntent(getActivity(), true);
+                startActivityForResult(intent, REQUEST_LANG_TO);
             }
         });
-
-        updateView();
 
         mSwapLanguagesButton = (ImageButton) v.findViewById(R.id.swap_languages_button);
         mSwapLanguagesButton.setOnClickListener(new View.OnClickListener()
@@ -216,14 +192,56 @@ public class TranslateFragment extends Fragment
 //        Фрагмент для вывода информации, запрошенной из словаря
         mResultFragment = ResultFragment.newInstance();
         getFragmentManager().beginTransaction()
-                .add(R.id.translation_container,mResultFragment)
+                .add(R.id.translation_container, mResultFragment)
                 .commit();
+
+        if (getArguments() != null)
+        {
+            String id = getArguments().getString(ARG_ID);
+            if (Data.get(getActivity()).hasTranslation(id))
+            {
+                mTranslation = Data.get(getActivity()).getTranslation(id);
+                updateView();
+                if(SplashActivity.hasInternetConnection(getActivity()))
+                {
+                    translate();
+                }
+            }
+            else
+            {
+                initializeNewTranslation();
+                updateView();
+            }
+        }
+        else if (savedInstanceState != null)
+        {
+            String id = savedInstanceState.getString(ARG_ID);
+            if(Data.get(getActivity()).hasTranslation(id))
+            {
+                mTranslation = Data.get(getActivity()).getTranslation(id);
+                updateView();
+                if(SplashActivity.hasInternetConnection(getActivity()))
+                {
+                    translate();
+                }
+            }
+            else
+            {
+                initializeNewTranslation();
+                updateView();
+            }
+        }
+        else
+        {
+            initializeNewTranslation();
+            updateView();
+        }
 
         return v;
     }
 
-//    AsynkTask для для перевода текста
-    private class AsyncTranslater extends AsyncTask<String,Void,String>
+    //    AsynkTask для для перевода текста
+    private class AsyncTranslater extends AsyncTask<String, Void, String>
     {
         @Override
         protected String doInBackground(String... params)
@@ -250,19 +268,19 @@ public class TranslateFragment extends Fragment
         }
     }
 
-    private class AsyncDictionary extends AsyncTask<String,Void,Dictionary>
+    private class AsyncDictionary extends AsyncTask<String, Void, Dictionary>
     {
         @Override
         protected Dictionary doInBackground(String... params)
         {
             Translater translater = new Translater();
-            return translater.getDictionary(params[0],params[1]);
+            return translater.getDictionary(params[0], params[1]);
         }
 
         @Override
         protected void onPostExecute(Dictionary dictionary)
         {
-            if(dictionary!=null)
+            if (dictionary != null)
             {
                 mDictionary = dictionary;
                 mResultFragment.setDictionary(mDictionary);
@@ -278,7 +296,8 @@ public class TranslateFragment extends Fragment
 
                 setVisibleDictionaryFragment(true);
                 mSaveToHistoryButton.setEnabled(true);
-            } else
+            }
+            else
             {
                 setVisibleDictionaryFragment(false);
                 useTranslaterAPI();
@@ -289,9 +308,9 @@ public class TranslateFragment extends Fragment
     private String getFullNameByShortName(String shortName)
     {
         List<Language> mLanguages = Data.get(getActivity()).getLanguages();
-        for (Language language:mLanguages)
+        for (Language language : mLanguages)
         {
-            if(language.getShortLang().equals(shortName))
+            if (language.getShortLang().equals(shortName))
             {
                 return language.getFullLang();
             }
@@ -302,11 +321,11 @@ public class TranslateFragment extends Fragment
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        if(resultCode!= Activity.RESULT_OK)
+        if (resultCode != Activity.RESULT_OK)
         {
             return;
         }
-        if(requestCode==REQUEST_LANG_FROM)
+        if (requestCode == REQUEST_LANG_FROM)
         {
             mTranslation.setLangFrom(data.getStringExtra(LanguageChooseActivity.EXTRA_LANG));
             updateView();
@@ -324,7 +343,7 @@ public class TranslateFragment extends Fragment
         View view = getActivity().getCurrentFocus();
         if (view != null)
         {
-            InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
@@ -335,65 +354,73 @@ public class TranslateFragment extends Fragment
         mFromLanguageTextView.setText(getFullNameByShortName(mTranslation.getLangFrom()));
         mFieldToTranslate.setText(mTranslation.getTextFrom());
         mResultTextView.setText(mTranslation.getTextTo());
-        if(mTranslation.isFavorite())
+        if (mTranslation.isFavorite())
         {
             mSaveToHistoryButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
-        }else
+        }
+        else
         {
             mSaveToHistoryButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_not_favorite));
         }
-
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState)
     {
         super.onSaveInstanceState(outState);
-        outState.putString(ARG_ID,mTranslation.getId().toString());
+        outState.putString(ARG_ID, mTranslation.getId().toString());
     }
 
     private void translate()
     {
-        int countOfWords = mFieldToTranslate.getText().toString().split(" ").length;
-        if(countOfWords>2)
+        if(SplashActivity.hasInternetConnection(getActivity()))
         {
-            useTranslaterAPI();
-        } else
+            int countOfWords = mFieldToTranslate.getText().toString().split(" ").length;
+            if (countOfWords > 2)
+            {
+                useTranslaterAPI();
+            }
+            else
+            {
+                useDictionaryAPI();
+            }
+            hideKeyboard();
+        }else
         {
-            useDictionaryAPI();
+            Toast.makeText(getActivity(),R.string.no_internet,Toast.LENGTH_SHORT).show();
         }
-        hideKeyboard();
     }
 
     private void useTranslaterAPI()
     {
-        if(mAsyncTranslater != null)
+        if (mAsyncTranslater != null)
         {
             mAsyncTranslater.cancel(true);
         }
         mAsyncTranslater = new AsyncTranslater();
         mAsyncTranslater.execute(mFieldToTranslate.getText().toString(),
-                mTranslation.getLangFrom()+"-"+mTranslation.getLangTo());
+                mTranslation.getLangFrom() + "-" + mTranslation.getLangTo());
     }
 
     private void useDictionaryAPI()
     {
-        if(mAsyncDictionary != null)
+        if (mAsyncDictionary != null)
         {
             mAsyncDictionary.cancel(true);
         }
         mAsyncDictionary = new AsyncDictionary();
         mAsyncDictionary.execute(mFieldToTranslate.getText().toString(),
-            mTranslation.getLangFrom() +"-"+mTranslation.getLangTo());
+                mTranslation.getLangFrom() + "-" + mTranslation.getLangTo());
     }
 
     private void setVisibleDictionaryFragment(boolean visible)
     {
-        if(visible)
+        if (visible)
         {
             mScrollView.setVisibility(View.GONE);
             mFrameForDictionary.setVisibility(View.VISIBLE);
-        }else
+        }
+        else
         {
             mScrollView.setVisibility(View.VISIBLE);
             mFrameForDictionary.setVisibility(View.GONE);
@@ -403,8 +430,8 @@ public class TranslateFragment extends Fragment
     private void saveLangsToPrefs()
     {
         PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
-                .putString(PreferencesScheme.PREF_LANG_FROM,mTranslation.getLangFrom())
-                .putString(PreferencesScheme.PREF_LANG_TO,mTranslation.getLangTo())
+                .putString(PreferencesScheme.PREF_LANG_FROM, mTranslation.getLangFrom())
+                .putString(PreferencesScheme.PREF_LANG_TO, mTranslation.getLangTo())
                 .apply();
     }
 
@@ -413,5 +440,18 @@ public class TranslateFragment extends Fragment
     {
         super.onDestroy();
         saveLangsToPrefs();
+    }
+
+    private void initializeNewTranslation()
+    {
+        mTranslation = new Translation(
+                PreferenceManager.getDefaultSharedPreferences(getActivity())
+                        .getString(PreferencesScheme.PREF_LANG_FROM, "ru"),
+                PreferenceManager.getDefaultSharedPreferences(getActivity())
+                        .getString(PreferencesScheme.PREF_LANG_TO, "en"),
+                "",
+                getString(R.string.result_of_translation),
+                false,
+                false);
     }
 }

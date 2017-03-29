@@ -1,4 +1,4 @@
-package ru.overtired.yatranslater.structure;
+package ru.overtired.yatranslater.structure.dictionary;
 
 import java.util.ArrayList;
 import java.util.List;

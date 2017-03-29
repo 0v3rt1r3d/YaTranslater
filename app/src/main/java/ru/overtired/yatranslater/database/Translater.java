@@ -20,7 +20,7 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 import ru.overtired.yatranslater.R;
-import ru.overtired.yatranslater.structure.Dictionary;
+import ru.overtired.yatranslater.structure.dictionary.Dictionary;
 import ru.overtired.yatranslater.structure.Language;
 import ru.overtired.yatranslater.structure.dictionary.Example;
 import ru.overtired.yatranslater.structure.dictionary.Translation;

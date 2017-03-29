@@ -88,6 +88,7 @@ public abstract class HistoryFavoriteRecycler extends Fragment
                         mBookmark.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
                     }
                     Data.get(getActivity()).updateTranslation(mTranslation);
+                    updateOtherRecycler();
                 }
             });
 
@@ -130,6 +131,7 @@ public abstract class HistoryFavoriteRecycler extends Fragment
                         {
                             Data.get(getActivity()).removeTranslation(mTranslation);
                             mRecyclerView.setAdapter(new HistoryFavoriteAdapter(getTranslations()));
+                            updateOtherRecycler();
                         }
                     })
                     .setNegativeButton(android.R.string.cancel,null)
@@ -175,4 +177,6 @@ public abstract class HistoryFavoriteRecycler extends Fragment
     {
         mRecyclerView.setAdapter(new HistoryFavoriteAdapter(getTranslations()));
     }
+
+    abstract protected void updateOtherRecycler();
 }

@@ -2,11 +2,9 @@ package ru.overtired.yatranslater.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,12 +13,10 @@ import android.widget.TextView;
 
 import com.google.android.flexbox.FlexboxLayout;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import ru.overtired.yatranslater.R;
-import ru.overtired.yatranslater.structure.Dictionary;
-import ru.overtired.yatranslater.structure.Translation;
+import ru.overtired.yatranslater.structure.dictionary.Dictionary;
 
 /**
  * Created by overtired on 22.03.17.

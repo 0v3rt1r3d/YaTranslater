@@ -285,6 +285,13 @@ public class Data
         return cursorWrapper.getCount()>0;
     }
 
+    public boolean hasTranslation(String id)
+    {
+        TranslationCursorWrapper cursorWrapper =
+                queryHistory(HistoryTable.Cols.UUID+"=\""+id+"\"");
+        return cursorWrapper.getCount()>0;
+    }
+
     public List<Translation> getFindHistory(String text)
     {
         List<Translation> translations = new ArrayList<>();
