@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                             xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             android:layout_width="match_parent"
+                                             android:layout_height="match_parent"
+                                             android:orientation="vertical">
+
+  <RelativeLayout
+    android:id="@+id/toolbar_translate"
+    android:layout_width="0dp"
+    android:layout_height="48dp"
+    android:background="@color/colorPrimary"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
+
+    <ImageButton
+      android:id="@+id/swap_languages_button"
+      style="@style/AppBarTitle"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_centerInParent="true"
+      android:background="@android:color/transparent"
+      android:src="@drawable/ic_change_languages"/>
+
+    <TextView
+      android:id="@+id/from_language_text_view"
+      style="@style/AppBarTitle"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginRight="8dp"
+      android:layout_toLeftOf="@id/swap_languages_button"
+      />
+
+
+    <TextView
+      android:id="@+id/to_language_text_view"
+      style="@style/AppBarTitle"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginLeft="8dp"
+      android:layout_toRightOf="@id/swap_languages_button"
+      />
+
+  </RelativeLayout>
+
+  <LinearLayout
+    android:orientation="horizontal"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/toolbar_translate">
+
+    <EditText
+      android:layout_weight="1"
+      android:id="@+id/field_for_translate"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_margin="8dp"
+      android:gravity="top"
+      android:hint="@string/hint_for_translater_field"
+      android:inputType="textMultiLine"
+      android:scrollbars="vertical"
+      />
+
+    <ImageButton
+      android:id="@+id/button_bookmark"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_margin="8dp"
+      android:background="@android:color/transparent"
+      android:padding="8dp"
+      android:src="@drawable/ic_bookmark"
+      />
+
+    <FrameLayout
+      android:layout_weight="1"
+      android:id="@+id/translation_container"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_marginLeft="8dp"
+      android:layout_marginRight="8dp"
+      android:textSize="20sp"
+      android:visibility="gone"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintHorizontal_weight="1"
+      app:layout_constraintLeft_toRightOf="@id/field_for_translate"
+      app:layout_constraintRight_toLeftOf="@id/button_bookmark"
+      app:layout_constraintStart_toEndOf="@id/field_for_translate"
+      app:layout_constraintTop_toBottomOf="@id/toolbar_translate"/>
+
+    <ScrollView
+      android:layout_weight="1"
+      android:id="@+id/translate_fragment_scroll_view"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_marginLeft="8dp"
+      android:layout_marginRight="8dp"
+      android:fillViewport="true"
+      android:scrollbars="vertical"
+      android:visibility="visible"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintHorizontal_weight="1"
+      app:layout_constraintLeft_toRightOf="@id/field_for_translate"
+      app:layout_constraintRight_toLeftOf="@id/button_bookmark"
+      app:layout_constraintStart_toEndOf="@id/field_for_translate"
+      app:layout_constraintTop_toBottomOf="@id/toolbar_translate"
+      >
+
+      <TextView
+        android:id="@+id/translated_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:textColor="@android:color/black"
+        android:textSize="18sp"
+        />
+
+    </ScrollView>
+
+  </LinearLayout>
+
+
+
+</android.support.constraint.ConstraintLayout>

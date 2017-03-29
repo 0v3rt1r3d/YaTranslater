@@ -30,6 +30,8 @@ public class MiddleFragment extends Fragment
 {
     public static final String TAG = "MiddleFragment";
 
+    private static final String ARG_PAGE = "arg_page";
+
     private HistoryFragment mHistoryFragment;
     private FavoriteFragment mFavoriteFragment;
 
@@ -107,6 +109,12 @@ public class MiddleFragment extends Fragment
             }
         });
 
+        if(savedInstanceState!=null)
+        {
+            int page = savedInstanceState.getInt(ARG_PAGE);
+            mViewPager.setCurrentItem(page);
+        }
+
         return v;
     }
 
@@ -162,5 +170,12 @@ public class MiddleFragment extends Fragment
     public void updateHistoryRecyclerView()
     {
         mHistoryFragment.updateRecycler();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+        outState.putInt(ARG_PAGE,mViewPager.getCurrentItem());
     }
 }
