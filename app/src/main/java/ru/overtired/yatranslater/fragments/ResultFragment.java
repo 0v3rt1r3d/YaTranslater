@@ -24,9 +24,13 @@ import ru.overtired.yatranslater.structure.dictionary.Dictionary;
 
 public class ResultFragment extends Fragment
 {
+    private static final String ARG_DICTIONARY = "arg_dictionary";
+
     private TextView mMainResult;
     private TextView mTranscription;
     private RecyclerView mRecyclerView;
+
+    private Dictionary mDictionary;
 
     private List<ru.overtired.yatranslater.structure.dictionary.Translation> mTranslations;
 
@@ -42,6 +46,11 @@ public class ResultFragment extends Fragment
         mRecyclerView = (RecyclerView) view.findViewById(R.id.frament_result_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
+        if(mDictionary!=null)
+        {
+            updateView();
+        }
+
         return view;
     }
 
@@ -54,11 +63,12 @@ public class ResultFragment extends Fragment
 //    Метод setDictionary меняет содержимое этого фрагмента, обновляет информацию
     public void setDictionary(Dictionary dictionary)
     {
+        mDictionary = dictionary;
         //Основное поле и транскрипция
-        mMainResult.setText(dictionary.getText());
-        mTranscription.setText(dictionary.getTranscription());
-        mTranslations = dictionary.getTranslations();
-        mRecyclerView.setAdapter(new DicAdapter(mTranslations));
+        if(mMainResult!=null)
+        {
+            updateView();
+        }
     }
 
     private class DicHolder extends RecyclerView.ViewHolder
@@ -220,5 +230,13 @@ public class ResultFragment extends Fragment
     {
         textView.setTextSize(TypedValue.COMPLEX_UNIT_SP,18);
         textView.setTextColor(getResources().getColor(R.color.colorGrey));
+    }
+
+    private void updateView()
+    {
+        mMainResult.setText(mDictionary.getText());
+        mTranscription.setText(mDictionary.getTranscription());
+        mTranslations = mDictionary.getTranslations();
+        mRecyclerView.setAdapter(new DicAdapter(mTranslations));
     }
 }

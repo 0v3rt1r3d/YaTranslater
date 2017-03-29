@@ -129,7 +129,7 @@ public abstract class HistoryFavoriteRecycler extends Fragment
                         @Override
                         public void onClick(DialogInterface dialog, int which)
                         {
-                            Data.get(getActivity()).removeTranslation(mTranslation);
+                            removeTranslation(mTranslation);
                             mRecyclerView.setAdapter(new HistoryFavoriteAdapter(getTranslations()));
                             updateOtherRecycler();
                         }
@@ -179,4 +179,6 @@ public abstract class HistoryFavoriteRecycler extends Fragment
     }
 
     abstract protected void updateOtherRecycler();
+
+    abstract protected void removeTranslation(Translation translation);
 }

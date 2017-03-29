@@ -47,6 +47,7 @@ public class TranslateFragment extends Fragment
     public final static int REQUEST_LANG_TO = 1;
 
     private static final String ARG_ID = "arg_id";
+    private static final String ARG_DICTIONARY = "arg_dictionary";
 
     private Translation mTranslation;
 
@@ -190,9 +191,7 @@ public class TranslateFragment extends Fragment
 
 //        Фрагмент для вывода информации, запрошенной из словаря
         mResultFragment = ResultFragment.newInstance();
-        getFragmentManager().beginTransaction()
-                .add(R.id.translation_container, mResultFragment)
-                .commit();
+
 
         if (getArguments() != null)
         {
@@ -218,6 +217,14 @@ public class TranslateFragment extends Fragment
             if(Data.get(getActivity()).hasTranslation(id))
             {
                 mTranslation = Data.get(getActivity()).getTranslation(id);
+                mDictionary = savedInstanceState.getParcelable(ARG_DICTIONARY);
+                if(mDictionary!=null)
+                {
+                    setVisibleDictionaryFragment(true);
+                    mResultFragment.setDictionary(mDictionary);
+                    // TODO: 29.03.17 Разобраться с восстановлением данных из словаря 
+                    
+                }//elseif
                 updateView();
                 if(SplashActivity.hasInternetConnection(getActivity()))
                 {
@@ -235,6 +242,10 @@ public class TranslateFragment extends Fragment
             initializeNewTranslation();
             updateView();
         }
+
+        getFragmentManager().beginTransaction()
+                .add(R.id.translation_container, mResultFragment)
+                .commit();
 
         return v;
     }
@@ -368,6 +379,10 @@ public class TranslateFragment extends Fragment
     {
         super.onSaveInstanceState(outState);
         outState.putString(ARG_ID, mTranslation.getId().toString());
+        if (mFrameForDictionary.getVisibility() == View.VISIBLE)
+        {
+            outState.putParcelable(ARG_DICTIONARY,mDictionary);
+        }
     }
 
     private void translate()

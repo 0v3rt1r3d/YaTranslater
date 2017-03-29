@@ -87,4 +87,10 @@ public class FavoriteFragment extends HistoryFavoriteRecycler
         MiddleFragment parentFragment = (MiddleFragment)getParentFragment();
         parentFragment.updateHistoryRecyclerView();
     }
+
+    @Override
+    protected void removeTranslation(Translation translation)
+    {
+        Data.get(getActivity()).removeFromFavorites(translation);
+    }
 }

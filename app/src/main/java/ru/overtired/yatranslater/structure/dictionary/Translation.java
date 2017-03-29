@@ -1,5 +1,8 @@
 package ru.overtired.yatranslater.structure.dictionary;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,9 +10,52 @@ import java.util.List;
  * Created by overtired on 22.03.17.
  */
 
-public class Translation
+public class Translation implements Parcelable
 {
     private String mText;
+
+    private List<String> mSynonyms;
+    private List<String> mMeans;
+    private List<Example> mExamples;
+
+    public static final Parcelable.Creator<Translation> CREATOR =
+            new Parcelable.Creator<Translation>()
+            {
+                @Override
+                public Translation createFromParcel(Parcel source)
+                {
+                    return new Translation(source);
+                }
+
+                @Override
+                public Translation[] newArray(int size)
+                {
+                    return new Translation[size];
+                }
+            };
+
+    @Override
+    public int describeContents()
+    {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
+        dest.writeString(mText);
+        dest.writeList(mSynonyms);
+        dest.writeList(mMeans);
+        dest.writeList(mExamples);
+    }
+
+    private Translation(Parcel source)
+    {
+        mText = source.readString();
+        source.readStringList(mSynonyms);
+        source.readStringList(mMeans);
+        source.readTypedList(mExamples,Example.CREATOR);
+    }
 
     public String getText()
     {
@@ -31,10 +77,6 @@ public class Translation
     {
         return mExamples;
     }
-
-    private List<String> mSynonyms;
-    private List<String> mMeans;
-    private List<Example> mExamples;
 
     public Translation(String text)
     {
@@ -58,4 +100,6 @@ public class Translation
     {
         mMeans.add(mean);
     }
+
+
 }

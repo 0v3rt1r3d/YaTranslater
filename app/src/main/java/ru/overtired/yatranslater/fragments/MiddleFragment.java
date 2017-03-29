@@ -80,7 +80,8 @@ public class MiddleFragment extends Fragment
                                         public void onClick(DialogInterface dialog, int which)
                                         {
                                             Data.get(getActivity()).clearHistory();
-                                            mHistoryFragment.updateRecycler();
+                                            updateFavoriteRecyclerView();
+                                            updateHistoryRecyclerView();
                                         }
                                     })
                             .setNegativeButton(android.R.string.cancel, null)
@@ -96,7 +97,8 @@ public class MiddleFragment extends Fragment
                                         public void onClick(DialogInterface dialog, int which)
                                         {
                                             Data.get(getActivity()).clearFavorites();
-                                            mHistoryFragment.updateRecycler();
+                                            updateFavoriteRecyclerView();
+                                            updateHistoryRecyclerView();
                                         }
                                     })
                             .setNegativeButton(android.R.string.cancel, null)
