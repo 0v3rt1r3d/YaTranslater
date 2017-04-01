@@ -27,15 +27,15 @@ import android.widget.Toast;
 
 import java.util.List;
 
-import ru.overtired.yatranslater.activities.SplashActivity;
-import ru.overtired.yatranslater.database.PreferencesScheme;
-import ru.overtired.yatranslater.structure.dictionary.Dictionary;
-import ru.overtired.yatranslater.structure.Language;
-import ru.overtired.yatranslater.activities.LanguageChooseActivity;
 import ru.overtired.yatranslater.R;
-import ru.overtired.yatranslater.database.Translater;
-import ru.overtired.yatranslater.structure.Translation;
+import ru.overtired.yatranslater.activities.LanguageChooseActivity;
+import ru.overtired.yatranslater.activities.SplashActivity;
 import ru.overtired.yatranslater.database.Data;
+import ru.overtired.yatranslater.database.PreferencesScheme;
+import ru.overtired.yatranslater.database.Translater;
+import ru.overtired.yatranslater.structure.Language;
+import ru.overtired.yatranslater.structure.Translation;
+import ru.overtired.yatranslater.structure.dictionary.Dictionary;
 
 /**
  * Created by overtired on 14.03.17.
@@ -48,6 +48,7 @@ public class TranslateFragment extends Fragment
 
     private static final String ARG_ID = "arg_id";
     private static final String ARG_DICTIONARY = "arg_dictionary";
+    private static final String ARG_TRANSLATION = "arg_translation";
 
     private Translation mTranslation;
 
@@ -63,22 +64,10 @@ public class TranslateFragment extends Fragment
     private AsyncDictionary mAsyncDictionary;
 
     private FrameLayout mFrameForDictionary;
-    private ResultFragment mResultFragment;
+    //    private ResultFragment mResultFragment;
     private Dictionary mDictionary;
 
     private ScrollView mScrollView;
-
-
-    public static TranslateFragment newInstance(String id)
-    {
-        TranslateFragment fragment = new TranslateFragment();
-        Bundle args = new Bundle();
-
-        args.putString(ARG_ID, id);
-
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     public static TranslateFragment newInstance()
     {
@@ -89,6 +78,8 @@ public class TranslateFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
+        Log.e("Tagg", toString());
+
         View v = inflater.inflate(R.layout.fragment_translate, container, false);
 
         mScrollView = (ScrollView) v.findViewById(R.id.translate_fragment_scroll_view);
@@ -190,8 +181,19 @@ public class TranslateFragment extends Fragment
         });
 
 //        Фрагмент для вывода информации, запрошенной из словаря
-        mResultFragment = ResultFragment.newInstance();
-
+//        if (mResultFragment == null)
+//        {
+//            mResultFragment = ResultFragment.newInstance();
+//        }
+//
+//        FragmentManager fm = getFragmentManager();
+//        Fragment fragment = fm.findFragmentById(R.id.translation_container);
+//        if (fragment == null)
+//        {
+//            getFragmentManager().beginTransaction()
+//                    .add(R.id.translation_container, mResultFragment)
+//                    .commit();
+//        }
 
         if (getArguments() != null)
         {
@@ -200,7 +202,7 @@ public class TranslateFragment extends Fragment
             {
                 mTranslation = Data.get(getActivity()).getTranslation(id);
                 updateView();
-                if(SplashActivity.hasInternetConnection(getActivity()))
+                if (SplashActivity.hasInternetConnection(getActivity()))
                 {
                     translate();
                 }
@@ -214,22 +216,22 @@ public class TranslateFragment extends Fragment
         else if (savedInstanceState != null)
         {
             String id = savedInstanceState.getString(ARG_ID);
-            if(Data.get(getActivity()).hasTranslation(id))
+            if (Data.get(getActivity()).hasTranslation(id))
             {
                 mTranslation = Data.get(getActivity()).getTranslation(id);
                 mDictionary = savedInstanceState.getParcelable(ARG_DICTIONARY);
-                if(mDictionary!=null)
+                if (mDictionary != null)
                 {
-                    setVisibleDictionaryFragment(true);
-                    mResultFragment.setDictionary(mDictionary);
+//                    setVisibleDictionaryFragment(true);
                     // TODO: 29.03.17 Разобраться с восстановлением данных из словаря
-                    
-                }//elseif
-                updateView();
-                if(SplashActivity.hasInternetConnection(getActivity()))
-                {
-                    translate();
                 }
+                else
+                {
+                    String result = savedInstanceState.getString(ARG_TRANSLATION);
+                    mResultTextView.setText(result);
+                }
+                updateView();
+                translate();
             }
             else
             {
@@ -242,10 +244,6 @@ public class TranslateFragment extends Fragment
             initializeNewTranslation();
             updateView();
         }
-
-        getFragmentManager().beginTransaction()
-                .add(R.id.translation_container, mResultFragment)
-                .commit();
 
         return v;
     }
@@ -284,7 +282,7 @@ public class TranslateFragment extends Fragment
         protected Dictionary doInBackground(String... params)
         {
             Translater translater = new Translater();
-            return translater.getDictionary(getActivity(),params[0], params[1]);
+            return translater.getDictionary(getActivity(), params[0], params[1]);
         }
 
         @Override
@@ -294,7 +292,7 @@ public class TranslateFragment extends Fragment
             {
                 //Если такое слово уже есть, то проверяется есть ли оно в избранном
                 mDictionary = dictionary;
-                mResultFragment.setDictionary(mDictionary);
+//                mResultFragment.setDictionary(mDictionary);
 
                 Translation temp = new Translation(
                         mTranslation.getLangFrom(),
@@ -315,6 +313,7 @@ public class TranslateFragment extends Fragment
                 updateView();
 
                 setVisibleDictionaryFragment(true);
+//                mResultFragment.updateView();
                 mSaveToHistoryButton.setEnabled(true);
             }
             else
@@ -370,6 +369,7 @@ public class TranslateFragment extends Fragment
 
     public void updateView()
     {
+        Log.e("Tagg", "update " + toString());
         mToLanguageTextView.setText(getFullNameByShortName(mTranslation.getLangTo()));
         mFromLanguageTextView.setText(getFullNameByShortName(mTranslation.getLangFrom()));
         mFieldToTranslate.setText(mTranslation.getTextFrom());
@@ -384,14 +384,17 @@ public class TranslateFragment extends Fragment
         outState.putString(ARG_ID, mTranslation.getId().toString());
         if (mFrameForDictionary.getVisibility() == View.VISIBLE)
         {
-            outState.putParcelable(ARG_DICTIONARY,mDictionary);
+            outState.putParcelable(ARG_DICTIONARY, mDictionary);
+        }
+        else
+        {
+            outState.putString(ARG_TRANSLATION, mResultTextView.getText().toString());
         }
     }
 
     private void translate()
     {
-        if(Data.get(getActivity()).hasDirection(mTranslation.getLangFrom()+
-            "-"+mTranslation.getLangTo()))
+        if (Data.get(getActivity()).hasDirection(mTranslation.getLangFrom() + "-" + mTranslation.getLangTo()))
         {
             if (SplashActivity.hasInternetConnection(getActivity()))
             {
@@ -410,9 +413,10 @@ public class TranslateFragment extends Fragment
             {
                 Toast.makeText(getActivity(), R.string.no_internet, Toast.LENGTH_SHORT).show();
             }
-        } else
+        }
+        else
         {
-            Toast.makeText(getActivity(),R.string.no_direction,Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), R.string.no_direction, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -444,6 +448,17 @@ public class TranslateFragment extends Fragment
         {
             mScrollView.setVisibility(View.GONE);
             mFrameForDictionary.setVisibility(View.VISIBLE);
+            Fragment lastFragment =
+                    getFragmentManager().findFragmentById(R.id.translation_container);
+            if (lastFragment != null)
+            {
+                getFragmentManager().beginTransaction()
+                        .remove(lastFragment)
+                        .commit();
+            }
+            getFragmentManager().beginTransaction()
+                    .add(R.id.translation_container, ResultFragment.newInstance(mDictionary))
+                    .commit();
         }
         else
         {
@@ -469,15 +484,18 @@ public class TranslateFragment extends Fragment
 
     private void initializeNewTranslation()
     {
-        mTranslation = new Translation(
-                PreferenceManager.getDefaultSharedPreferences(getActivity())
-                        .getString(PreferencesScheme.PREF_LANG_FROM, "ru"),
-                PreferenceManager.getDefaultSharedPreferences(getActivity())
-                        .getString(PreferencesScheme.PREF_LANG_TO, "en"),
-                "",
-                getString(R.string.result_of_translation),
-                false,
-                false);
+        if (mTranslation == null)
+        {
+            mTranslation = new Translation(
+                    PreferenceManager.getDefaultSharedPreferences(getActivity())
+                            .getString(PreferencesScheme.PREF_LANG_FROM, "ru"),
+                    PreferenceManager.getDefaultSharedPreferences(getActivity())
+                            .getString(PreferencesScheme.PREF_LANG_TO, "en"),
+                    "",
+                    getString(R.string.result_of_translation),
+                    false,
+                    false);
+        }
     }
 
     private void setBookmarkIcon(boolean set)
@@ -490,5 +508,16 @@ public class TranslateFragment extends Fragment
         {
             mSaveToHistoryButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_not_favorite));
         }
+    }
+
+    public void setTranslation(Translation translation)
+    {
+        Log.e("Tagg", "translation " + toString());
+        mTranslation = translation;
+        if (!isDetached())
+        {
+            updateView();
+        }
+        translate();
     }
 }

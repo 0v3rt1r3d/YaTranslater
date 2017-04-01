@@ -5,10 +5,6 @@ import android.support.v7.preference.PreferenceFragmentCompat;
 
 import ru.overtired.yatranslater.R;
 
-/**
- * Created by overtired on 19.03.17.
- */
-
 public class SettingsPreferenceFragment extends PreferenceFragmentCompat
 {
     @Override

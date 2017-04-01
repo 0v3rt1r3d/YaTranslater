@@ -3,12 +3,18 @@ package ru.overtired.yatranslater.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.IdRes;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.roughike.bottombar.OnTabSelectListener;
+
+import java.util.List;
 
 import ru.overtired.yatranslater.R;
 import ru.overtired.yatranslater.database.Data;
@@ -26,9 +32,7 @@ public class MainActivity extends AppCompatActivity implements HistoryFavoriteRe
 {
     private com.roughike.bottombar.BottomBar mBottomBar;
 
-    private MiddleFragment mMiddleFragment;
-    private TranslateFragment mTranslateFragment;
-    private SettingsFragment mSettingsFragment;
+    private ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -36,39 +40,27 @@ public class MainActivity extends AppCompatActivity implements HistoryFavoriteRe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        Сразу инициализирую все фрагменты
-        mTranslateFragment = TranslateFragment.newInstance();
-        mSettingsFragment = SettingsFragment.newInstance();
-        mMiddleFragment = MiddleFragment.newInstance();
+        mViewPager = (ViewPager) findViewById(R.id.main_view_pager);
+        mViewPager.setAdapter(new MainViewPagerAdapter(getSupportFragmentManager()));c
 
 //        Первым фрагментом выбираю перевод
-        FragmentManager fm = getSupportFragmentManager();
-        fm.beginTransaction().add(R.id.fragment_container,mTranslateFragment).commit();
-
         mBottomBar = (com.roughike.bottombar.BottomBar) findViewById(R.id.bottom_bar);
         mBottomBar.setOnTabSelectListener(new OnTabSelectListener()
         {
             @Override
             public void onTabSelected(@IdRes int tabId)
             {
-                if(tabId == R.id.nav_button_translate)
+                if (tabId == R.id.nav_button_translate)
                 {
-                    getSupportFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.fragment_container,mTranslateFragment)
-                            .commit();
-                }else if(tabId == R.id.nav_button_middle)
+                    mViewPager.setCurrentItem(0);
+                }
+                else if (tabId == R.id.nav_button_middle)
                 {
-                    getSupportFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.fragment_container,mMiddleFragment)
-                            .commit();
-                }else if(tabId == R.id.nav_button_settings)
+                    mViewPager.setCurrentItem(1);
+                }
+                else if (tabId == R.id.nav_button_settings)
                 {
-                    getSupportFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.fragment_container,mSettingsFragment)
-                            .commit();
+                    mViewPager.setCurrentItem(2);
                 }
             }
         });
@@ -76,14 +68,14 @@ public class MainActivity extends AppCompatActivity implements HistoryFavoriteRe
 
     public static Intent newIntent(Context context)
     {
-        Intent intent = new Intent(context,MainActivity.class);
-        return intent;
+        return new Intent(context, MainActivity.class);
     }
 
     @Override
     public void setTranslation(Translation translation)
     {
-        mTranslateFragment = TranslateFragment.newInstance(translation.getId().toString());
+        ((MainViewPagerAdapter) mViewPager.getAdapter()).setTranslation(translation);
+        mViewPager.getAdapter().notifyDataSetChanged();
         mBottomBar.selectTabAtPosition(0);
     }
 }

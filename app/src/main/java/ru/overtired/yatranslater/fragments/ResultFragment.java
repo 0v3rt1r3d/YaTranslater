@@ -18,10 +18,6 @@ import java.util.List;
 import ru.overtired.yatranslater.R;
 import ru.overtired.yatranslater.structure.dictionary.Dictionary;
 
-/**
- * Created by overtired on 22.03.17.
- */
-
 public class ResultFragment extends Fragment
 {
     private static final String ARG_DICTIONARY = "arg_dictionary";
@@ -46,30 +42,39 @@ public class ResultFragment extends Fragment
         mRecyclerView = (RecyclerView) view.findViewById(R.id.frament_result_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        if(mDictionary!=null)
+        if(savedInstanceState!=null)
         {
-            updateView();
+            mDictionary = savedInstanceState.getParcelable(ARG_DICTIONARY);
+        } else
+        {
+            mDictionary = getArguments().getParcelable(ARG_DICTIONARY);
         }
+
+        mRecyclerView.setAdapter(new DicAdapter(mDictionary.getTranslations()));
+        mMainResult.setText(mDictionary.getText());
+        mTranscription.setText(mDictionary.getTranscription());
 
         return view;
     }
 
-    public static ResultFragment newInstance()
+    public static ResultFragment newInstance(Dictionary dictionary)
     {
+        Bundle args = new Bundle();
+        args.putParcelable(ARG_DICTIONARY,dictionary);
         ResultFragment fragment = new ResultFragment();
+        fragment.setArguments(args);
         return fragment;
     }
 
 //    Метод setDictionary меняет содержимое этого фрагмента, обновляет информацию
-    public void setDictionary(Dictionary dictionary)
-    {
-        mDictionary = dictionary;
-        //Основное поле и транскрипция
-        if(mMainResult!=null)
-        {
-            updateView();
-        }
-    }
+//    public void setDictionary(Dictionary dictionary)
+//    {
+//        mDictionary = dictionary;
+//        if(mMainResult!=null)
+//        {
+//            updateView();
+//        }
+//    }
 
     private class DicHolder extends RecyclerView.ViewHolder
     {
@@ -232,11 +237,21 @@ public class ResultFragment extends Fragment
         textView.setTextColor(getResources().getColor(R.color.colorGrey));
     }
 
-    private void updateView()
+//    public void updateView()
+//    {
+//        if(isVisible())
+//        {
+//            mMainResult.setText(mDictionary.getText());
+//            mTranscription.setText(mDictionary.getTranscription());
+//            mTranslations = mDictionary.getTranslations();
+//            mRecyclerView.setAdapter(new DicAdapter(mTranslations));
+//        }
+//    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState)
     {
-        mMainResult.setText(mDictionary.getText());
-        mTranscription.setText(mDictionary.getTranscription());
-        mTranslations = mDictionary.getTranslations();
-        mRecyclerView.setAdapter(new DicAdapter(mTranslations));
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(ARG_DICTIONARY,mDictionary);
     }
 }
