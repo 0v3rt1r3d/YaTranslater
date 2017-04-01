@@ -69,9 +69,28 @@ public class TranslateFragment extends Fragment
 
     private ScrollView mScrollView;
 
+    public static TranslateFragment newInstance(Translation translation)
+    {
+        Bundle args = new Bundle();
+        args.putParcelable(ARG_TRANSLATION,translation);
+
+        TranslateFragment fragment = new TranslateFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     public static TranslateFragment newInstance()
     {
-        return new TranslateFragment();
+        Bundle args = new Bundle();
+        TranslateFragment fragment = new TranslateFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onAttach(Context context)
+    {
+        super.onAttach(context);
     }
 
     @Nullable
@@ -86,6 +105,14 @@ public class TranslateFragment extends Fragment
         mFrameForDictionary = (FrameLayout) v.findViewById(R.id.translation_container);
 
         mResultTextView = (TextView) v.findViewById(R.id.translated_text_view);
+        mResultTextView.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Log.d("TranslateFragment:",toString());
+            }
+        });
 
         mSaveToHistoryButton = (ImageButton) v.findViewById(R.id.button_bookmark);
         mSaveToHistoryButton.setOnClickListener(new View.OnClickListener()
@@ -195,26 +222,14 @@ public class TranslateFragment extends Fragment
 //                    .commit();
 //        }
 
-        if (getArguments() != null)
+        if (getArguments().getParcelable(ARG_TRANSLATION)!= null)
         {
-            String id = getArguments().getString(ARG_ID);
-            if (Data.get(getActivity()).hasTranslation(id))
-            {
-                mTranslation = Data.get(getActivity()).getTranslation(id);
-                updateView();
-                if (SplashActivity.hasInternetConnection(getActivity()))
-                {
-                    translate();
-                }
-            }
-            else
-            {
-                initializeNewTranslation();
-                updateView();
-            }
+            mTranslation = getArguments().getParcelable(ARG_TRANSLATION);
+            updateView();
         }
         else if (savedInstanceState != null)
         {
+            Log.e("TagToSearch", "SavedState in TrFr");
             String id = savedInstanceState.getString(ARG_ID);
             if (Data.get(getActivity()).hasTranslation(id))
             {
@@ -367,7 +382,7 @@ public class TranslateFragment extends Fragment
         }
     }
 
-    public void updateView()
+    private void updateView()
     {
         Log.e("Tagg", "update " + toString());
         mToLanguageTextView.setText(getFullNameByShortName(mTranslation.getLangTo()));
@@ -512,12 +527,8 @@ public class TranslateFragment extends Fragment
 
     public void setTranslation(Translation translation)
     {
-        Log.e("Tagg", "translation " + toString());
         mTranslation = translation;
-        if (!isDetached())
-        {
-            updateView();
-        }
+        updateView();
         translate();
     }
 }

@@ -13,11 +13,7 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.TableLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import ru.overtired.yatranslater.R;
 import ru.overtired.yatranslater.database.Data;
@@ -38,7 +34,6 @@ public class MiddleFragment extends Fragment
     private ImageButton mClearHistoryButton;
 
     private ViewPager mViewPager;
-
     private TabLayout mTabLayout;
 
     public static MiddleFragment newInstance()

@@ -1,6 +1,5 @@
 package ru.overtired.yatranslater.fragments;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -9,7 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.KeyEvent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +40,7 @@ public abstract class HistoryFavoriteRecycler extends Fragment
     public void onAttach(Context context)
     {
         super.onAttach(context);
+        Log.e("activity",getActivity().toString());
         mCallbacks = (Callbacks)getActivity();
     }
 
@@ -181,4 +181,11 @@ public abstract class HistoryFavoriteRecycler extends Fragment
     abstract protected void updateOtherRecycler();
 
     abstract protected void removeTranslation(Translation translation);
+
+    @Override
+    public void onDetach()
+    {
+        super.onDetach();
+        mCallbacks = null;
+    }
 }

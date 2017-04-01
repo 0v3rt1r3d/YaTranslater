@@ -6,7 +6,4 @@
   <tab
     id="@+id/nav_button_middle"
     icon="@drawable/ic_bookmark"/>
-  <tab
-    id="@+id/nav_button_settings"
-    icon="@drawable/ic_settings"/>
 </tabs>
