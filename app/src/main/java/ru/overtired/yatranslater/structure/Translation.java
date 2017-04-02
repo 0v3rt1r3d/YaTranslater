@@ -97,6 +97,15 @@ public class Translation implements Parcelable
         mInHistory = inHistory;
     }
 
+    public boolean equals(Translation translation)
+    {
+        return (mTextFrom.equals(translation.getTextFrom()) &&
+                mLangFrom.equals(translation.getLangFrom()) &&
+                mLangTo.equals(translation.getLangTo()));
+    }
+
+//    Getters-setter
+
     public UUID getId()
     {
         return mId;

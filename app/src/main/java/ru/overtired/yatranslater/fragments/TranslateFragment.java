@@ -46,7 +46,6 @@ public class TranslateFragment extends Fragment
     public final static int REQUEST_LANG_FROM = 0;
     public final static int REQUEST_LANG_TO = 1;
 
-    private static final String ARG_ID = "arg_id";
     private static final String ARG_DICTIONARY = "arg_dictionary";
     private static final String ARG_TRANSLATION = "arg_translation";
 
@@ -71,8 +70,9 @@ public class TranslateFragment extends Fragment
 
     public static TranslateFragment newInstance(Translation translation)
     {
+//        Для инициализации уже готового перевода из истории
         Bundle args = new Bundle();
-        args.putParcelable(ARG_TRANSLATION,translation);
+        args.putParcelable(ARG_TRANSLATION, translation);
 
         TranslateFragment fragment = new TranslateFragment();
         fragment.setArguments(args);
@@ -110,7 +110,7 @@ public class TranslateFragment extends Fragment
             @Override
             public void onClick(View v)
             {
-                Log.d("TranslateFragment:",toString());
+                Log.d("TranslateFragment:", toString());
             }
         });
 
@@ -222,44 +222,37 @@ public class TranslateFragment extends Fragment
 //                    .commit();
 //        }
 
-        if (getArguments().getParcelable(ARG_TRANSLATION)!= null)
+//        Тут начало инициализации
+        if (savedInstanceState != null)
         {
+//            Восстановление после поворота, если фрагмент был на переднем плане
+            mTranslation = savedInstanceState.getParcelable(ARG_TRANSLATION);
+//            Если есть данные из словаря - загружаю их
+            setVisibleDictionaryFragment((mDictionary =
+                    savedInstanceState.getParcelable(ARG_DICTIONARY)) != null);
+            updateView();
+        }
+        else if (getArguments().getParcelable(ARG_TRANSLATION)!= null)
+        {
+//            Инициализация при запуске из истории-избранного
             mTranslation = getArguments().getParcelable(ARG_TRANSLATION);
+//            В случае, если перевод был передан в аргументах
             updateView();
+            translate();
         }
-        else if (savedInstanceState != null)
+        else if(mTranslation != null)
         {
-            Log.e("TagToSearch", "SavedState in TrFr");
-            String id = savedInstanceState.getString(ARG_ID);
-            if (Data.get(getActivity()).hasTranslation(id))
-            {
-                mTranslation = Data.get(getActivity()).getTranslation(id);
-                mDictionary = savedInstanceState.getParcelable(ARG_DICTIONARY);
-                if (mDictionary != null)
-                {
-//                    setVisibleDictionaryFragment(true);
-                    // TODO: 29.03.17 Разобраться с восстановлением данных из словаря
-                }
-                else
-                {
-                    String result = savedInstanceState.getString(ARG_TRANSLATION);
-                    mResultTextView.setText(result);
-                }
-                updateView();
-                translate();
-            }
-            else
-            {
-                initializeNewTranslation();
-                updateView();
-            }
-        }
-        else
+//            Восстановление, если фрагмент не был на переднем плане
+            setVisibleDictionaryFragment(mDictionary!=null);
+            updateView();
+//            Т.е. не восстанавливалась после поворота
+            // TODO: 01.04.17 Возможно этот метод не нужен, можно прямо сюда его вставить
+        } else
         {
+//            Создание с нуля, если запускается впервые
             initializeNewTranslation();
-            updateView();
         }
-
+        updateView();
         return v;
     }
 
@@ -369,7 +362,6 @@ public class TranslateFragment extends Fragment
             mTranslation.setLangTo(data.getStringExtra(LanguageChooseActivity.EXTRA_LANG));
             updateView();
         }
-        saveLangsToPrefs();
     }
 
     private void hideKeyboard()
@@ -384,7 +376,7 @@ public class TranslateFragment extends Fragment
 
     private void updateView()
     {
-        Log.e("Tagg", "update " + toString());
+//        Если во фрагменте есть mTranslation, то этот метод заполняет все поля
         mToLanguageTextView.setText(getFullNameByShortName(mTranslation.getLangTo()));
         mFromLanguageTextView.setText(getFullNameByShortName(mTranslation.getLangFrom()));
         mFieldToTranslate.setText(mTranslation.getTextFrom());
@@ -392,18 +384,26 @@ public class TranslateFragment extends Fragment
         setBookmarkIcon(mTranslation.isFavorite());
     }
 
+    public void setState(Bundle bundle)
+    {
+//        Наверняка можно было как-то по-человечески сделать, но сделал так
+        mTranslation = bundle.getParcelable(ARG_TRANSLATION);
+        if(bundle.getParcelable(ARG_DICTIONARY)!=null)
+        {
+            mDictionary = bundle.getParcelable(ARG_DICTIONARY);
+        }
+    }
+
     @Override
     public void onSaveInstanceState(Bundle outState)
     {
         super.onSaveInstanceState(outState);
-        outState.putString(ARG_ID, mTranslation.getId().toString());
+        outState.putParcelable(ARG_TRANSLATION, mTranslation);
+
+//        Если есть перевод из словаря - его тоже сохраняю
         if (mFrameForDictionary.getVisibility() == View.VISIBLE)
         {
             outState.putParcelable(ARG_DICTIONARY, mDictionary);
-        }
-        else
-        {
-            outState.putString(ARG_TRANSLATION, mResultTextView.getText().toString());
         }
     }
 
@@ -482,19 +482,14 @@ public class TranslateFragment extends Fragment
         }
     }
 
-    private void saveLangsToPrefs()
+    @Override
+    public void onDestroy()
     {
         PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
                 .putString(PreferencesScheme.PREF_LANG_FROM, mTranslation.getLangFrom())
                 .putString(PreferencesScheme.PREF_LANG_TO, mTranslation.getLangTo())
                 .apply();
-    }
-
-    @Override
-    public void onDestroy()
-    {
         super.onDestroy();
-        saveLangsToPrefs();
     }
 
     private void initializeNewTranslation()
@@ -530,5 +525,10 @@ public class TranslateFragment extends Fragment
         mTranslation = translation;
         updateView();
         translate();
+    }
+
+    public Translation getTranslation()
+    {
+        return mTranslation;
     }
 }
