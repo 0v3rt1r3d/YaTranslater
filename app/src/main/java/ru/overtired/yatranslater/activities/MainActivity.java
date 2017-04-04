@@ -125,7 +125,6 @@ public class MainActivity extends AppCompatActivity implements HistoryFavoriteRe
     {
 //        if(!mTranslateFragment.getTranslation().equals(translation))
 //        {
-//
 //            mTranslateFragment = TranslateFragment.newInstance(translation);
 //        } else
 //        {

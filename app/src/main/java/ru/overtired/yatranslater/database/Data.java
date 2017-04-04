@@ -183,6 +183,7 @@ public class Data
         values.put(HistoryTable.Cols.TEXT_TO, translation.getTextTo());
         values.put(HistoryTable.Cols.IS_FAVORITE, translation.isFavorite() ? 1 : 0);
         values.put(HistoryTable.Cols.IS_IN_HISTORY, translation.isInHistory() ? 1 : 0);
+        values.put(HistoryTable.Cols.IS_IN_DICTIONARY, translation.isInDictionary() ? 1 : 0);
 
         return values;
     }
@@ -328,20 +329,18 @@ public class Data
         mDatabase.update(HistoryTable.NAME, values, HistoryTable.Cols.UUID + "=\"" + translation.getId().toString() + "\"", null);
     }
 
-    public Translation getTranslation(String id)
+    public Translation getTranslation(Translation translation)
     {
         TranslationCursorWrapper cursorWrapper =
-                queryHistory(HistoryTable.Cols.UUID + "=\"" + id + "\"");
-        try
+                queryHistory(HistoryTable.Cols.TEXT_FROM + "=\"" + translation.getTextFrom() + "\" and " +
+                        HistoryTable.Cols.LANG_FROM + "=\"" + translation.getLangFrom() + "\" and " +
+                        HistoryTable.Cols.LANG_TO + "=\"" + translation.getLangTo() + "\"");
+        if(cursorWrapper.getCount()==0)
         {
-            cursorWrapper.moveToFirst();
-            return cursorWrapper.getTranslation();
+            return null;
         }
-        catch (Exception e)
-        {
-            Log.d("Exception: ", e.getMessage());
-        }
-        return null;
+        cursorWrapper.moveToFirst();
+        return cursorWrapper.getTranslation();
     }
 
     public boolean hasTranslation(Translation translation)
@@ -350,13 +349,6 @@ public class Data
                 queryHistory(HistoryTable.Cols.TEXT_FROM + "=\"" + translation.getTextFrom() + "\" and " +
                         HistoryTable.Cols.LANG_FROM + "=\"" + translation.getLangFrom() + "\" and " +
                         HistoryTable.Cols.LANG_TO + "=\"" + translation.getLangTo() + "\"");
-        return cursorWrapper.getCount() > 0;
-    }
-
-    public boolean hasTranslation(String id)
-    {
-        TranslationCursorWrapper cursorWrapper =
-                queryHistory(HistoryTable.Cols.UUID + "=\"" + id + "\"");
         return cursorWrapper.getCount() > 0;
     }
 
@@ -431,5 +423,17 @@ public class Data
 
         cursor.moveToFirst();
         return cursor.getTranslation().isFavorite();
+    }
+
+    public String getFullLanguageByShort(String shortLang)
+    {
+        for (Language language : getLanguages())
+        {
+            if (language.getShortLang().equals(shortLang))
+            {
+                return language.getFullLang();
+            }
+        }
+        return null;
     }
 }

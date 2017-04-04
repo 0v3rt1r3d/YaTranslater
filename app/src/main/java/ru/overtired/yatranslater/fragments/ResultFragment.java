@@ -3,6 +3,7 @@ package ru.overtired.yatranslater.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
@@ -32,8 +33,6 @@ public class ResultFragment extends Fragment
     @BindView(R.id.frament_result_recycler_view) RecyclerView mRecyclerView;
 
     private Dictionary mDictionary;
-
-    private List<ru.overtired.yatranslater.structure.dictionary.Translation> mTranslations;
 
     @Nullable
     @Override
@@ -68,36 +67,20 @@ public class ResultFragment extends Fragment
         return fragment;
     }
 
-//    Метод setDictionary меняет содержимое этого фрагмента, обновляет информацию
-//    public void setDictionary(Dictionary dictionary)
-//    {
-//        mDictionary = dictionary;
-//        if(mMainResult!=null)
-//        {
-//            updateView();
-//        }
-//    }
-
-    private class DicHolder extends RecyclerView.ViewHolder
+    public class DicHolder extends RecyclerView.ViewHolder
     {
         private ru.overtired.yatranslater.structure.dictionary.Translation mTranslation;
 
-        private FlexboxLayout mFlexSynonyms;
-        private FlexboxLayout mFlexMeans;
-        private FlexboxLayout mFlexExamples;
+        @BindView(R.id.list_dic_flex_synonyms) FlexboxLayout mFlexSynonyms;
+        @BindView(R.id.list_dic_flex_means) FlexboxLayout mFlexMeans;
+        @BindView(R.id.list_dic_flex_examples) FlexboxLayout mFlexExamples;
 
-        private TextView mNumberText;
+        @BindView(R.id.list_dic_tv_number) TextView mNumberText;
 
         public DicHolder(View itemView)
         {
             super(itemView);
-
-            mFlexSynonyms = (FlexboxLayout) itemView.findViewById(R.id.list_dic_flex_synonyms);
-            mFlexMeans = (FlexboxLayout) itemView.findViewById(R.id.list_dic_flex_means);
-            mFlexExamples = (FlexboxLayout) itemView.findViewById(R.id.list_dic_flex_examples);
-
-            mNumberText = (TextView) itemView.findViewById(R.id.list_dic_tv_number);
-
+            ButterKnife.bind(this,itemView);
             mFlexMeans.setVisibility(View.GONE);
             mFlexExamples.setVisibility(View.GONE);
         }
@@ -221,25 +204,7 @@ public class ResultFragment extends Fragment
         }
     }
 
-    private void setTextViewSynonymStyle(TextView textView)
-    {
-        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP,18);
-        textView.setTextColor(getResources().getColor(R.color.colorBlack));
-    }
-
-    private void setTextViewMeanStyle(TextView textView)
-    {
-        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP,18);
-        textView.setTextColor(getResources().getColor(R.color.colorPrimary));
-    }
-
-    private void setTextViewExampleStyle(TextView textView)
-    {
-        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP,18);
-        textView.setTextColor(getResources().getColor(R.color.colorGrey));
-    }
-
-//    public void updateView()
+    //    public void updateView()
 //    {
 //        if(isVisible())
 //        {
@@ -262,5 +227,24 @@ public class ResultFragment extends Fragment
     {
         super.onDestroyView();
         mUnbinder.unbind();
+    }
+
+//    Методы для изменения стиля TextViews из RecyclerView
+    private void setTextViewSynonymStyle(TextView textView)
+    {
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP,18);
+        textView.setTextColor(getResources().getColor(R.color.colorBlack));
+    }
+
+    private void setTextViewMeanStyle(TextView textView)
+    {
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP,18);
+        textView.setTextColor(getResources().getColor(R.color.colorPrimary));
+    }
+
+    private void setTextViewExampleStyle(TextView textView)
+    {
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP,18);
+        textView.setTextColor(getResources().getColor(R.color.colorGrey));
     }
 }

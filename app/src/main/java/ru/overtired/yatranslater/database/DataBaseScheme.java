@@ -30,6 +30,7 @@ public class DataBaseScheme
             public static final String TEXT_TO = "text_to";
             public static final String IS_FAVORITE = "is_favorite";
             public static final String IS_IN_HISTORY = "in_history";
+            public static final String IS_IN_DICTIONARY = "is_in_dictionary";
         }
     }
 

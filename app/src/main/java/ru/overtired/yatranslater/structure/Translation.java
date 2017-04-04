@@ -13,6 +13,7 @@ public class Translation implements Parcelable
     private UUID mId;
     private boolean mIsFavorite;
     private boolean mInHistory;
+    private boolean mIsInDictionary;
 
     private String mLangFrom;
     private String mLangTo;
@@ -70,7 +71,8 @@ public class Translation implements Parcelable
                        String textTo,
                        String uuid,
                        boolean isFavorite,
-                       boolean inHistory)
+                       boolean inHistory,
+                       boolean isInDictionary)
     {
         mLangFrom = langFrom;
         mLangTo = langTo;
@@ -79,6 +81,7 @@ public class Translation implements Parcelable
         mIsFavorite = isFavorite;
         mId = UUID.fromString(uuid);
         mInHistory = inHistory;
+        mIsInDictionary = isInDictionary;
     }
 
     public Translation(String langFrom,
@@ -86,7 +89,8 @@ public class Translation implements Parcelable
                        String textFrom,
                        String textTo,
                        boolean isFavorite,
-                       boolean inHistory)
+                       boolean inHistory,
+                       boolean isInDictionary)
     {
         mLangFrom = langFrom;
         mLangTo = langTo;
@@ -95,6 +99,7 @@ public class Translation implements Parcelable
         mIsFavorite = isFavorite;
         mId = UUID.randomUUID();
         mInHistory = inHistory;
+        mIsInDictionary = isInDictionary;
     }
 
     public boolean equals(Translation translation)
@@ -169,5 +174,15 @@ public class Translation implements Parcelable
     public void setInHistory(boolean inHistory)
     {
         mInHistory = inHistory;
+    }
+
+    public boolean isInDictionary()
+    {
+        return mIsInDictionary;
+    }
+
+    public void setInDictionary(boolean inDictionary)
+    {
+        mIsInDictionary = inDictionary;
     }
 }

@@ -11,7 +11,6 @@ import android.support.v7.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,8 +24,6 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -36,7 +33,6 @@ import ru.overtired.yatranslater.activities.SplashActivity;
 import ru.overtired.yatranslater.database.Data;
 import ru.overtired.yatranslater.database.PreferencesScheme;
 import ru.overtired.yatranslater.database.Translater;
-import ru.overtired.yatranslater.structure.Language;
 import ru.overtired.yatranslater.structure.Translation;
 import ru.overtired.yatranslater.structure.dictionary.Dictionary;
 
@@ -55,23 +51,27 @@ public class TranslateFragment extends Fragment
     private Unbinder mUnbinder;
 
     private Translation mTranslation;
+    private Dictionary mDictionary;
 
-    //View, показывающие языки
-    @BindView(R.id.from_language_text_view) TextView mFromLanguageTextView;
-    @BindView(R.id.to_language_text_view) TextView mToLanguageTextView;
-    @BindView(R.id.field_for_translate) EditText mFieldToTranslate;
-    @BindView(R.id.translated_text_view) TextView mResultTextView;
-    @BindView(R.id.swap_languages_button) ImageButton mSwapLanguagesButton;
-    @BindView(R.id.button_bookmark) ImageButton mSaveToHistoryButton;
+    @BindView(R.id.from_language_text_view)
+    TextView mFromLanguageTextView;
+    @BindView(R.id.to_language_text_view)
+    TextView mToLanguageTextView;
+    @BindView(R.id.field_for_translate)
+    EditText mFieldToTranslate;
+    @BindView(R.id.translated_text_view)
+    TextView mResultTextView;
+    @BindView(R.id.swap_languages_button)
+    ImageButton mSwapLanguagesButton;
+    @BindView(R.id.button_bookmark)
+    ImageButton mSaveToFavoritesButton;
+    @BindView(R.id.translate_fragment_scroll_view)
+    ScrollView mScrollView;
 
     private AsyncTranslater mAsyncTranslater;
     private AsyncDictionary mAsyncDictionary;
 
     private FrameLayout mFrameForDictionary;
-    //    private ResultFragment mResultFragment;
-    private Dictionary mDictionary;
-
-    @BindView(R.id.translate_fragment_scroll_view) ScrollView mScrollView;
 
     public static TranslateFragment newInstance(Translation translation)
     {
@@ -86,16 +86,8 @@ public class TranslateFragment extends Fragment
 
     public static TranslateFragment newInstance()
     {
-        Bundle args = new Bundle();
         TranslateFragment fragment = new TranslateFragment();
-        fragment.setArguments(args);
         return fragment;
-    }
-
-    @Override
-    public void onAttach(Context context)
-    {
-        super.onAttach(context);
     }
 
     @Nullable
@@ -104,61 +96,44 @@ public class TranslateFragment extends Fragment
     {
         View view = inflater.inflate(R.layout.fragment_translate, container, false);
 
-        mUnbinder = ButterKnife.bind(this,view);
+        mUnbinder = ButterKnife.bind(this, view);
 
 //        Контейнер под фрагмент нахожу отдельно, потому что ссылка него нужна после уничтожения View
-        mFrameForDictionary = (FrameLayout)view.findViewById(R.id.translation_container);
-//        Фрагмент для вывода информации, запрошенной из словаря
-//        if (mResultFragment == null)
-//        {
-//            mResultFragment = ResultFragment.newInstance();
-//        }
-//
-//        FragmentManager fm = getFragmentManager();
-//        Fragment fragment = fm.findFragmentById(R.id.translation_container);
-//        if (fragment == null)
-//        {
-//            getFragmentManager().beginTransaction()
-//                    .add(R.id.translation_container, mResultFragment)
-//                    .commit();
-//        }
+        mFrameForDictionary = (FrameLayout) view.findViewById(R.id.translation_container);
 
 //        Тут начало инициализации
         if (savedInstanceState != null)
         {
-            Log.e("image before restoring",mSaveToHistoryButton.getDrawable().toString());
 //            Восстановление после поворота, если фрагмент был на переднем плане
             mTranslation = savedInstanceState.getParcelable(ARG_TRANSLATION);
+            updateView();
 //            Если есть данные из словаря - загружаю их
-//            setVisibleDictionaryFragment((mDictionary =
-//                    savedInstanceState.getParcelable(ARG_DICTIONARY)) != null);
+            setVisibleDictionaryFragment((mDictionary =
+                    savedInstanceState.getParcelable(ARG_DICTIONARY)) != null);
         }
-        else if (getArguments().getParcelable(ARG_TRANSLATION)!= null)
+        else if (getArguments() != null && getArguments().getParcelable(ARG_TRANSLATION) != null)
         {
 //            Инициализация при запуске из истории-избранного
             mTranslation = getArguments().getParcelable(ARG_TRANSLATION);
+            updateView();
+            translate();
 //            В случае, если перевод был передан в аргументах
         }
-        else if(mTranslation != null)
+        else if (mTranslation != null)
         {
 //            Восстановление, если фрагмент не был на переднем плане
-            setVisibleDictionaryFragment(mDictionary!=null);
+            setVisibleDictionaryFragment(mDictionary != null);
+            updateView();
 //            Т.е. не восстанавливалась после поворота
             // TODO: 01.04.17 Возможно этот метод не нужен, можно прямо сюда его вставить
-        } else
+        }
+        else
         {
 //            Создание с нуля, если запускается впервые
             initializeNewTranslation();
-        }
-        updateView();
-
-        if(getArguments().getParcelable(ARG_TRANSLATION)!= null)
-        {
-            translate();
+            updateView();
         }
 
-
-        Log.e("image on the end",mSaveToHistoryButton.getDrawable().toString());
         return view;
     }
 
@@ -166,16 +141,8 @@ public class TranslateFragment extends Fragment
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
-        mResultTextView.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                Log.d("TranslateFragment:", toString());
-            }
-        });
 
-        mSaveToHistoryButton.setOnClickListener(new View.OnClickListener()
+        mSaveToFavoritesButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
@@ -183,12 +150,12 @@ public class TranslateFragment extends Fragment
                 if (mTranslation.isFavorite())
                 {
                     mTranslation.setFavorite(false);
-                    mSaveToHistoryButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_not_favorite));
+                    mSaveToFavoritesButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_not_favorite));
                 }
                 else
                 {
                     mTranslation.setFavorite(true);
-                    mSaveToHistoryButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
+                    mSaveToFavoritesButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
                 }
                 Data.get(getActivity()).updateTranslation(mTranslation);
             }
@@ -208,27 +175,6 @@ public class TranslateFragment extends Fragment
                     hideKeyboard();
                 }
                 return false;
-            }
-        });
-        mFieldToTranslate.addTextChangedListener(new TextWatcher()
-        {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after)
-            {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count)
-            {
-                mSaveToHistoryButton.setImageDrawable(getResources()
-                        .getDrawable(R.drawable.ic_not_favorite));
-            }
-
-            @Override
-            public void afterTextChanged(Editable s)
-            {
-
             }
         });
 
@@ -265,7 +211,7 @@ public class TranslateFragment extends Fragment
         });
     }
 
-    //    AsynkTask для для перевода текста
+    //    Классы для перевода текста из переводчика и словаря
     private class AsyncTranslater extends AsyncTask<String, Void, String>
     {
         @Override
@@ -278,17 +224,12 @@ public class TranslateFragment extends Fragment
         @Override
         protected void onPostExecute(String string)
         {
-            mResultTextView.setText(string);
-            mTranslation = new Translation(
-                    mTranslation.getLangFrom(),
-                    mTranslation.getLangTo(),
-                    mFieldToTranslate.getText().toString(),
-                    mResultTextView.getText().toString(),
-                    false,
-                    true);
+            mTranslation.setTextTo(string);
+            mTranslation.setInDictionary(false);
+            mTranslation.setInHistory(true);
+
             setVisibleDictionaryFragment(false);
             Data.get(getActivity()).addTranslation(mTranslation);
-            mSaveToHistoryButton.setEnabled(true);
             mResultTextView.setText(mTranslation.getTextTo());
         }
     }
@@ -307,51 +248,28 @@ public class TranslateFragment extends Fragment
         {
             if (dictionary != null)
             {
-                //Если такое слово уже есть, то проверяется есть ли оно в избранном
                 mDictionary = dictionary;
-//                mResultFragment.setDictionary(mDictionary);
 
-                Translation temp = new Translation(
-                        mTranslation.getLangFrom(),
-                        mTranslation.getLangTo(),
-                        mFieldToTranslate.getText().toString(),
-                        mDictionary.getTranslations().get(0).getText(),
-                        false,
-                        true);
-
-                mTranslation = new Translation(temp.getLangFrom(),
-                        temp.getLangTo(),
-                        temp.getTextFrom(),
-                        temp.getTextTo(),
-                        Data.get(getActivity()).isTranslationFavorite(temp),
-                        true);
-
+                mTranslation.setTextTo(dictionary.getTranslations().get(0).getText());
+                mTranslation.setInDictionary(true);
+                mTranslation.setInHistory(true);
                 Data.get(getActivity()).addTranslation(mTranslation);
                 updateView();
 
                 setVisibleDictionaryFragment(true);
-//                mResultFragment.updateView();
-                mSaveToHistoryButton.setEnabled(true);
             }
             else
             {
                 setVisibleDictionaryFragment(false);
-                useTranslaterAPI();
+                if (mAsyncTranslater != null)
+                {
+                    mAsyncTranslater.cancel(true);
+                }
+                mAsyncTranslater = new AsyncTranslater();
+                mAsyncTranslater.execute(mFieldToTranslate.getText().toString(),
+                        mTranslation.getLangFrom() + "-" + mTranslation.getLangTo());
             }
         }
-    }
-
-    private String getFullNameByShortName(String shortName)
-    {
-        List<Language> mLanguages = Data.get(getActivity()).getLanguages();
-        for (Language language : mLanguages)
-        {
-            if (language.getShortLang().equals(shortName))
-            {
-                return language.getFullLang();
-            }
-        }
-        return null;
     }
 
     @Override
@@ -386,17 +304,22 @@ public class TranslateFragment extends Fragment
     private void updateView()
     {
 //        Если во фрагменте есть mTranslation, то этот метод заполняет все поля
-        mToLanguageTextView.setText(getFullNameByShortName(mTranslation.getLangTo()));
-        mFromLanguageTextView.setText(getFullNameByShortName(mTranslation.getLangFrom()));
+        mToLanguageTextView.setText(Data.get(getActivity())
+                .getFullLanguageByShort(mTranslation.getLangTo()));
+        mFromLanguageTextView.setText(Data.get(getActivity())
+                .getFullLanguageByShort(mTranslation.getLangFrom()));
         mFieldToTranslate.setText(mTranslation.getTextFrom());
         mResultTextView.setText(mTranslation.getTextTo());
+
         if (mTranslation.isFavorite())
         {
-            mSaveToHistoryButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
+            mSaveToFavoritesButton.setImageDrawable(getResources()
+                    .getDrawable(R.drawable.ic_favorite));
         }
         else
         {
-            mSaveToHistoryButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_not_favorite));
+            mSaveToFavoritesButton.setImageDrawable(getResources()
+                    .getDrawable(R.drawable.ic_not_favorite));
         }
     }
 
@@ -404,7 +327,7 @@ public class TranslateFragment extends Fragment
     {
 //        Наверняка можно было как-то по-человечески сделать, но сделал так
         mTranslation = bundle.getParcelable(ARG_TRANSLATION);
-        if(bundle.getParcelable(ARG_DICTIONARY)!=null)
+        if (bundle.getParcelable(ARG_DICTIONARY) != null)
         {
             mDictionary = bundle.getParcelable(ARG_DICTIONARY);
         }
@@ -427,50 +350,46 @@ public class TranslateFragment extends Fragment
     {
         if (Data.get(getActivity()).hasDirection(mTranslation.getLangFrom() + "-" + mTranslation.getLangTo()))
         {
-            if (SplashActivity.hasInternetConnection(getActivity()))
+            mTranslation.setTextFrom(mFieldToTranslate.getText().toString());
+            Translation temp = Data.get(getActivity()).getTranslation(mTranslation);
+            if (temp != null && !temp.isInDictionary())
             {
-                int countOfWords = mFieldToTranslate.getText().toString().split(" ").length;
-                if (countOfWords > 2)
-                {
-                    useTranslaterAPI();
-                }
-                else
-                {
-                    useDictionaryAPI();
-                }
-                hideKeyboard();
+//                Если перевод не из словаря, просто восстанавливаю данные из базы
+                mTranslation = temp;
+                updateView();
             }
             else
             {
-                Toast.makeText(getActivity(), R.string.no_internet, Toast.LENGTH_SHORT).show();
+//                Нужно загружать данные из словаря
+                if (temp != null)
+                {
+                    mTranslation = temp;
+                    updateView();
+                }
+                if (SplashActivity.hasInternetConnection(getActivity()))
+                {
+//                    Загрузка данных
+                    if (mAsyncDictionary != null)
+                    {
+                        mAsyncDictionary.cancel(true);
+                    }
+                    mAsyncDictionary = new AsyncDictionary();
+                    mAsyncDictionary.execute(mFieldToTranslate.getText().toString(),
+                            mTranslation.getLangFrom() + "-" + mTranslation.getLangTo());
+                }
+                else
+                {
+                    Toast.makeText(getActivity(), R.string.no_internet, Toast.LENGTH_SHORT).show();
+                }
             }
+            // TODO: 04.04.17 анимация загрузки
+            hideKeyboard();
+
         }
         else
         {
             Toast.makeText(getActivity(), R.string.no_direction, Toast.LENGTH_SHORT).show();
         }
-    }
-
-    private void useTranslaterAPI()
-    {
-        if (mAsyncTranslater != null)
-        {
-            mAsyncTranslater.cancel(true);
-        }
-        mAsyncTranslater = new AsyncTranslater();
-        mAsyncTranslater.execute(mFieldToTranslate.getText().toString(),
-                mTranslation.getLangFrom() + "-" + mTranslation.getLangTo());
-    }
-
-    private void useDictionaryAPI()
-    {
-        if (mAsyncDictionary != null)
-        {
-            mAsyncDictionary.cancel(true);
-        }
-        mAsyncDictionary = new AsyncDictionary();
-        mAsyncDictionary.execute(mFieldToTranslate.getText().toString(),
-                mTranslation.getLangFrom() + "-" + mTranslation.getLangTo());
     }
 
     private void setVisibleDictionaryFragment(boolean visible)
@@ -479,16 +398,8 @@ public class TranslateFragment extends Fragment
         {
             mScrollView.setVisibility(View.GONE);
             mFrameForDictionary.setVisibility(View.VISIBLE);
-            Fragment lastFragment =
-                    getFragmentManager().findFragmentById(R.id.translation_container);
-            if (lastFragment != null)
-            {
-                getFragmentManager().beginTransaction()
-                        .remove(lastFragment)
-                        .commit();
-            }
             getFragmentManager().beginTransaction()
-                    .add(R.id.translation_container, ResultFragment.newInstance(mDictionary))
+                    .replace(R.id.translation_container, ResultFragment.newInstance(mDictionary))
                     .commit();
         }
         else
@@ -527,6 +438,7 @@ public class TranslateFragment extends Fragment
                     "",
                     getString(R.string.result_of_translation),
                     false,
+                    false,
                     false);
         }
     }
@@ -534,5 +446,19 @@ public class TranslateFragment extends Fragment
     public Translation getTranslation()
     {
         return mTranslation;
+    }
+
+    @Override
+    public void onDetach()
+    {
+        super.onDetach();
+        if (mAsyncDictionary != null)
+        {
+            mAsyncDictionary.cancel(true);
+        }
+        if (mAsyncTranslater != null)
+        {
+            mAsyncTranslater.cancel(true);
+        }
     }
 }
