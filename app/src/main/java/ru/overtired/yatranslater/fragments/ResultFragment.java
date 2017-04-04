@@ -15,16 +15,21 @@ import com.google.android.flexbox.FlexboxLayout;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import ru.overtired.yatranslater.R;
 import ru.overtired.yatranslater.structure.dictionary.Dictionary;
 
 public class ResultFragment extends Fragment
 {
+    private Unbinder mUnbinder;
+
     private static final String ARG_DICTIONARY = "arg_dictionary";
 
-    private TextView mMainResult;
-    private TextView mTranscription;
-    private RecyclerView mRecyclerView;
+    @BindView(R.id.frament_result_main) TextView mMainResult;
+    @BindView(R.id.fragment_result_transcription) TextView mTranscription;
+    @BindView(R.id.frament_result_recycler_view) RecyclerView mRecyclerView;
 
     private Dictionary mDictionary;
 
@@ -35,11 +40,8 @@ public class ResultFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
         View view = inflater.inflate(R.layout.fragment_result, container, false);
+        mUnbinder = ButterKnife.bind(this,view);
 
-        mMainResult = (TextView)view.findViewById(R.id.frament_result_main);
-        mTranscription = (TextView) view.findViewById(R.id.fragment_result_transcription);
-
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.frament_result_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         if(savedInstanceState!=null)
@@ -253,5 +255,12 @@ public class ResultFragment extends Fragment
     {
         super.onSaveInstanceState(outState);
         outState.putParcelable(ARG_DICTIONARY,mDictionary);
+    }
+
+    @Override
+    public void onDestroyView()
+    {
+        super.onDestroyView();
+        mUnbinder.unbind();
     }
 }

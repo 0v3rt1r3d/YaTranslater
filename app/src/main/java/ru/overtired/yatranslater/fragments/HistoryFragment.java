@@ -12,6 +12,9 @@ import android.widget.EditText;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import ru.overtired.yatranslater.R;
 import ru.overtired.yatranslater.structure.Translation;
 import ru.overtired.yatranslater.database.Data;
@@ -22,14 +25,12 @@ import ru.overtired.yatranslater.database.Data;
 
 public class HistoryFragment extends HistoryFavoriteRecycler
 {
-    private EditText mSearchEditText;
+    @BindView(R.id.searchview_middle) EditText mSearchEditText;
     private boolean mIsSearchActivated = false;
 
     public static HistoryFragment newInstance()
     {
-//        Bundle args = new Bundle();
         HistoryFragment fragment = new HistoryFragment();
-//        fragment.setArguments(args);
         return fragment;
     }
 
@@ -39,7 +40,6 @@ public class HistoryFragment extends HistoryFavoriteRecycler
     {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        mSearchEditText = (EditText) mView.findViewById(R.id.searchview_middle);
         mSearchEditText.addTextChangedListener(new TextWatcher()
         {
             @Override

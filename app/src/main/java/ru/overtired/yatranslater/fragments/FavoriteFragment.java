@@ -12,6 +12,7 @@ import android.widget.EditText;
 
 import java.util.List;
 
+import butterknife.BindView;
 import ru.overtired.yatranslater.R;
 import ru.overtired.yatranslater.structure.Translation;
 import ru.overtired.yatranslater.database.Data;
@@ -22,7 +23,7 @@ import ru.overtired.yatranslater.database.Data;
 
 public class FavoriteFragment extends HistoryFavoriteRecycler
 {
-    private EditText mSearchEditText;
+    @BindView(R.id.searchview_middle) EditText mSearchEditText;
     private boolean mIsSearchActivated = false;
 
     public static FavoriteFragment newInstance()
@@ -39,7 +40,6 @@ public class FavoriteFragment extends HistoryFavoriteRecycler
     {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        mSearchEditText = (EditText) mView.findViewById(R.id.searchview_middle);
         mSearchEditText.addTextChangedListener(new TextWatcher()
         {
             @Override

@@ -15,6 +15,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import ru.overtired.yatranslater.R;
 import ru.overtired.yatranslater.database.Data;
 
@@ -24,17 +27,18 @@ import ru.overtired.yatranslater.database.Data;
 
 public class MiddleFragment extends Fragment
 {
-    public static final String TAG = "MiddleFragment";
+    private Unbinder mUnbinder;
 
+    public static final String TAG = "MiddleFragment";
     private static final String ARG_PAGE = "arg_page";
 
     private HistoryFragment mHistoryFragment;
     private FavoriteFragment mFavoriteFragment;
 
-    private ImageButton mClearHistoryButton;
+    @BindView(R.id.clear_history_button) ImageButton mClearHistoryButton;
 
-    private ViewPager mViewPager;
-    private TabLayout mTabLayout;
+    @BindView(R.id.middle_view_pager) ViewPager mViewPager;
+    @BindView(R.id.tab_layout) TabLayout mTabLayout;
 
     public static MiddleFragment newInstance()
     {
@@ -47,19 +51,17 @@ public class MiddleFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
-        View v = inflater.inflate(R.layout.fragment_middle, container, false);
+        View view = inflater.inflate(R.layout.fragment_middle, container, false);
+        mUnbinder = ButterKnife.bind(this,view);
 
         mHistoryFragment = HistoryFragment.newInstance();
         mFavoriteFragment = FavoriteFragment.newInstance();
 
-        mViewPager = (ViewPager) v.findViewById(R.id.middle_view_pager);
         mViewPager.setAdapter(new TabbedFragmentPagerAdapter(getActivity(),
                 getChildFragmentManager()));
 
-        mTabLayout = (TabLayout) v.findViewById(R.id.tab_layout);
         mTabLayout.setupWithViewPager(mViewPager);
 
-        mClearHistoryButton = (ImageButton) v.findViewById(R.id.clear_history_button);
         mClearHistoryButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -110,7 +112,7 @@ public class MiddleFragment extends Fragment
             mViewPager.setCurrentItem(page);
         }
 
-        return v;
+        return view;
     }
 
     private class TabbedFragmentPagerAdapter extends FragmentPagerAdapter
@@ -172,5 +174,12 @@ public class MiddleFragment extends Fragment
     {
         super.onSaveInstanceState(outState);
         outState.putInt(ARG_PAGE,mViewPager.getCurrentItem());
+    }
+
+    @Override
+    public void onDestroyView()
+    {
+        super.onDestroyView();
+        mUnbinder.unbind();
     }
 }

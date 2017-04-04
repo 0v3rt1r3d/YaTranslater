@@ -17,6 +17,9 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import ru.overtired.yatranslater.R;
 import ru.overtired.yatranslater.database.Data;
 import ru.overtired.yatranslater.structure.Translation;
@@ -27,7 +30,8 @@ import ru.overtired.yatranslater.structure.Translation;
 
 public abstract class HistoryFavoriteRecycler extends Fragment
 {
-    protected RecyclerView mRecyclerView;
+    private Unbinder mUnbinder;
+    @BindView(R.id.history_favorite_recycler_view) protected RecyclerView mRecyclerView;
     protected Callbacks mCallbacks;
     protected View mView;
 
@@ -49,7 +53,9 @@ public abstract class HistoryFavoriteRecycler extends Fragment
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
         mView = inflater.inflate(R.layout.fragment_history_favorite,container,false);
-        mRecyclerView = (RecyclerView) mView.findViewById(R.id.history_favorite_recycler_view);
+        mUnbinder = ButterKnife.bind(this,mView);
+
+
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(new HistoryFavoriteAdapter(getTranslations()));
 
@@ -61,18 +67,18 @@ public abstract class HistoryFavoriteRecycler extends Fragment
     {
         private Translation mTranslation;
         
-        private ImageButton mBookmark;
-        private TextView mTextFromView;
-        private TextView mTextToView;
-        private TextView mTextDirection;
+        @BindView(R.id.list_translation_button_save) ImageButton mBookmark;
+        @BindView(R.id.list_translation_text_from) TextView mTextFromView;
+        @BindView(R.id.list_translation_text_to) TextView mTextToView;
+        @BindView(R.id.list_translation_text_direction) TextView mTextDirection;
         
         public HistoryFavoriteHolder(View itemView)
         {
             super(itemView);
+            ButterKnife.bind(this,itemView);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
 
-            mBookmark = (ImageButton) itemView.findViewById(R.id.list_translation_button_save);
             mBookmark.setOnClickListener(new View.OnClickListener()
             {
                 @Override
@@ -91,10 +97,6 @@ public abstract class HistoryFavoriteRecycler extends Fragment
                     updateOtherRecycler();
                 }
             });
-
-            mTextDirection = (TextView) itemView.findViewById(R.id.list_translation_text_direction);
-            mTextFromView = (TextView) itemView.findViewById(R.id.list_translation_text_from);
-            mTextToView = (TextView) itemView.findViewById(R.id.list_translation_text_to);
         }
         
         public void bindTranslation(Translation translation)
@@ -187,5 +189,12 @@ public abstract class HistoryFavoriteRecycler extends Fragment
     {
         super.onDetach();
         mCallbacks = null;
+    }
+
+    @Override
+    public void onDestroyView()
+    {
+        super.onDestroyView();
+        mUnbinder.unbind();
     }
 }

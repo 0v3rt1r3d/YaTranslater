@@ -14,6 +14,8 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import ru.overtired.yatranslater.structure.Language;
 import ru.overtired.yatranslater.R;
 import ru.overtired.yatranslater.database.Data;
@@ -24,7 +26,7 @@ import ru.overtired.yatranslater.database.Data;
 
 public class LanguageChooseActivity extends AppCompatActivity
 {
-    private RecyclerView mRecyclerView;
+    @BindView(R.id.language_recycler_view) RecyclerView mRecyclerView;
     private List<Language> mListLanguages;
 
     /* EXTRA_FROM_OR_TO_LANG - это направление перевода, от него зависит заголовок активности
@@ -45,10 +47,10 @@ public class LanguageChooseActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_language_chooser);
+        ButterKnife.bind(this);
 
         /*Здесь все прозрачно, из заполняю список языков из синглетона*/
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.language_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(LanguageChooseActivity.this));
         mListLanguages = Data.get(LanguageChooseActivity.this).getLanguages();
         LanguageAdapter adapter = new LanguageAdapter(mListLanguages);
@@ -65,17 +67,17 @@ public class LanguageChooseActivity extends AppCompatActivity
         }
     }
 
-    private class LanguageHolder extends RecyclerView.ViewHolder implements View.OnClickListener
+    public class LanguageHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
         private Language mLanguage;
-        private TextView mTextView;
+        @BindView(R.id.list_language_text_view) TextView mTextView;
 
         public LanguageHolder(View itemView)
         {
             super(itemView);
-
+            ButterKnife.bind(this,itemView);
             itemView.setOnClickListener(this);
-            mTextView = (TextView) itemView.findViewById(R.id.list_language_text_view);
+
         }
 
         public void bindLanguage(Language language)
