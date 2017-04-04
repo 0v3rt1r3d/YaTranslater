@@ -5,14 +5,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 import com.roughike.bottombar.OnTabSelectListener;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.overtired.yatranslater.R;
-import ru.overtired.yatranslater.database.Data;
 import ru.overtired.yatranslater.fragments.HistoryFavoriteRecycler;
 import ru.overtired.yatranslater.fragments.MiddleFragment;
 import ru.overtired.yatranslater.fragments.TranslateFragment;
@@ -125,17 +123,18 @@ public class MainActivity extends AppCompatActivity implements HistoryFavoriteRe
     @Override
     public void setTranslation(Translation translation)
     {
-        if(!mTranslateFragment.getTranslation().equals(translation))
-        {
-
-            mTranslateFragment = TranslateFragment.newInstance(translation);
-        } else
-        {
-//            Возможно, что пользователь добавил перевод в избранное
-            mTranslateFragment.getTranslation().setFavorite(Data.get(this)
-                    .isTranslationFavorite(translation));
-            mTranslateFragment.setArguments(new Bundle());
-        }
+//        if(!mTranslateFragment.getTranslation().equals(translation))
+//        {
+//
+//            mTranslateFragment = TranslateFragment.newInstance(translation);
+//        } else
+//        {
+////            Возможно, что пользователь добавил перевод в избранное
+//            mTranslateFragment.getTranslation().setFavorite(Data.get(this)
+//                    .isTranslationFavorite(translation));
+//            mTranslateFragment.setArguments(new Bundle());
+//        }
+        mTranslateFragment = TranslateFragment.newInstance(translation);
         mBottomBar.selectTabAtPosition(0);
     }
 }

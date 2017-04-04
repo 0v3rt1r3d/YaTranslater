@@ -27,6 +27,9 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import ru.overtired.yatranslater.R;
 import ru.overtired.yatranslater.activities.LanguageChooseActivity;
 import ru.overtired.yatranslater.activities.SplashActivity;
@@ -49,15 +52,17 @@ public class TranslateFragment extends Fragment
     private static final String ARG_DICTIONARY = "arg_dictionary";
     private static final String ARG_TRANSLATION = "arg_translation";
 
+    private Unbinder mUnbinder;
+
     private Translation mTranslation;
 
     //View, показывающие языки
-    private TextView mFromLanguageTextView;
-    private TextView mToLanguageTextView;
-    private EditText mFieldToTranslate;
-    private TextView mResultTextView;
-    private ImageButton mSwapLanguagesButton;
-    private ImageButton mSaveToHistoryButton;
+    @BindView(R.id.from_language_text_view) TextView mFromLanguageTextView;
+    @BindView(R.id.to_language_text_view) TextView mToLanguageTextView;
+    @BindView(R.id.field_for_translate) EditText mFieldToTranslate;
+    @BindView(R.id.translated_text_view) TextView mResultTextView;
+    @BindView(R.id.swap_languages_button) ImageButton mSwapLanguagesButton;
+    @BindView(R.id.button_bookmark) ImageButton mSaveToHistoryButton;
 
     private AsyncTranslater mAsyncTranslater;
     private AsyncDictionary mAsyncDictionary;
@@ -66,7 +71,7 @@ public class TranslateFragment extends Fragment
     //    private ResultFragment mResultFragment;
     private Dictionary mDictionary;
 
-    private ScrollView mScrollView;
+    @BindView(R.id.translate_fragment_scroll_view) ScrollView mScrollView;
 
     public static TranslateFragment newInstance(Translation translation)
     {
@@ -97,14 +102,70 @@ public class TranslateFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
-        Log.e("Tagg", toString());
+        View view = inflater.inflate(R.layout.fragment_translate, container, false);
 
-        View v = inflater.inflate(R.layout.fragment_translate, container, false);
+        mUnbinder = ButterKnife.bind(this,view);
 
-        mScrollView = (ScrollView) v.findViewById(R.id.translate_fragment_scroll_view);
-        mFrameForDictionary = (FrameLayout) v.findViewById(R.id.translation_container);
+//        Контейнер под фрагмент нахожу отдельно, потому что ссылка него нужна после уничтожения View
+        mFrameForDictionary = (FrameLayout)view.findViewById(R.id.translation_container);
+//        Фрагмент для вывода информации, запрошенной из словаря
+//        if (mResultFragment == null)
+//        {
+//            mResultFragment = ResultFragment.newInstance();
+//        }
+//
+//        FragmentManager fm = getFragmentManager();
+//        Fragment fragment = fm.findFragmentById(R.id.translation_container);
+//        if (fragment == null)
+//        {
+//            getFragmentManager().beginTransaction()
+//                    .add(R.id.translation_container, mResultFragment)
+//                    .commit();
+//        }
 
-        mResultTextView = (TextView) v.findViewById(R.id.translated_text_view);
+//        Тут начало инициализации
+        if (savedInstanceState != null)
+        {
+            Log.e("image before restoring",mSaveToHistoryButton.getDrawable().toString());
+//            Восстановление после поворота, если фрагмент был на переднем плане
+            mTranslation = savedInstanceState.getParcelable(ARG_TRANSLATION);
+//            Если есть данные из словаря - загружаю их
+//            setVisibleDictionaryFragment((mDictionary =
+//                    savedInstanceState.getParcelable(ARG_DICTIONARY)) != null);
+        }
+        else if (getArguments().getParcelable(ARG_TRANSLATION)!= null)
+        {
+//            Инициализация при запуске из истории-избранного
+            mTranslation = getArguments().getParcelable(ARG_TRANSLATION);
+//            В случае, если перевод был передан в аргументах
+        }
+        else if(mTranslation != null)
+        {
+//            Восстановление, если фрагмент не был на переднем плане
+            setVisibleDictionaryFragment(mDictionary!=null);
+//            Т.е. не восстанавливалась после поворота
+            // TODO: 01.04.17 Возможно этот метод не нужен, можно прямо сюда его вставить
+        } else
+        {
+//            Создание с нуля, если запускается впервые
+            initializeNewTranslation();
+        }
+        updateView();
+
+        if(getArguments().getParcelable(ARG_TRANSLATION)!= null)
+        {
+            translate();
+        }
+
+
+        Log.e("image on the end",mSaveToHistoryButton.getDrawable().toString());
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState)
+    {
+        super.onViewCreated(view, savedInstanceState);
         mResultTextView.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -114,7 +175,6 @@ public class TranslateFragment extends Fragment
             }
         });
 
-        mSaveToHistoryButton = (ImageButton) v.findViewById(R.id.button_bookmark);
         mSaveToHistoryButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -133,7 +193,7 @@ public class TranslateFragment extends Fragment
                 Data.get(getActivity()).updateTranslation(mTranslation);
             }
         });
-        mFieldToTranslate = (EditText) v.findViewById(R.id.field_for_translate);
+
         mFieldToTranslate.setImeOptions(EditorInfo.IME_ACTION_DONE);
         mFieldToTranslate.setRawInputType(InputType.TYPE_CLASS_TEXT);
         mFieldToTranslate.setOnEditorActionListener(new TextView.OnEditorActionListener()
@@ -172,7 +232,6 @@ public class TranslateFragment extends Fragment
             }
         });
 
-        mFromLanguageTextView = (TextView) v.findViewById(R.id.from_language_text_view);
         mFromLanguageTextView.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -183,7 +242,6 @@ public class TranslateFragment extends Fragment
             }
         });
 
-        mToLanguageTextView = (TextView) v.findViewById(R.id.to_language_text_view);
         mToLanguageTextView.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -194,7 +252,6 @@ public class TranslateFragment extends Fragment
             }
         });
 
-        mSwapLanguagesButton = (ImageButton) v.findViewById(R.id.swap_languages_button);
         mSwapLanguagesButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -206,54 +263,6 @@ public class TranslateFragment extends Fragment
                 updateView();
             }
         });
-
-//        Фрагмент для вывода информации, запрошенной из словаря
-//        if (mResultFragment == null)
-//        {
-//            mResultFragment = ResultFragment.newInstance();
-//        }
-//
-//        FragmentManager fm = getFragmentManager();
-//        Fragment fragment = fm.findFragmentById(R.id.translation_container);
-//        if (fragment == null)
-//        {
-//            getFragmentManager().beginTransaction()
-//                    .add(R.id.translation_container, mResultFragment)
-//                    .commit();
-//        }
-
-//        Тут начало инициализации
-        if (savedInstanceState != null)
-        {
-//            Восстановление после поворота, если фрагмент был на переднем плане
-            mTranslation = savedInstanceState.getParcelable(ARG_TRANSLATION);
-//            Если есть данные из словаря - загружаю их
-            setVisibleDictionaryFragment((mDictionary =
-                    savedInstanceState.getParcelable(ARG_DICTIONARY)) != null);
-            updateView();
-        }
-        else if (getArguments().getParcelable(ARG_TRANSLATION)!= null)
-        {
-//            Инициализация при запуске из истории-избранного
-            mTranslation = getArguments().getParcelable(ARG_TRANSLATION);
-//            В случае, если перевод был передан в аргументах
-            updateView();
-            translate();
-        }
-        else if(mTranslation != null)
-        {
-//            Восстановление, если фрагмент не был на переднем плане
-            setVisibleDictionaryFragment(mDictionary!=null);
-            updateView();
-//            Т.е. не восстанавливалась после поворота
-            // TODO: 01.04.17 Возможно этот метод не нужен, можно прямо сюда его вставить
-        } else
-        {
-//            Создание с нуля, если запускается впервые
-            initializeNewTranslation();
-        }
-        updateView();
-        return v;
     }
 
     //    AsynkTask для для перевода текста
@@ -381,7 +390,14 @@ public class TranslateFragment extends Fragment
         mFromLanguageTextView.setText(getFullNameByShortName(mTranslation.getLangFrom()));
         mFieldToTranslate.setText(mTranslation.getTextFrom());
         mResultTextView.setText(mTranslation.getTextTo());
-        setBookmarkIcon(mTranslation.isFavorite());
+        if (mTranslation.isFavorite())
+        {
+            mSaveToHistoryButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
+        }
+        else
+        {
+            mSaveToHistoryButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_not_favorite));
+        }
     }
 
     public void setState(Bundle bundle)
@@ -492,6 +508,13 @@ public class TranslateFragment extends Fragment
         super.onDestroy();
     }
 
+    @Override
+    public void onDestroyView()
+    {
+        super.onDestroyView();
+        mUnbinder.unbind();
+    }
+
     private void initializeNewTranslation()
     {
         if (mTranslation == null)
@@ -506,25 +529,6 @@ public class TranslateFragment extends Fragment
                     false,
                     false);
         }
-    }
-
-    private void setBookmarkIcon(boolean set)
-    {
-        if (set)
-        {
-            mSaveToHistoryButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
-        }
-        else
-        {
-            mSaveToHistoryButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_not_favorite));
-        }
-    }
-
-    public void setTranslation(Translation translation)
-    {
-        mTranslation = translation;
-        updateView();
-        translate();
     }
 
     public Translation getTranslation()
