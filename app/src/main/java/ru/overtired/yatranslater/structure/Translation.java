@@ -87,11 +87,15 @@ public class Translation implements Parcelable
     }
 
 
-    public void swapLangs()
+    public void swapDirection()
     {
         String temp = mLangFrom;
         mLangFrom = mLangTo;
         mLangTo = temp;
+
+        temp = mTextFrom;
+        mTextFrom = mTextTo;
+        mTextTo = temp;
     }
 
 //    Getters-setter

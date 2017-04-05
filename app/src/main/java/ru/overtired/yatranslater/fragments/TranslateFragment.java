@@ -205,10 +205,25 @@ public class TranslateFragment extends Fragment implements ResultFragment.Callba
             @Override
             public void onClick(View v)
             {
-                String temp = mTranslation.getLangFrom();
-                mTranslation.setLangFrom(mTranslation.getLangTo());
-                mTranslation.setLangTo(temp);
+                if(mFieldToTranslate.getText().toString().equals(""))
+                {
+                    mTranslation = new Translation(
+                            mTranslation.getLangFrom(),
+                            mTranslation.getLangTo(),
+                            "",
+                            "",
+                            false,
+                            false,
+                            false
+                            );
+                }
+                mTranslation.swapDirection();
                 updateView();
+                if(!mTranslation.getTextTo().equals(""))
+                {
+                    translate();
+                }
+
             }
         });
     }
@@ -216,8 +231,8 @@ public class TranslateFragment extends Fragment implements ResultFragment.Callba
     @Override
     public void translateNewWord(String text)
     {
+        mTranslation.swapDirection();
         mTranslation.setTextFrom(text);
-        mTranslation.swapLangs();
         updateView();
         translate();
     }
@@ -264,6 +279,8 @@ public class TranslateFragment extends Fragment implements ResultFragment.Callba
                 mTranslation.setTextTo(dictionary.getTranslations().get(0).getText());
                 mTranslation.setInDictionary(true);
                 mTranslation.setInHistory(true);
+
+                Data.get(getActivity()).putInCache(mTranslation,mDictionary);
 
                 Data.get(getActivity()).addTranslation(mTranslation);
                 updateView();
@@ -381,7 +398,20 @@ public class TranslateFragment extends Fragment implements ResultFragment.Callba
                     mTranslation = temp;
                     updateView();
                 }
-                if (SplashActivity.hasInternetConnection(getActivity()))
+                Dictionary dic = Data.get(getActivity()).getFromCache(mTranslation);
+                if(dic!=null)
+                {
+                    mDictionary=dic;
+
+                    mTranslation.setTextTo(dic.getTranslations().get(0).getText());
+                    mTranslation.setInDictionary(true);
+                    mTranslation.setInHistory(true);
+
+                    Data.get(getActivity()).addTranslation(mTranslation);
+                    updateView();
+
+                    setVisibleDictionaryFragment(true);
+                } else if (SplashActivity.hasInternetConnection(getActivity()))
                 {
 //                    Загрузка данных
                     if (mAsyncDictionary != null)

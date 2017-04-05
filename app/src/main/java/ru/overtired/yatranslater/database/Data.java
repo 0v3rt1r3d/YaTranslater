@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+import android.util.LruCache;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ import ru.overtired.yatranslater.structure.Translation;
 import ru.overtired.yatranslater.database.DataBaseScheme.DirectionsTable;
 import ru.overtired.yatranslater.database.DataBaseScheme.HistoryTable;
 import ru.overtired.yatranslater.database.DataBaseScheme.LanguagesTable;
+import ru.overtired.yatranslater.structure.dictionary.Dictionary;
 
 //Этот класс - синглетон. Нужен для общего доступа к языкам и истории перевода из разных фрагментов
 
@@ -22,6 +24,8 @@ public class Data
 {
     private Context mContext;
     private SQLiteDatabase mDatabase;
+    private LruCache<String,Dictionary> mCache;
+    int mCacheSize = 10*1024*1024; // 10 мб
 
     private static Data sData;
 
@@ -38,6 +42,18 @@ public class Data
     {
         mContext = context.getApplicationContext();
         mDatabase = new DataBaseHelper(mContext).getWritableDatabase();
+        mCache = new LruCache<>(mCacheSize);
+    }
+
+    public void putInCache(Translation translation,Dictionary dictionary)
+    {
+        mCache.put(translation.getLangFrom()+translation.getLangTo()+translation.getTextFrom(),
+                dictionary);
+    }
+
+    public Dictionary getFromCache(Translation translation)
+    {
+        return mCache.get(translation.getLangFrom()+translation.getLangTo()+translation.getTextFrom());
     }
 
     public List<Language> getLanguages()
