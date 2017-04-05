@@ -101,6 +101,4 @@ public class Translation implements Parcelable
     {
         mMeans.add(mean);
     }
-
-
 }

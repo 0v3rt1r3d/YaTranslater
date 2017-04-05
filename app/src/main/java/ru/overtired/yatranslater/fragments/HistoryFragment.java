@@ -59,7 +59,7 @@ public class HistoryFragment extends HistoryFavoriteRecycler
                 {
                     mIsSearchActivated = true;
                 }
-                mRecyclerView.setAdapter(new HistoryFavoriteAdapter(getTranslations()));
+                updateRecycler();
             }
 
             @Override

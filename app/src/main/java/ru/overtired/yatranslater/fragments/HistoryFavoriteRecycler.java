@@ -6,8 +6,11 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.util.DiffUtil;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SimpleItemAnimator;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -132,7 +135,7 @@ public abstract class HistoryFavoriteRecycler extends Fragment
                         public void onClick(DialogInterface dialog, int which)
                         {
                             removeTranslation(mTranslation);
-                            mRecyclerView.setAdapter(new HistoryFavoriteAdapter(getTranslations()));
+                            updateRecycler();
                             updateOtherRecycler();
                         }
                     })
@@ -171,13 +174,25 @@ public abstract class HistoryFavoriteRecycler extends Fragment
         {
             return mTranslations.size();
         }
+
+        public void updateTranslationsList()
+        {
+            final TranslationsDiffCallback diffCallback =
+                    new TranslationsDiffCallback(mTranslations,getTranslations());
+            final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
+            this.mTranslations.clear();
+            this.mTranslations.addAll(getTranslations());
+            diffResult.dispatchUpdatesTo(this);
+
+        }
     }
 
     abstract protected List<Translation> getTranslations();
 
     public void updateRecycler()
     {
-        mRecyclerView.setAdapter(new HistoryFavoriteAdapter(getTranslations()));
+//        mRecyclerView.setAdapter(new HistoryFavoriteAdapter(getTranslations()));
+        ((HistoryFavoriteAdapter)mRecyclerView.getAdapter()).updateTranslationsList();
     }
 
     abstract protected void updateOtherRecycler();

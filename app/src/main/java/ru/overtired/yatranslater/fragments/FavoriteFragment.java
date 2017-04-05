@@ -56,7 +56,7 @@ public class FavoriteFragment extends HistoryFavoriteRecycler
                 {
                     mIsSearchActivated = true;
                 }
-                mRecyclerView.setAdapter(new HistoryFavoriteAdapter(getTranslations()));
+                updateRecycler();
             }
 
             @Override
