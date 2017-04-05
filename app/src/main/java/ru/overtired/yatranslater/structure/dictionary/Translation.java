@@ -57,6 +57,7 @@ public class Translation implements Parcelable
         source.readTypedList(mExamples,Example.CREATOR);
     }
 
+
     public String getText()
     {
         return mText;

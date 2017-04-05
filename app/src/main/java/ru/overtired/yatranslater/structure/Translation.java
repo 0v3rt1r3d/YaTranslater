@@ -86,6 +86,14 @@ public class Translation implements Parcelable
                 mLangTo.equals(translation.getLangTo()));
     }
 
+
+    public void swapLangs()
+    {
+        String temp = mLangFrom;
+        mLangFrom = mLangTo;
+        mLangTo = temp;
+    }
+
 //    Getters-setter
 
     public boolean isFavorite()

@@ -40,7 +40,7 @@ import ru.overtired.yatranslater.structure.dictionary.Dictionary;
  * Created by overtired on 14.03.17.
  */
 
-public class TranslateFragment extends Fragment
+public class TranslateFragment extends Fragment implements ResultFragment.Callback
 {
     public final static int REQUEST_LANG_FROM = 0;
     public final static int REQUEST_LANG_TO = 1;
@@ -209,6 +209,15 @@ public class TranslateFragment extends Fragment
                 updateView();
             }
         });
+    }
+
+    @Override
+    public void translateNewWord(String text)
+    {
+        mTranslation.setTextFrom(text);
+        mTranslation.swapLangs();
+        updateView();
+        translate();
     }
 
     //    Классы для перевода текста из переводчика и словаря

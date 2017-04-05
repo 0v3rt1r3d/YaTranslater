@@ -27,8 +27,8 @@ public class MainActivity extends AppCompatActivity implements HistoryFavoriteRe
 //    Если перед пересозданием активности был активен TranslateFragment - просто восстановлю ссылку
     private static final String STATE_IS_TRANSLATE_FRAGMENT_ACTIVE = "is_translate_fragment_active";
 
-    private static final String TAG_TRANSLATE_FRAGMENT = "tag_translate_fragment";
-    private static final String TAG_MIDDLE_FRAGMENT = "tag_middle_fragment";
+    public static final String TAG_TRANSLATE_FRAGMENT = "tag_translate_fragment";
+    public static final String TAG_MIDDLE_FRAGMENT = "tag_middle_fragment";
 
     private TranslateFragment mTranslateFragment;
     private MiddleFragment mMiddleFragment;

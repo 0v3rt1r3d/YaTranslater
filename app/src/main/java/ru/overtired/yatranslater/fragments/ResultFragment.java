@@ -1,5 +1,6 @@
 package ru.overtired.yatranslater.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -20,11 +21,18 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import ru.overtired.yatranslater.R;
+import ru.overtired.yatranslater.activities.MainActivity;
 import ru.overtired.yatranslater.structure.dictionary.Dictionary;
 
 public class ResultFragment extends Fragment
 {
+    interface Callback
+    {
+        void translateNewWord(String text);
+    }
+
     private Unbinder mUnbinder;
+    private Callback mCallback;
 
     private static final String ARG_DICTIONARY = "arg_dictionary";
 
@@ -67,7 +75,7 @@ public class ResultFragment extends Fragment
         return fragment;
     }
 
-    public class DicHolder extends RecyclerView.ViewHolder
+    public class DicHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
         private ru.overtired.yatranslater.structure.dictionary.Translation mTranslation;
 
@@ -103,6 +111,7 @@ public class ResultFragment extends Fragment
             TextView textView = new TextView(getActivity());
             textView.setLayoutParams(params);
             textView.setText(mTranslation.getText());
+            textView.setOnClickListener(this);
             setTextViewSynonymStyle(textView);
 
             mFlexSynonyms.addView(textView);
@@ -120,6 +129,7 @@ public class ResultFragment extends Fragment
                 for(int i=0;i<translation.getSynonyms().size();i++)
                 {
                     textView = new TextView(getActivity());
+                    textView.setOnClickListener(this);
                     textView.setLayoutParams(params);
                     textView.setText(translation.getSynonyms().get(i));
                     setTextViewSynonymStyle(textView);
@@ -171,6 +181,13 @@ public class ResultFragment extends Fragment
                     mFlexExamples.addView(textView);
                 }
             }
+        }
+
+        @Override
+        public void onClick(View v)
+        {
+            TextView textView = (TextView)v;
+            mCallback.translateNewWord(textView.getText().toString());
         }
     }
 
@@ -246,5 +263,19 @@ public class ResultFragment extends Fragment
     {
         textView.setTextSize(TypedValue.COMPLEX_UNIT_SP,18);
         textView.setTextColor(getResources().getColor(R.color.colorGrey));
+    }
+
+    @Override
+    public void onAttach(Context context)
+    {
+        super.onAttach(context);
+        mCallback = (Callback)getFragmentManager().findFragmentByTag(MainActivity.TAG_TRANSLATE_FRAGMENT);
+    }
+
+    @Override
+    public void onDetach()
+    {
+        super.onDetach();
+        mCallback = null;
     }
 }
