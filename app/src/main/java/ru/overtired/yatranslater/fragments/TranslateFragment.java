@@ -27,6 +27,7 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 import ru.overtired.yatranslater.R;
 import ru.overtired.yatranslater.activities.LanguageChooseActivity;
 import ru.overtired.yatranslater.activities.SplashActivity;
@@ -67,6 +68,10 @@ public class TranslateFragment extends Fragment implements ResultFragment.Callba
     ImageButton mSaveToFavoritesButton;
     @BindView(R.id.translate_fragment_scroll_view)
     ScrollView mScrollView;
+    @BindView(R.id.button_clear)
+    ImageButton mButtonClear;
+    @BindView(R.id.progressbar)
+    MaterialProgressBar mProgressBar;
 
     private AsyncTranslater mAsyncTranslater;
     private AsyncDictionary mAsyncDictionary;
@@ -134,6 +139,7 @@ public class TranslateFragment extends Fragment implements ResultFragment.Callba
 //            Создание с нуля, если запускается впервые
             initializeNewTranslation();
             updateView();
+            showKeyboard();
         }
 
         return view;
@@ -226,6 +232,16 @@ public class TranslateFragment extends Fragment implements ResultFragment.Callba
 
             }
         });
+
+        mButtonClear.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                mFieldToTranslate.setText("");
+                showKeyboard();
+            }
+        });
     }
 
     @Override
@@ -257,6 +273,7 @@ public class TranslateFragment extends Fragment implements ResultFragment.Callba
             setVisibleDictionaryFragment(false);
             Data.get(getActivity()).addTranslation(mTranslation);
             mResultTextView.setText(mTranslation.getTextTo());
+            mProgressBar.setVisibility(View.GONE);
         }
     }
 
@@ -284,6 +301,8 @@ public class TranslateFragment extends Fragment implements ResultFragment.Callba
 
                 Data.get(getActivity()).addTranslation(mTranslation);
                 updateView();
+
+                mProgressBar.setVisibility(View.GONE);
 
                 setVisibleDictionaryFragment(true);
             }
@@ -338,6 +357,7 @@ public class TranslateFragment extends Fragment implements ResultFragment.Callba
         mFromLanguageTextView.setText(Data.get(getActivity())
                 .getFullLanguageByShort(mTranslation.getLangFrom()));
         mFieldToTranslate.setText(mTranslation.getTextFrom());
+        mFieldToTranslate.setSelection(mFieldToTranslate.getText().length());
         mResultTextView.setText(mTranslation.getTextTo());
 
         if (mTranslation.isFavorite())
@@ -377,6 +397,10 @@ public class TranslateFragment extends Fragment implements ResultFragment.Callba
 
     private void translate()
     {
+        if(mFieldToTranslate.getText().toString().equals(""))
+        {
+            return;
+        }
         if (Data.get(getActivity()).hasDirection(mTranslation.getLangFrom() + "-" + mTranslation.getLangTo()))
         {
             mTranslation.setFavorite(false);
@@ -413,6 +437,7 @@ public class TranslateFragment extends Fragment implements ResultFragment.Callba
                     setVisibleDictionaryFragment(true);
                 } else if (SplashActivity.hasInternetConnection(getActivity()))
                 {
+                    mProgressBar.setVisibility(View.VISIBLE);
 //                    Загрузка данных
                     if (mAsyncDictionary != null)
                     {
@@ -504,5 +529,20 @@ public class TranslateFragment extends Fragment implements ResultFragment.Callba
         {
             mAsyncTranslater.cancel(true);
         }
+    }
+
+    private void showKeyboard()
+    {
+        mFieldToTranslate.requestFocus();
+        mFieldToTranslate.postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                // TODO Auto-generated method stub
+                InputMethodManager keyboard = (InputMethodManager)getActivity().
+                        getSystemService(Context.INPUT_METHOD_SERVICE);
+                keyboard.showSoftInput(mFieldToTranslate, 0);
+            }
+        },200);
     }
 }
