@@ -12,6 +12,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 
+import com.facebook.stetho.Stetho;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -36,6 +38,7 @@ public class SplashActivity extends AppCompatActivity
     protected void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        Stetho.initializeWithDefaults(getApplication());
         final Context context = SplashActivity.this;
 
         boolean isFirstStart = PreferenceManager.getDefaultSharedPreferences(context)

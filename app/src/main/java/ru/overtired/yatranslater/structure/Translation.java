@@ -10,7 +10,6 @@ import java.util.UUID;
 
 public class Translation implements Parcelable
 {
-    private UUID mId;
     private boolean mIsFavorite;
     private boolean mInHistory;
     private boolean mIsInDictionary;
@@ -44,7 +43,6 @@ public class Translation implements Parcelable
     @Override
     public void writeToParcel(Parcel dest, int flags)
     {
-        dest.writeString(mId.toString());
         dest.writeBooleanArray(new boolean[]{mIsFavorite,mInHistory});
         dest.writeString(mLangFrom);
         dest.writeString(mLangTo);
@@ -54,7 +52,6 @@ public class Translation implements Parcelable
 
     private Translation(Parcel source)
     {
-        mId = UUID.fromString(source.readString());
         boolean arr[] = new boolean[]{};
         source.readBooleanArray(arr);
         mIsFavorite = arr[0];
@@ -69,7 +66,6 @@ public class Translation implements Parcelable
                        String langTo,
                        String textFrom,
                        String textTo,
-                       String uuid,
                        boolean isFavorite,
                        boolean inHistory,
                        boolean isInDictionary)
@@ -79,25 +75,6 @@ public class Translation implements Parcelable
         mTextFrom = textFrom;
         mTextTo = textTo;
         mIsFavorite = isFavorite;
-        mId = UUID.fromString(uuid);
-        mInHistory = inHistory;
-        mIsInDictionary = isInDictionary;
-    }
-
-    public Translation(String langFrom,
-                       String langTo,
-                       String textFrom,
-                       String textTo,
-                       boolean isFavorite,
-                       boolean inHistory,
-                       boolean isInDictionary)
-    {
-        mLangFrom = langFrom;
-        mLangTo = langTo;
-        mTextFrom = textFrom;
-        mTextTo = textTo;
-        mIsFavorite = isFavorite;
-        mId = UUID.randomUUID();
         mInHistory = inHistory;
         mIsInDictionary = isInDictionary;
     }
@@ -110,11 +87,6 @@ public class Translation implements Parcelable
     }
 
 //    Getters-setter
-
-    public UUID getId()
-    {
-        return mId;
-    }
 
     public boolean isFavorite()
     {

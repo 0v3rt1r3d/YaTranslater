@@ -18,7 +18,6 @@ public class TranslationCursorWrapper extends CursorWrapper
 
     public Translation getTranslation()
     {
-        String uuid = getString(getColumnIndex(DataBaseScheme.HistoryTable.Cols.UUID));
         String shortFrom = getString(getColumnIndex(DataBaseScheme.HistoryTable.Cols.LANG_FROM));
         String shortTo = getString(getColumnIndex(DataBaseScheme.HistoryTable.Cols.LANG_TO));
         String wordFrom = getString(getColumnIndex(DataBaseScheme.HistoryTable.Cols.TEXT_FROM));
@@ -27,6 +26,6 @@ public class TranslationCursorWrapper extends CursorWrapper
         boolean inHistory = getInt(getColumnIndex(DataBaseScheme.HistoryTable.Cols.IS_IN_HISTORY))!=0;
         boolean inDictionary = getInt(getColumnIndex(DataBaseScheme.HistoryTable.Cols.IS_IN_DICTIONARY))!=0;
 
-        return new Translation(shortFrom,shortTo,wordFrom,wordTo,uuid,isFavorite,inHistory,inDictionary);
+        return new Translation(shortFrom,shortTo,wordFrom,wordTo,isFavorite,inHistory,inDictionary);
     }
 }

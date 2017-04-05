@@ -28,9 +28,7 @@ public class FavoriteFragment extends HistoryFavoriteRecycler
 
     public static FavoriteFragment newInstance()
     {
-//        Bundle args = new Bundle();
         FavoriteFragment fragment = new FavoriteFragment();
-//        fragment.setArguments(args);
         return fragment;
     }
 

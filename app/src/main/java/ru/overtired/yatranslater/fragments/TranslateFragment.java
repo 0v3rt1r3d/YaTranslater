@@ -253,6 +253,7 @@ public class TranslateFragment extends Fragment
                 mTranslation.setTextTo(dictionary.getTranslations().get(0).getText());
                 mTranslation.setInDictionary(true);
                 mTranslation.setInHistory(true);
+
                 Data.get(getActivity()).addTranslation(mTranslation);
                 updateView();
 
@@ -350,7 +351,10 @@ public class TranslateFragment extends Fragment
     {
         if (Data.get(getActivity()).hasDirection(mTranslation.getLangFrom() + "-" + mTranslation.getLangTo()))
         {
+            mTranslation.setFavorite(false);
             mTranslation.setTextFrom(mFieldToTranslate.getText().toString());
+            updateView();
+
             Translation temp = Data.get(getActivity()).getTranslation(mTranslation);
             if (temp != null && !temp.isInDictionary())
             {
@@ -384,7 +388,6 @@ public class TranslateFragment extends Fragment
             }
             // TODO: 04.04.17 анимация загрузки
             hideKeyboard();
-
         }
         else
         {

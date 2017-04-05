@@ -176,7 +176,6 @@ public class Data
     {
         ContentValues values = new ContentValues();
 
-        values.put(HistoryTable.Cols.UUID, translation.getId().toString());
         values.put(HistoryTable.Cols.LANG_FROM, translation.getLangFrom());
         values.put(HistoryTable.Cols.LANG_TO, translation.getLangTo());
         values.put(HistoryTable.Cols.TEXT_FROM, translation.getTextFrom());
@@ -203,16 +202,16 @@ public class Data
         values.put(HistoryTable.Cols.IS_IN_HISTORY, 0);
         mDatabase.update(HistoryTable.NAME, values,
                 HistoryTable.Cols.IS_IN_HISTORY + "=1 and " +
-                        HistoryTable.Cols.LANG_FROM + "=\"" + translation.getLangFrom() + "\" and " +
-                        HistoryTable.Cols.LANG_TO + "=\"" + translation.getLangTo() + "\" and " +
-                        HistoryTable.Cols.TEXT_FROM + "=\"" + translation.getTextFrom() + "\""
+                        HistoryTable.Cols.LANG_FROM + "=\'" + translation.getLangFrom() + "\' and " +
+                        HistoryTable.Cols.LANG_TO + "=\'" + translation.getLangTo() + "\' and " +
+                        HistoryTable.Cols.TEXT_FROM + "=\'" + translation.getTextFrom() + "\'"
                 , null);
         mDatabase.delete(HistoryTable.NAME,
                 HistoryTable.Cols.IS_IN_HISTORY + "=0 and " +
-                        HistoryTable.Cols.IS_FAVORITE+"=0 and "+
-                        HistoryTable.Cols.LANG_FROM + "=\"" + translation.getLangFrom() + "\" and " +
-                        HistoryTable.Cols.LANG_TO + "=\"" + translation.getLangTo() + "\" and " +
-                        HistoryTable.Cols.TEXT_FROM + "=\"" + translation.getTextFrom() + "\""
+                        HistoryTable.Cols.IS_FAVORITE + "=0 and " +
+                        HistoryTable.Cols.LANG_FROM + "=\'" + translation.getLangFrom() + "\' and " +
+                        HistoryTable.Cols.LANG_TO + "=\'" + translation.getLangTo() + "\' and " +
+                        HistoryTable.Cols.TEXT_FROM + "=\'" + translation.getTextFrom() + "\'"
                 , null);
     }
 
@@ -222,25 +221,25 @@ public class Data
         values.put(HistoryTable.Cols.IS_FAVORITE, 0);
         mDatabase.update(HistoryTable.NAME, values,
                 HistoryTable.Cols.IS_FAVORITE + "=1 and " +
-                        HistoryTable.Cols.LANG_FROM + "=\"" + translation.getLangFrom() + "\" and " +
-                        HistoryTable.Cols.LANG_TO + "=\"" + translation.getLangTo() + "\" and " +
-                        HistoryTable.Cols.TEXT_FROM + "=\"" + translation.getTextFrom() + "\""
+                        HistoryTable.Cols.LANG_FROM + "=\'" + translation.getLangFrom() + "\' and " +
+                        HistoryTable.Cols.LANG_TO + "=\'" + translation.getLangTo() + "\' and " +
+                        HistoryTable.Cols.TEXT_FROM + "=\'" + translation.getTextFrom() + "\'"
                 , null);
         mDatabase.delete(HistoryTable.NAME,
                 HistoryTable.Cols.IS_IN_HISTORY + "=0 and " +
-                        HistoryTable.Cols.IS_FAVORITE+"=0 and "+
-                        HistoryTable.Cols.LANG_FROM + "=\"" + translation.getLangFrom() + "\" and " +
-                        HistoryTable.Cols.LANG_TO + "=\"" + translation.getLangTo() + "\" and " +
-                        HistoryTable.Cols.TEXT_FROM + "=\"" + translation.getTextFrom() + "\""
+                        HistoryTable.Cols.IS_FAVORITE + "=0 and " +
+                        HistoryTable.Cols.LANG_FROM + "=\'" + translation.getLangFrom() + "\' and " +
+                        HistoryTable.Cols.LANG_TO + "=\'" + translation.getLangTo() + "\' and " +
+                        HistoryTable.Cols.TEXT_FROM + "=\'" + translation.getTextFrom() + "'"
                 , null);
     }
 
     public void removeTranslation(Translation translation)
     {
         mDatabase.delete(HistoryTable.NAME,
-                HistoryTable.Cols.LANG_FROM + "=\"" + translation.getLangFrom() + "\" and " +
-                        HistoryTable.Cols.LANG_TO + "=\"" + translation.getLangTo() + "\" and " +
-                        HistoryTable.Cols.TEXT_FROM + "=\"" + translation.getTextFrom() + "\""
+                HistoryTable.Cols.LANG_FROM + "=\'" + translation.getLangFrom() + "\' and " +
+                        HistoryTable.Cols.LANG_TO + "=\'" + translation.getLangTo() + "\' and " +
+                        HistoryTable.Cols.TEXT_FROM + "=\'" + translation.getTextFrom() + "\'"
                 , null);
     }
 
@@ -304,7 +303,7 @@ public class Data
                 null,
                 null);
 
-        if(cursor.getCount()==0)
+        if (cursor.getCount() == 0)
         {
             return null;
         }
@@ -316,7 +315,8 @@ public class Data
             {
                 directions.add(cursor.getString(cursor.getColumnIndex(DirectionsTable.Cols.DIRECTION)));
             }
-        }finally
+        }
+        finally
         {
             cursor.close();
         }
@@ -326,16 +326,20 @@ public class Data
     public void updateTranslation(Translation translation)
     {
         ContentValues values = getTranslationContentValues(translation);
-        mDatabase.update(HistoryTable.NAME, values, HistoryTable.Cols.UUID + "=\"" + translation.getId().toString() + "\"", null);
+        mDatabase.update(HistoryTable.NAME, values,
+                HistoryTable.Cols.LANG_FROM + "=\'" + translation.getLangFrom() + "\' and " +
+                        HistoryTable.Cols.LANG_TO + "=\'" + translation.getLangTo() + "\' and " +
+                        HistoryTable.Cols.TEXT_FROM + "=\'" + translation.getTextFrom() + "\'"
+                , null);
     }
 
     public Translation getTranslation(Translation translation)
     {
         TranslationCursorWrapper cursorWrapper =
-                queryHistory(HistoryTable.Cols.TEXT_FROM + "=\"" + translation.getTextFrom() + "\" and " +
-                        HistoryTable.Cols.LANG_FROM + "=\"" + translation.getLangFrom() + "\" and " +
-                        HistoryTable.Cols.LANG_TO + "=\"" + translation.getLangTo() + "\"");
-        if(cursorWrapper.getCount()==0)
+                queryHistory(HistoryTable.Cols.TEXT_FROM + "=\'" + translation.getTextFrom() + "\' and " +
+                        HistoryTable.Cols.LANG_FROM + "=\'" + translation.getLangFrom() + "\' and " +
+                        HistoryTable.Cols.LANG_TO + "=\'" + translation.getLangTo() + "\'");
+        if (cursorWrapper.getCount() == 0)
         {
             return null;
         }
@@ -346,9 +350,9 @@ public class Data
     public boolean hasTranslation(Translation translation)
     {
         TranslationCursorWrapper cursorWrapper =
-                queryHistory(HistoryTable.Cols.TEXT_FROM + "=\"" + translation.getTextFrom() + "\" and " +
-                        HistoryTable.Cols.LANG_FROM + "=\"" + translation.getLangFrom() + "\" and " +
-                        HistoryTable.Cols.LANG_TO + "=\"" + translation.getLangTo() + "\"");
+                queryHistory(HistoryTable.Cols.TEXT_FROM + "=\'" + translation.getTextFrom() + "\' and " +
+                        HistoryTable.Cols.LANG_FROM + "=\'" + translation.getLangFrom() + "\' and " +
+                        HistoryTable.Cols.LANG_TO + "=\'" + translation.getLangTo() + "\'");
         return cursorWrapper.getCount() > 0;
     }
 
@@ -358,8 +362,8 @@ public class Data
 
         TranslationCursorWrapper cursorWrapper =
                 queryHistory(HistoryTable.Cols.IS_IN_HISTORY + "=1 and (" +
-                        HistoryTable.Cols.TEXT_FROM + " like \"%" + text + "%\" or " +
-                        HistoryTable.Cols.TEXT_TO + " like\"%" + text + "%\")");
+                        HistoryTable.Cols.TEXT_FROM + " like \'%" + text + "%\' or " +
+                        HistoryTable.Cols.TEXT_TO + " like\'%" + text + "%\')");
 
         try
         {
@@ -384,8 +388,8 @@ public class Data
 
         TranslationCursorWrapper cursorWrapper =
                 queryHistory(HistoryTable.Cols.IS_FAVORITE + "=1 and (" +
-                        HistoryTable.Cols.TEXT_FROM + " like \"%" + text + "%\" or " +
-                        HistoryTable.Cols.TEXT_TO + " like\"%" + text + "%\")");
+                        HistoryTable.Cols.TEXT_FROM + " like \'%" + text + "%\' or " +
+                        HistoryTable.Cols.TEXT_TO + " like\'%" + text + "%\')");
 
         try
         {
@@ -412,14 +416,14 @@ public class Data
 
     public boolean isTranslationFavorite(Translation translation)
     {
-        if(!hasTranslation(translation))
+        if (!hasTranslation(translation))
         {
             return false;
         }
         TranslationCursorWrapper cursor = queryHistory(
-                HistoryTable.Cols.LANG_FROM+"=\""+translation.getLangFrom()+"\" and "+
-        HistoryTable.Cols.LANG_TO+"=\""+translation.getLangTo()+"\" and "+
-        HistoryTable.Cols.TEXT_FROM+"=\""+translation.getTextFrom()+"\"");
+                HistoryTable.Cols.LANG_FROM + "=\'" + translation.getLangFrom() + "\' and " +
+                        HistoryTable.Cols.LANG_TO + "=\'" + translation.getLangTo() + "\' and " +
+                        HistoryTable.Cols.TEXT_FROM + "=\'" + translation.getTextFrom() + "\'");
 
         cursor.moveToFirst();
         return cursor.getTranslation().isFavorite();

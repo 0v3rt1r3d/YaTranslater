@@ -23,7 +23,6 @@ public class DataBaseScheme
 
         public static final class Cols
         {
-            public static final String UUID = "uuid";
             public static final String LANG_FROM = "lang_from";
             public static final String LANG_TO = "lang_to";
             public static final String TEXT_FROM = "text_from";
