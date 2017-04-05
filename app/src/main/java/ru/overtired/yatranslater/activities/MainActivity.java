@@ -123,16 +123,7 @@ public class MainActivity extends AppCompatActivity implements HistoryFavoriteRe
     @Override
     public void setTranslation(Translation translation)
     {
-//        if(!mTranslateFragment.getTranslation().equals(translation))
-//        {
-//            mTranslateFragment = TranslateFragment.newInstance(translation);
-//        } else
-//        {
-////            Возможно, что пользователь добавил перевод в избранное
-//            mTranslateFragment.getTranslation().setFavorite(Data.get(this)
-//                    .isTranslationFavorite(translation));
-//            mTranslateFragment.setArguments(new Bundle());
-//        }
+
         mTranslateFragment = TranslateFragment.newInstance(translation);
         mBottomBar.selectTabAtPosition(0);
     }

@@ -111,7 +111,8 @@ public class TranslateFragment extends Fragment implements ResultFragment.Callba
             setVisibleDictionaryFragment((mDictionary =
                     savedInstanceState.getParcelable(ARG_DICTIONARY)) != null);
         }
-        else if (getArguments() != null && getArguments().getParcelable(ARG_TRANSLATION) != null)
+        else if (getArguments() != null && getArguments().getParcelable(ARG_TRANSLATION) != null &&
+                mTranslation == null)
         {
 //            Инициализация при запуске из истории-избранного
             mTranslation = getArguments().getParcelable(ARG_TRANSLATION);
@@ -123,6 +124,7 @@ public class TranslateFragment extends Fragment implements ResultFragment.Callba
         {
 //            Восстановление, если фрагмент не был на переднем плане
             setVisibleDictionaryFragment(mDictionary != null);
+            mTranslation.setFavorite(Data.get(getActivity()).isTranslationFavorite(mTranslation));
             updateView();
 //            Т.е. не восстанавливалась после поворота
             // TODO: 01.04.17 Возможно этот метод не нужен, можно прямо сюда его вставить
