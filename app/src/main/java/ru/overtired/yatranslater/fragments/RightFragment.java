@@ -8,6 +8,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -26,24 +27,28 @@ import ru.overtired.yatranslater.database.Singleton;
 
 public class RightFragment extends Fragment
 {
-    private Unbinder mUnbinder;
+    private static final String ARG_HISTORY_PAGE_ACTIVE = "arg_page";
 
-    public static final String TAG = "RightFragment";
-    private static final String ARG_PAGE = "arg_page";
+    private Unbinder mUnbinder;
 
     private HistoryFragment mHistoryFragment;
     private FavoritesFragment mFavoritesFragment;
 
-    @BindView(R.id.fragment_right_button_clear) ImageButton mClearHistoryButton;
+    @BindView(R.id.fragment_right_button_clear)
+    ImageButton mClearHistoryButton;
 
-    @BindView(R.id.fragment_right_view_pager) ViewPager mViewPager;
-    @BindView(R.id.fragment_right_tab_layout) TabLayout mTabLayout;
+    @BindView(R.id.fragment_right_view_pager)
+    ViewPager mViewPager;
+    @BindView(R.id.fragment_right_tab_layout)
+    TabLayout mTabLayout;
 
-    public static RightFragment newInstance()
+    public static RightFragment newInstance(boolean historyPageActive)
     {
-//        Bundle args = new Bundle();
-        return new RightFragment();
-//        fragment.setArguments(args);
+        Bundle args = new Bundle();
+        args.putBoolean(ARG_HISTORY_PAGE_ACTIVE,historyPageActive);
+        RightFragment fragment = new RightFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Nullable
@@ -51,13 +56,20 @@ public class RightFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
         View view = inflater.inflate(R.layout.fragment_right, container, false);
-        mUnbinder = ButterKnife.bind(this,view);
+        mUnbinder = ButterKnife.bind(this, view);
 
         mHistoryFragment = HistoryFragment.newInstance();
         mFavoritesFragment = FavoritesFragment.newInstance();
 
         mViewPager.setAdapter(new TabbedFragmentPagerAdapter(getActivity(),
                 getChildFragmentManager()));
+        if(getArguments().getBoolean(ARG_HISTORY_PAGE_ACTIVE))
+        {
+            mViewPager.setCurrentItem(0);
+        }else
+        {
+            mViewPager.setCurrentItem(1);
+        }
 
         mTabLayout.setupWithViewPager(mViewPager);
 
@@ -66,9 +78,9 @@ public class RightFragment extends Fragment
             @Override
             public void onClick(View v)
             {
-                if(mViewPager.getCurrentItem()==0)
+                if (mViewPager.getCurrentItem() == 0)
                 {
-                    if(!mHistoryFragment.isRecyclerEmpty())
+                    if (!mHistoryFragment.isRecyclerEmpty())
                     {
                         new AlertDialog.Builder(getActivity())
                                 .setMessage(R.string.dialog_delete_history)
@@ -81,20 +93,22 @@ public class RightFragment extends Fragment
                                                 Singleton.get(getActivity()).clearHistory();
                                                 updateFavoriteRecyclerView();
                                                 updateHistoryRecyclerView();
-                                                Toast.makeText(getActivity(),R.string.history_empty,
+                                                Toast.makeText(getActivity(), R.string.history_empty,
                                                         Toast.LENGTH_SHORT).show();
                                             }
                                         })
                                 .setNegativeButton(android.R.string.cancel, null)
                                 .show();
-                    }else
+                    }
+                    else
                     {
-                        Toast.makeText(getActivity(),R.string.history_empty,Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), R.string.history_empty, Toast.LENGTH_SHORT).show();
                     }
 
-                }else
+                }
+                else
                 {
-                    if(!mFavoritesFragment.isRecyclerEmpty())
+                    if (!mFavoritesFragment.isRecyclerEmpty())
                     {
                         new AlertDialog.Builder(getActivity())
                                 .setMessage(R.string.dialog_delete_favorite)
@@ -107,25 +121,20 @@ public class RightFragment extends Fragment
                                                 Singleton.get(getActivity()).clearFavorites();
                                                 updateFavoriteRecyclerView();
                                                 updateHistoryRecyclerView();
-                                                Toast.makeText(getActivity(),R.string.favorites_empty,
+                                                Toast.makeText(getActivity(), R.string.favorites_empty,
                                                         Toast.LENGTH_SHORT).show();
                                             }
                                         })
                                 .setNegativeButton(android.R.string.cancel, null)
                                 .show();
-                    }else
+                    }
+                    else
                     {
-                        Toast.makeText(getActivity(),R.string.favorites_empty,Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), R.string.favorites_empty, Toast.LENGTH_SHORT).show();
                     }
                 }
             }
         });
-
-        if(savedInstanceState!=null)
-        {
-            int page = savedInstanceState.getInt(ARG_PAGE);
-            mViewPager.setCurrentItem(page);
-        }
 
         return view;
     }
@@ -150,11 +159,12 @@ public class RightFragment extends Fragment
         @Override
         public Fragment getItem(int position)
         {
-            if(position == 0)
+            if (position == 0)
             {
 //                    return HistoryFragment.newInstance();
                 return mHistoryFragment;
-            } else
+            }
+            else
             {
 //                    return FavoritesFragment.newInstance();
                 return mFavoritesFragment;
@@ -181,14 +191,13 @@ public class RightFragment extends Fragment
 
     public void updateHistoryRecyclerView()
     {
+
         mHistoryFragment.updateRecycler();
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState)
+    public boolean isHistoryPageActive()
     {
-        super.onSaveInstanceState(outState);
-        outState.putInt(ARG_PAGE,mViewPager.getCurrentItem());
+        return mViewPager.getCurrentItem()==0;
     }
 
     @Override

@@ -54,7 +54,6 @@ public abstract class BaseRecyclerFragment extends Fragment
         mView = inflater.inflate(R.layout.fragment_base_recycler,container,false);
         mUnbinder = ButterKnife.bind(this,mView);
 
-
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(new HistoryFavoriteAdapter(getTranslations()));
 
@@ -179,7 +178,6 @@ public abstract class BaseRecyclerFragment extends Fragment
             this.mTranslations.clear();
             this.mTranslations.addAll(getTranslations());
             diffResult.dispatchUpdatesTo(this);
-
         }
 
         @Override

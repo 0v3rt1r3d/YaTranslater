@@ -98,7 +98,7 @@ public class Downloader
         }
         catch (IOException ioe)
         {
-            Log.e(TAG, ":" + ioe.getMessage());
+            Log.d(TAG, ":" + ioe.getMessage());
         }
 
         return response;
@@ -124,7 +124,7 @@ public class Downloader
         }
         catch (IOException ioe)
         {
-            Log.e(TAG, ":" + ioe.getMessage());
+            Log.d(TAG, ":" + ioe.getMessage());
         }
 
         return translation;
@@ -168,8 +168,6 @@ public class Downloader
             {
                 dictionary = new Dictionary(text, context.getString(R.string.no_transcription), direction);
             }
-
-            Log.d(TAG, response);
 
 //            Перебор дефиниций
             for (int i = 0; i < jDefinitions.size(); i++)
@@ -228,7 +226,7 @@ public class Downloader
         }
         catch (IOException ioe)
         {
-            Log.e(TAG, ":" + ioe.getMessage());
+            Log.d(TAG, ":" + ioe.getMessage());
         }
 
         return dictionary;

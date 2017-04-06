@@ -59,7 +59,7 @@ public class DictionaryFragment extends Fragment
             mDictionary = getArguments().getParcelable(ARG_DICTIONARY);
         }
 
-        mRecyclerView.setAdapter(new DicAdapter(mDictionary.getVariants()));
+        mRecyclerView.setAdapter(new DictionaryAdapter(mDictionary.getVariants()));
         mMainResult.setText(mDictionary.getText());
         mTranscription.setText(mDictionary.getTranscription());
 
@@ -75,7 +75,7 @@ public class DictionaryFragment extends Fragment
         return fragment;
     }
 
-    public class DicHolder extends RecyclerView.ViewHolder implements View.OnClickListener
+    public class DictionaryHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
         private Variant mVariant;
 
@@ -85,7 +85,7 @@ public class DictionaryFragment extends Fragment
 
         @BindView(R.id.list_dictionary_text_view_number) TextView mNumberText;
 
-        public DicHolder(View itemView)
+        public DictionaryHolder(View itemView)
         {
             super(itemView);
             ButterKnife.bind(this,itemView);
@@ -93,7 +93,7 @@ public class DictionaryFragment extends Fragment
             mFlexExamples.setVisibility(View.GONE);
         }
 
-        public void bindDic(Variant variant, int number)
+        public void bindDictionary(Variant variant, int number)
         {
             mFlexSynonyms.removeAllViews();
             mFlexMeans.removeAllViews();
@@ -191,27 +191,27 @@ public class DictionaryFragment extends Fragment
         }
     }
 
-    private class DicAdapter extends RecyclerView.Adapter<DicHolder>
+    private class DictionaryAdapter extends RecyclerView.Adapter<DictionaryHolder>
     {
         private List<Variant> mVariants;
 
-        public DicAdapter(List<Variant> variants)
+        public DictionaryAdapter(List<Variant> variants)
         {
             mVariants = variants;
         }
 
         @Override
-        public DicHolder onCreateViewHolder(ViewGroup parent, int viewType)
+        public DictionaryHolder onCreateViewHolder(ViewGroup parent, int viewType)
         {
             LayoutInflater inflater = LayoutInflater.from(getActivity());
             View view = inflater.inflate(R.layout.list_dictionary,parent,false);
-            return new DicHolder(view);
+            return new DictionaryHolder(view);
         }
 
         @Override
-        public void onBindViewHolder(DicHolder holder, int position)
+        public void onBindViewHolder(DictionaryHolder holder, int position)
         {
-            holder.bindDic(mVariants.get(position),position);
+            holder.bindDictionary(mVariants.get(position),position);
         }
 
         @Override
@@ -258,7 +258,7 @@ public class DictionaryFragment extends Fragment
     public void onAttach(Context context)
     {
         super.onAttach(context);
-        mCallback = (Callback)getFragmentManager().findFragmentByTag(MainActivity.TAG_TRANSLATE_FRAGMENT);
+        mCallback = (Callback)getFragmentManager().findFragmentByTag(MainActivity.TAG_LEFT_FRAGMENT);
     }
 
     @Override
