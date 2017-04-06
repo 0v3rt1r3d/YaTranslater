@@ -3,12 +3,10 @@ package ru.overtired.yatranslater.structure.dictionary;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.overtired.yatranslater.structure.dictionary.*;
-import ru.overtired.yatranslater.structure.dictionary.Translation;
+//Хранит все данные, полученные из словаря
 
 public class Dictionary implements Parcelable
 {
@@ -31,7 +29,7 @@ public class Dictionary implements Parcelable
     private String mDirection;
     private String mText;
     private String mTranscription;
-    private List<ru.overtired.yatranslater.structure.dictionary.Translation> mTranslations;
+    private List<Variant> mVariants;
 
     @Override
     public void writeToParcel(Parcel dest, int flags)
@@ -39,7 +37,7 @@ public class Dictionary implements Parcelable
         dest.writeString(mDirection);
         dest.writeString(mText);
         dest.writeString(mTranscription);
-        dest.writeList(mTranslations);
+        dest.writeList(mVariants);
     }
 
     private Dictionary(Parcel source)
@@ -47,7 +45,7 @@ public class Dictionary implements Parcelable
         mDirection = source.readString();
         mText = source.readString();
         mTranscription = source.readString();
-        source.readTypedList(mTranslations,Translation.CREATOR);
+        source.readTypedList(mVariants, Variant.CREATOR);
     }
 
     public Dictionary(String text, String transcription, String direction)
@@ -55,17 +53,17 @@ public class Dictionary implements Parcelable
         mText = text;
         mDirection = direction;
         mTranscription = "["+transcription+"]";
-        mTranslations = new ArrayList<>();
+        mVariants = new ArrayList<>();
     }
 
-    public List<Translation> getTranslations()
+    public List<Variant> getVariants()
     {
-        return mTranslations;
+        return mVariants;
     }
 
-    public void addTranslation(Translation translation)
+    public void addTranslation(Variant variant)
     {
-        mTranslations.add(translation);
+        mVariants.add(variant);
     }
 
     @Override

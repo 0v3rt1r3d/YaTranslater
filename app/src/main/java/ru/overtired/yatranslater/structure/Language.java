@@ -1,4 +1,3 @@
-//refactored
 package ru.overtired.yatranslater.structure;
 
 //Структура данных для одного языка
@@ -29,6 +28,7 @@ public class Language implements Comparable<Language>
     @Override
     public int compareTo(@NonNull Language o)
     {
+//        Сравнение нужно для сортировки языков по алфавиту
         return mFullLang.compareToIgnoreCase(o.getFullLang());
     }
 }

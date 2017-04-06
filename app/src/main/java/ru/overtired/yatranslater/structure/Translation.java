@@ -1,4 +1,3 @@
-//refactored
 package ru.overtired.yatranslater.structure;
 
 import android.os.Parcel;

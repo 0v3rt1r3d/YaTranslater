@@ -1,8 +1,6 @@
-//refactored
 package ru.overtired.yatranslater.database;
 
-//    История и избранное хранится в одной таблице,
-//    а для обозначения избранного используется поле IS_FAVORITE
+//Схема базы данных
 
 public class DataBaseScheme
 {
@@ -27,8 +25,8 @@ public class DataBaseScheme
             public static final String LANG_TO = "lang_to";
             public static final String TEXT_FROM = "text_from";
             public static final String TEXT_TO = "text_to";
-            public static final String IS_FAVORITE = "is_favorite";
-            public static final String IS_IN_HISTORY = "in_history";
+            public static final String IS_IN_FAVORITES = "is_in_favorites";
+            public static final String IS_IN_HISTORY = "is_in_history";
             public static final String IS_IN_DICTIONARY = "is_in_dictionary";
         }
     }

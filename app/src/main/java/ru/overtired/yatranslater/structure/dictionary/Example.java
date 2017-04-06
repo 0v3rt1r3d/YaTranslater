@@ -5,9 +5,7 @@ import android.os.Parcelable;
 
 import java.security.spec.ECField;
 
-/**
- * Created by overtired on 22.03.17.
- */
+//Один из элементов словаря - пример перевода
 
 public class Example implements Parcelable
 {

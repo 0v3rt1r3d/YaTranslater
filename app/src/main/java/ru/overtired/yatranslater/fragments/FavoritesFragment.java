@@ -16,14 +16,14 @@ import ru.overtired.yatranslater.R;
 import ru.overtired.yatranslater.structure.Translation;
 import ru.overtired.yatranslater.database.Singleton;
 
-public class HistoryFragment extends BaseRecyclerFragment
+public class FavoritesFragment extends BaseRecyclerFragment
 {
     @BindView(R.id.fragment_base_recycler_edit_text_search) EditText mSearchEditText;
     private boolean mIsSearchActivated = false;
 
-    public static HistoryFragment newInstance()
+    public static FavoritesFragment newInstance()
     {
-        HistoryFragment fragment = new HistoryFragment();
+        FavoritesFragment fragment = new FavoritesFragment();
         return fragment;
     }
 
@@ -47,7 +47,6 @@ public class HistoryFragment extends BaseRecyclerFragment
                 if(s.equals(""))
                 {
                     mIsSearchActivated = false;
-
                 }else
                 {
                     mIsSearchActivated = true;
@@ -70,21 +69,21 @@ public class HistoryFragment extends BaseRecyclerFragment
     {
         if(mIsSearchActivated)
         {
-            return Singleton.get(getActivity()).getFindHistory(mSearchEditText.getText().toString());
+            return Singleton.get(getActivity()).getFindFavorites(mSearchEditText.getText().toString());
         }
-        return Singleton.get(getActivity()).getHistory();
+        return Singleton.get(getActivity()).getFavorites();
     }
 
     @Override
     protected void updateOtherRecycler()
     {
         RightFragment parentFragment = (RightFragment)getParentFragment();
-        parentFragment.updateFavoriteRecyclerView();
+        parentFragment.updateHistoryRecyclerView();
     }
 
     @Override
     protected void removeTranslation(Translation translation)
     {
-        Singleton.get(getActivity()).removeFromHistory(translation);
+        Singleton.get(getActivity()).removeFromFavorites(translation);
     }
 }

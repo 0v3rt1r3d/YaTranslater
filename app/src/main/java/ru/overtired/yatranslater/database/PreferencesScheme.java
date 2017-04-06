@@ -1,9 +1,5 @@
 package ru.overtired.yatranslater.database;
 
-/**
- * Created by overtired on 27.03.17.
- */
-
 public class PreferencesScheme
 {
     public static final String PREF_FIRST_START = "is_it_first_start";

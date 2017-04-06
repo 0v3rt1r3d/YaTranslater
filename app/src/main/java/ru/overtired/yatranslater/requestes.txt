@@ -1,6 +1,0 @@
-Это запрос языков
-https://translate.yandex.net/api/v1.5/tr.json/getLangs?key=trnsl.1.1.20170314T173731Z.9298c44b1c36e629.17d92fd0e44157b4fd53f1fa6f5a2fab7d129d6e&ui=ru
-
-А этот перевод
-
-https://translate.yandex.net/api/v1.5/tr.json/translate?key=trnsl.1.1.20170314T173731Z.9298c44b1c36e629.17d92fd0e44157b4fd53f1fa6f5a2fab7d129d6e&text=dog&lang=en-ru

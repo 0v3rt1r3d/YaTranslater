@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="preference-v14-25.3.1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.android/build-cache/6c3b0bf66b86f057355b219b5d0129a84e68c950/output/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.android/build-cache/6c3b0bf66b86f057355b219b5d0129a84e68c950/output/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/AndroidSDK/extras/android/m2repository/com/android/support/preference-v14/25.3.1/preference-v14-25.3.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

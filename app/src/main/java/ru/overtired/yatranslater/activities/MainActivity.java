@@ -12,41 +12,41 @@ import com.roughike.bottombar.OnTabSelectListener;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.overtired.yatranslater.R;
-import ru.overtired.yatranslater.fragments.HistoryFavoriteRecycler;
-import ru.overtired.yatranslater.fragments.MiddleFragment;
-import ru.overtired.yatranslater.fragments.TranslateFragment;
+import ru.overtired.yatranslater.fragments.BaseRecyclerFragment;
+import ru.overtired.yatranslater.fragments.LeftFragment;
+import ru.overtired.yatranslater.fragments.RightFragment;
 import ru.overtired.yatranslater.structure.Translation;
 
-/**
- * Главная активность, хост для всех фрагментов
- */
+//Главная активность - родительская для всех фрагментов
 
-public class MainActivity extends AppCompatActivity implements HistoryFavoriteRecycler.Callbacks
+public class MainActivity extends AppCompatActivity implements BaseRecyclerFragment.Callbacks
 {
-    @BindView(R.id.bottom_bar)
+    @BindView(R.id.activity_main_bottom_bar)
     com.roughike.bottombar.BottomBar mBottomBar;
 
-    //    Если перед пересозданием активности был активен TranslateFragment - просто восстановлю ссылку
+//    Флаг для восстановления состояния фрагментов при повороте
     private static final String STATE_IS_TRANSLATE_FRAGMENT_ACTIVE = "is_translate_fragment_active";
 
+//    Метки фрагментов
     public static final String TAG_TRANSLATE_FRAGMENT = "tag_translate_fragment";
     public static final String TAG_MIDDLE_FRAGMENT = "tag_middle_fragment";
 
-    private TranslateFragment mTranslateFragment;
-    private MiddleFragment mMiddleFragment;
+    private LeftFragment mLeftFragment;
+    private RightFragment mRightFragment;
 
     @Override
     protected void onSaveInstanceState(Bundle outState)
     {
         super.onSaveInstanceState(outState);
-//        Сохраняю информацию о том, какой фрагмент активен
+
+//        Сохраняется информацию о том, какой фрагмент активен
         outState.putBoolean(STATE_IS_TRANSLATE_FRAGMENT_ACTIVE,
                 (mBottomBar.getCurrentTabPosition() == 0));
         if (mBottomBar.getCurrentTabPosition() != 0)
         {
 //            В случае, если фрагмент перевода не активен, его все равно нужно сохранить
             Bundle translateFragmentState = new Bundle();
-            mTranslateFragment.onSaveInstanceState(translateFragmentState);
+            mLeftFragment.onSaveInstanceState(translateFragmentState);
             outState.putParcelable(TAG_TRANSLATE_FRAGMENT, translateFragmentState);
         }
     }
@@ -60,34 +60,33 @@ public class MainActivity extends AppCompatActivity implements HistoryFavoriteRe
 
         if (savedInstanceState != null)
         {
+//            Действия после поворота
             if (savedInstanceState.getBoolean(STATE_IS_TRANSLATE_FRAGMENT_ACTIVE))
             {
-//            Если был открыт фрагмент перевода - восстанавливаю ссылку на него
-                mTranslateFragment = (TranslateFragment) getSupportFragmentManager()
+//            Если был открыт фрагмент перевода - восстанавливается ссылка на него
+                mLeftFragment = (LeftFragment) getSupportFragmentManager()
                         .findFragmentByTag(TAG_TRANSLATE_FRAGMENT);
-                mMiddleFragment = MiddleFragment.newInstance();
+                mRightFragment = RightFragment.newInstance();
             }
             else
             {
 //                Если был открыт фрагмент с историей
-                mMiddleFragment = (MiddleFragment) getSupportFragmentManager()
+                mRightFragment = (RightFragment) getSupportFragmentManager()
                         .findFragmentByTag(TAG_MIDDLE_FRAGMENT);
                 Bundle translateFragmentState = savedInstanceState.getBundle(TAG_TRANSLATE_FRAGMENT);
-                mTranslateFragment = TranslateFragment.newInstance();
-                mTranslateFragment.setState(translateFragmentState);
+                mLeftFragment = LeftFragment.newInstance();
+                mLeftFragment.setState(translateFragmentState);
             }
-//            И не надо ничего добавлять во FragmentManager, уже итак восстановилось все
         }
         else
         {
 //            Если активность не пересоздается после поворота, а впервые инициализируется
-            mTranslateFragment = TranslateFragment.newInstance();
-            mMiddleFragment = MiddleFragment.newInstance();
+            mLeftFragment = LeftFragment.newInstance();
+            mRightFragment = RightFragment.newInstance();
 
-//            И добавляю фрагмент перевода во FragmentManager
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main_activity_frame_for_fragments,
-                            mTranslateFragment,
+                    .replace(R.id.activity_main_frame_for_fragments,
+                            mLeftFragment,
                             TAG_TRANSLATE_FRAGMENT)
                     .commit();
         }
@@ -102,8 +101,8 @@ public class MainActivity extends AppCompatActivity implements HistoryFavoriteRe
                 {
                     FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
-                    transaction.replace(R.id.main_activity_frame_for_fragments,
-                            mTranslateFragment,
+                    transaction.replace(R.id.activity_main_frame_for_fragments,
+                            mLeftFragment,
                             TAG_TRANSLATE_FRAGMENT);
                     transaction.commit();
                 }
@@ -111,8 +110,8 @@ public class MainActivity extends AppCompatActivity implements HistoryFavoriteRe
                 {
                     FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
-                    transaction.replace(R.id.main_activity_frame_for_fragments,
-                            mMiddleFragment,
+                    transaction.replace(R.id.activity_main_frame_for_fragments,
+                            mRightFragment,
                             TAG_MIDDLE_FRAGMENT);
                     transaction.commit();
                 }
@@ -128,8 +127,8 @@ public class MainActivity extends AppCompatActivity implements HistoryFavoriteRe
     @Override
     public void setTranslation(Translation translation)
     {
-
-        mTranslateFragment = TranslateFragment.newInstance(translation);
+//        Этот метод вызывается из правого фрагмента для восстановления данных перевода
+        mLeftFragment = LeftFragment.newInstance(translation);
         mBottomBar.selectTabAtPosition(0);
     }
 }

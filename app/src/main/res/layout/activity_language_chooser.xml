@@ -8,7 +8,7 @@
   tools:context="ru.overtired.yatranslater.activities.LanguageChooseActivity">
 
   <android.support.v7.widget.RecyclerView
-    android:id="@+id/language_recycler_view"
+    android:id="@+id/activity_language_chooser_recycler_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_constraintBottom_toBottomOf="parent"

@@ -7,7 +7,7 @@
   <string name="favorites">Favorites</string>
   <string name="language_text">Text language</string>
   <string name="language_translate">Translate language</string>
-  <string name="result_of_translation">Result of translation</string>
+  <string name="result_of_translation">Result of variant</string>
 
   <!--Настройки-->
   <string name="settings_update_lang">Should update languages next time</string>

@@ -30,7 +30,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
                 DataBaseScheme.HistoryTable.Cols.TEXT_TO + ", " +
                 DataBaseScheme.HistoryTable.Cols.IS_IN_HISTORY+", "+
                 DataBaseScheme.HistoryTable.Cols.IS_IN_DICTIONARY+", "+
-                DataBaseScheme.HistoryTable.Cols.IS_FAVORITE + ")");
+                DataBaseScheme.HistoryTable.Cols.IS_IN_FAVORITES + ")");
 
         db.execSQL("create table " + DataBaseScheme.DirectionsTable.NAME + " (" +
                 " _id integer primary key autoincrement, " +

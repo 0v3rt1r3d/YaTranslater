@@ -5,10 +5,6 @@ import android.database.CursorWrapper;
 
 import ru.overtired.yatranslater.structure.Language;
 
-/**
- * Created by overtired on 17.03.17.
- */
-
 public class LanguageCursorWrapper extends CursorWrapper
 {
     public LanguageCursorWrapper(Cursor cursor)

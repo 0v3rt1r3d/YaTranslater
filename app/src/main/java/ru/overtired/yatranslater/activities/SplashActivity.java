@@ -12,33 +12,30 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 
-import com.facebook.stetho.Stetho;
-
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
 import ru.overtired.yatranslater.R;
+import ru.overtired.yatranslater.database.Downloader;
 import ru.overtired.yatranslater.database.PreferencesScheme;
 import ru.overtired.yatranslater.structure.Language;
-import ru.overtired.yatranslater.database.Translater;
-import ru.overtired.yatranslater.database.Data;
+import ru.overtired.yatranslater.database.Singleton;
 
-/**
- * Эта активность загружает языки с сервера и сохраняет их в базе данных
- * Языки загружает либо на русском, либо на английском в зависимости от конкретной локали
- */
+//Эта активность загружает языки с сервера и сохраняет их в базе данных
+//Языки загружает либо на русском, либо на английском в зависимости от конкретной локали
 
 public class SplashActivity extends AppCompatActivity
 {
     private String mCurrentLocale;
+    private LanguagesDownloader mLanguagesDownloader;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        Stetho.initializeWithDefaults(getApplication());
+
         final Context context = SplashActivity.this;
 
         boolean isFirstStart = PreferenceManager.getDefaultSharedPreferences(context)
@@ -46,11 +43,17 @@ public class SplashActivity extends AppCompatActivity
 
         String locale = PreferenceManager.getDefaultSharedPreferences(context)
                 .getString(PreferencesScheme.PREF_LOCALE, "");
+
         mCurrentLocale = Locale.getDefault().toString().substring(0, 2);
 
-//        Перезагружает языки, если другая локаль или первый запуск
+//        Перезагружаются языки, если другая локаль или первый запуск
         if (isFirstStart || !mCurrentLocale.equals(locale))
         {
+            PreferenceManager.getDefaultSharedPreferences(SplashActivity.this)
+                    .edit()
+                    .putBoolean(PreferencesScheme.PREF_FIRST_START, false)
+                    .putString(PreferencesScheme.PREF_LOCALE, mCurrentLocale)
+                    .apply();
             tryToDownloadLanguages();
         }
         else
@@ -59,19 +62,19 @@ public class SplashActivity extends AppCompatActivity
         }
     }
 
-    private class LangAndDirTaker extends AsyncTask<String, Void, String>
+    private class LanguagesDownloader extends AsyncTask<String, Void, String>
     {
         @Override
         protected String doInBackground(String... params)
         {
-            Translater translater = new Translater();
-            return translater.getLangAndDirResponse(params[0]);
+            Downloader downloader = new Downloader();
+            return downloader.getLanguagesResponse(params[0]);
         }
 
         @Override
         protected void onPostExecute(String jsonResponse)
         {
-            List<Language> languages = Translater.getLanguages(SplashActivity.this, jsonResponse);
+            List<Language> languages = Downloader.getLanguages(SplashActivity.this, jsonResponse);
 
             Collections.sort(languages, new Comparator<Language>()
             {
@@ -84,21 +87,15 @@ public class SplashActivity extends AppCompatActivity
 
             for (int i = 0; i < languages.size(); i++)
             {
-                Data.get(SplashActivity.this).addLanguage(languages.get(i));
+                Singleton.get(SplashActivity.this).addLanguage(languages.get(i));
             }
 
-            List<String> directions = Translater.getDirections(jsonResponse);
+            List<String> directions = Downloader.getDirections(jsonResponse);
 
             for (int i = 0; i < directions.size(); i++)
             {
-                Data.get(SplashActivity.this).addDirection(directions.get(i));
+                Singleton.get(SplashActivity.this).addDirection(directions.get(i));
             }
-
-            PreferenceManager.getDefaultSharedPreferences(SplashActivity.this)
-                    .edit()
-                    .putBoolean(PreferencesScheme.PREF_FIRST_START, false)
-                    .putString(PreferencesScheme.PREF_LOCALE, mCurrentLocale)
-                    .apply();
 
             startMainActivity();
         }
@@ -111,34 +108,17 @@ public class SplashActivity extends AppCompatActivity
         finish();
     }
 
-    public static boolean hasInternetConnection(Context context)
-    {
-//        Проверяет наличие сети
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        if (wifiInfo != null && wifiInfo.isConnected() && wifiInfo.isAvailable())
-        {
-            return true;
-        }
-        wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-        if (wifiInfo != null && wifiInfo.isConnected() && wifiInfo.isAvailable())
-        {
-            return true;
-        }
-        wifiInfo = cm.getActiveNetworkInfo();
-        if (wifiInfo != null && wifiInfo.isConnected() && wifiInfo.isAvailable())
-        {
-            return true;
-        }
-        return false;
-    }
-
     private void tryToDownloadLanguages()
     {
-        if (hasInternetConnection(SplashActivity.this))
+        if (Downloader.hasInternetConnection(SplashActivity.this))
         {
-            Data.get(SplashActivity.this).removeAllLanguages();
-            new LangAndDirTaker().execute(mCurrentLocale);
+            Singleton.get(SplashActivity.this).removeAllLanguages();
+            if(mLanguagesDownloader!=null)
+            {
+                mLanguagesDownloader.cancel(true);
+            }
+            mLanguagesDownloader = new LanguagesDownloader();
+            mLanguagesDownloader.execute(mCurrentLocale);
         }
         else
         {
@@ -162,6 +142,16 @@ public class SplashActivity extends AppCompatActivity
                         }
                     })
                     .show();
+        }
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        if(mLanguagesDownloader!=null)
+        {
+            mLanguagesDownloader.cancel(true);
         }
     }
 }
