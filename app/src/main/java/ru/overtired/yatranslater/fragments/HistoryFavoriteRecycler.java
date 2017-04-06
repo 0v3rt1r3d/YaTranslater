@@ -185,6 +185,12 @@ public abstract class HistoryFavoriteRecycler extends Fragment
             diffResult.dispatchUpdatesTo(this);
 
         }
+
+        @Override
+        public boolean onFailedToRecycleView(HistoryFavoriteHolder holder)
+        {
+            return true;
+        }
     }
 
     abstract protected List<Translation> getTranslations();
@@ -211,5 +217,10 @@ public abstract class HistoryFavoriteRecycler extends Fragment
     {
         super.onDestroyView();
         mUnbinder.unbind();
+    }
+
+    public boolean isRecyclerEmpty()
+    {
+        return mRecyclerView.getAdapter().getItemCount()==0;
     }
 }

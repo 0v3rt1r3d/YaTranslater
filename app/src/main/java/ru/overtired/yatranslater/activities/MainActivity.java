@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import com.roughike.bottombar.OnTabSelectListener;
@@ -22,9 +23,10 @@ import ru.overtired.yatranslater.structure.Translation;
 
 public class MainActivity extends AppCompatActivity implements HistoryFavoriteRecycler.Callbacks
 {
-    @BindView(R.id.bottom_bar) com.roughike.bottombar.BottomBar mBottomBar;
+    @BindView(R.id.bottom_bar)
+    com.roughike.bottombar.BottomBar mBottomBar;
 
-//    Если перед пересозданием активности был активен TranslateFragment - просто восстановлю ссылку
+    //    Если перед пересозданием активности был активен TranslateFragment - просто восстановлю ссылку
     private static final String STATE_IS_TRANSLATE_FRAGMENT_ACTIVE = "is_translate_fragment_active";
 
     public static final String TAG_TRANSLATE_FRAGMENT = "tag_translate_fragment";
@@ -40,12 +42,12 @@ public class MainActivity extends AppCompatActivity implements HistoryFavoriteRe
 //        Сохраняю информацию о том, какой фрагмент активен
         outState.putBoolean(STATE_IS_TRANSLATE_FRAGMENT_ACTIVE,
                 (mBottomBar.getCurrentTabPosition() == 0));
-        if(mBottomBar.getCurrentTabPosition()!=0)
+        if (mBottomBar.getCurrentTabPosition() != 0)
         {
 //            В случае, если фрагмент перевода не активен, его все равно нужно сохранить
             Bundle translateFragmentState = new Bundle();
             mTranslateFragment.onSaveInstanceState(translateFragmentState);
-            outState.putParcelable(TAG_TRANSLATE_FRAGMENT,translateFragmentState);
+            outState.putParcelable(TAG_TRANSLATE_FRAGMENT, translateFragmentState);
         }
     }
 
@@ -58,13 +60,14 @@ public class MainActivity extends AppCompatActivity implements HistoryFavoriteRe
 
         if (savedInstanceState != null)
         {
-            if(savedInstanceState.getBoolean(STATE_IS_TRANSLATE_FRAGMENT_ACTIVE))
+            if (savedInstanceState.getBoolean(STATE_IS_TRANSLATE_FRAGMENT_ACTIVE))
             {
 //            Если был открыт фрагмент перевода - восстанавливаю ссылку на него
                 mTranslateFragment = (TranslateFragment) getSupportFragmentManager()
                         .findFragmentByTag(TAG_TRANSLATE_FRAGMENT);
                 mMiddleFragment = MiddleFragment.newInstance();
-            }else
+            }
+            else
             {
 //                Если был открыт фрагмент с историей
                 mMiddleFragment = (MiddleFragment) getSupportFragmentManager()
@@ -97,19 +100,21 @@ public class MainActivity extends AppCompatActivity implements HistoryFavoriteRe
             {
                 if (tabId == R.id.nav_button_translate)
                 {
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.main_activity_frame_for_fragments,
-                                    mTranslateFragment,
-                                    TAG_TRANSLATE_FRAGMENT)
-                            .commit();
+                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+                    transaction.replace(R.id.main_activity_frame_for_fragments,
+                            mTranslateFragment,
+                            TAG_TRANSLATE_FRAGMENT);
+                    transaction.commit();
                 }
                 else if (tabId == R.id.nav_button_middle)
                 {
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.main_activity_frame_for_fragments,
-                                    mMiddleFragment,
-                                    TAG_MIDDLE_FRAGMENT)
-                            .commit();
+                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+                    transaction.replace(R.id.main_activity_frame_for_fragments,
+                            mMiddleFragment,
+                            TAG_MIDDLE_FRAGMENT);
+                    transaction.commit();
                 }
             }
         });

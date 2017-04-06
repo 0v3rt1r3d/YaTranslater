@@ -19,4 +19,6 @@
   <string name="button_delete">Удалить</string>
   <string name="no_transcription">Нет транскрипции</string>
   <string name="no_direction">Не удается перевести в этом направлении, выберете другой язык</string>
+  <string name="history_empty">История очищена</string>
+  <string name="favorites_empty">Избранное очищено</string>
 </resources>

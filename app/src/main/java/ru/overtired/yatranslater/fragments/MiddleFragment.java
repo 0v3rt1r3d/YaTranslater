@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -67,41 +68,57 @@ public class MiddleFragment extends Fragment
             @Override
             public void onClick(View v)
             {
-//                mHistoryFragment.updateRecycler();
                 if(mViewPager.getCurrentItem()==0)
                 {
-                    new AlertDialog.Builder(getActivity())
-                            .setMessage(R.string.dialog_delete_history)
-                            .setPositiveButton(android.R.string.ok,
-                                    new DialogInterface.OnClickListener()
-                                    {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which)
+                    if(!mHistoryFragment.isRecyclerEmpty())
+                    {
+                        new AlertDialog.Builder(getActivity())
+                                .setMessage(R.string.dialog_delete_history)
+                                .setPositiveButton(android.R.string.ok,
+                                        new DialogInterface.OnClickListener()
                                         {
-                                            Data.get(getActivity()).clearHistory();
-                                            updateFavoriteRecyclerView();
-                                            updateHistoryRecyclerView();
-                                        }
-                                    })
-                            .setNegativeButton(android.R.string.cancel, null)
-                            .show();
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which)
+                                            {
+                                                Data.get(getActivity()).clearHistory();
+                                                updateFavoriteRecyclerView();
+                                                updateHistoryRecyclerView();
+                                                Toast.makeText(getActivity(),R.string.history_empty,
+                                                        Toast.LENGTH_SHORT).show();
+                                            }
+                                        })
+                                .setNegativeButton(android.R.string.cancel, null)
+                                .show();
+                    }else
+                    {
+                        Toast.makeText(getActivity(),R.string.history_empty,Toast.LENGTH_SHORT).show();
+                    }
+
                 }else
                 {
-                    new AlertDialog.Builder(getActivity())
-                            .setMessage(R.string.dialog_delete_favorite)
-                            .setPositiveButton(android.R.string.ok,
-                                    new DialogInterface.OnClickListener()
-                                    {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which)
+                    if(!mFavoriteFragment.isRecyclerEmpty())
+                    {
+                        new AlertDialog.Builder(getActivity())
+                                .setMessage(R.string.dialog_delete_favorite)
+                                .setPositiveButton(android.R.string.ok,
+                                        new DialogInterface.OnClickListener()
                                         {
-                                            Data.get(getActivity()).clearFavorites();
-                                            updateFavoriteRecyclerView();
-                                            updateHistoryRecyclerView();
-                                        }
-                                    })
-                            .setNegativeButton(android.R.string.cancel, null)
-                            .show();
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which)
+                                            {
+                                                Data.get(getActivity()).clearFavorites();
+                                                updateFavoriteRecyclerView();
+                                                updateHistoryRecyclerView();
+                                                Toast.makeText(getActivity(),R.string.favorites_empty,
+                                                        Toast.LENGTH_SHORT).show();
+                                            }
+                                        })
+                                .setNegativeButton(android.R.string.cancel, null)
+                                .show();
+                    }else
+                    {
+                        Toast.makeText(getActivity(),R.string.favorites_empty,Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });

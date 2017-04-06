@@ -116,17 +116,17 @@ public class SplashActivity extends AppCompatActivity
 //        Проверяет наличие сети
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        if (wifiInfo != null && wifiInfo.isConnected())
+        if (wifiInfo != null && wifiInfo.isConnected() && wifiInfo.isAvailable())
         {
             return true;
         }
         wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-        if (wifiInfo != null && wifiInfo.isConnected())
+        if (wifiInfo != null && wifiInfo.isConnected() && wifiInfo.isAvailable())
         {
             return true;
         }
         wifiInfo = cm.getActiveNetworkInfo();
-        if (wifiInfo != null && wifiInfo.isConnected())
+        if (wifiInfo != null && wifiInfo.isConnected() && wifiInfo.isAvailable())
         {
             return true;
         }

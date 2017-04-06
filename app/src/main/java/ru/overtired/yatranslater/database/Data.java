@@ -47,13 +47,15 @@ public class Data
 
     public void putInCache(Translation translation,Dictionary dictionary)
     {
-        mCache.put(translation.getLangFrom()+translation.getLangTo()+translation.getTextFrom(),
+        mCache.put(translation.getLangFrom()+translation.getLangTo()+
+                        translation.getTextFrom().hashCode(),
                 dictionary);
     }
 
     public Dictionary getFromCache(Translation translation)
     {
-        return mCache.get(translation.getLangFrom()+translation.getLangTo()+translation.getTextFrom());
+        return mCache.get(translation.getLangFrom()+translation.getLangTo()+
+                translation.getTextFrom().hashCode());
     }
 
     public List<Language> getLanguages()

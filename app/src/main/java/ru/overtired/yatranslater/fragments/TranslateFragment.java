@@ -211,7 +211,7 @@ public class TranslateFragment extends Fragment implements ResultFragment.Callba
             @Override
             public void onClick(View v)
             {
-                if(mFieldToTranslate.getText().toString().equals(""))
+                if (mFieldToTranslate.getText().toString().equals(""))
                 {
                     mTranslation = new Translation(
                             mTranslation.getLangFrom(),
@@ -221,11 +221,11 @@ public class TranslateFragment extends Fragment implements ResultFragment.Callba
                             false,
                             false,
                             false
-                            );
+                    );
                 }
                 mTranslation.swapDirection();
                 updateView();
-                if(!mTranslation.getTextTo().equals(""))
+                if (!mTranslation.getTextTo().equals(""))
                 {
                     translate();
                 }
@@ -297,7 +297,7 @@ public class TranslateFragment extends Fragment implements ResultFragment.Callba
                 mTranslation.setInDictionary(true);
                 mTranslation.setInHistory(true);
 
-                Data.get(getActivity()).putInCache(mTranslation,mDictionary);
+                Data.get(getActivity()).putInCache(mTranslation, mDictionary);
 
                 Data.get(getActivity()).addTranslation(mTranslation);
                 updateView();
@@ -397,14 +397,19 @@ public class TranslateFragment extends Fragment implements ResultFragment.Callba
 
     private void translate()
     {
-        if(mFieldToTranslate.getText().toString().equals(""))
+        if (mFieldToTranslate.getText().toString().equals(""))
         {
+//            Ничего не делаю, если текст для перевода пустой
             return;
         }
+
         if (Data.get(getActivity()).hasDirection(mTranslation.getLangFrom() + "-" + mTranslation.getLangTo()))
         {
+            mSaveToFavoritesButton.setEnabled(false);
+
             mTranslation.setFavorite(false);
             mTranslation.setTextFrom(mFieldToTranslate.getText().toString());
+
             updateView();
 
             Translation temp = Data.get(getActivity()).getTranslation(mTranslation);
@@ -423,9 +428,10 @@ public class TranslateFragment extends Fragment implements ResultFragment.Callba
                     updateView();
                 }
                 Dictionary dic = Data.get(getActivity()).getFromCache(mTranslation);
-                if(dic!=null)
+                if (dic != null)
                 {
-                    mDictionary=dic;
+//                    Такое слово уже есть в кеше, восстанавливаю
+                    mDictionary = dic;
 
                     mTranslation.setTextTo(dic.getTranslations().get(0).getText());
                     mTranslation.setInDictionary(true);
@@ -435,7 +441,8 @@ public class TranslateFragment extends Fragment implements ResultFragment.Callba
                     updateView();
 
                     setVisibleDictionaryFragment(true);
-                } else if (SplashActivity.hasInternetConnection(getActivity()))
+                }
+                else if (SplashActivity.hasInternetConnection(getActivity()))
                 {
                     mProgressBar.setVisibility(View.VISIBLE);
 //                    Загрузка данных
@@ -476,6 +483,7 @@ public class TranslateFragment extends Fragment implements ResultFragment.Callba
             mScrollView.setVisibility(View.VISIBLE);
             mFrameForDictionary.setVisibility(View.GONE);
         }
+        mSaveToFavoritesButton.setEnabled(true);
     }
 
     @Override
@@ -534,15 +542,17 @@ public class TranslateFragment extends Fragment implements ResultFragment.Callba
     private void showKeyboard()
     {
         mFieldToTranslate.requestFocus();
-        mFieldToTranslate.postDelayed(new Runnable() {
+        mFieldToTranslate.postDelayed(new Runnable()
+        {
 
             @Override
-            public void run() {
+            public void run()
+            {
                 // TODO Auto-generated method stub
-                InputMethodManager keyboard = (InputMethodManager)getActivity().
+                InputMethodManager keyboard = (InputMethodManager) getActivity().
                         getSystemService(Context.INPUT_METHOD_SERVICE);
                 keyboard.showSoftInput(mFieldToTranslate, 0);
             }
-        },200);
+        }, 200);
     }
 }
