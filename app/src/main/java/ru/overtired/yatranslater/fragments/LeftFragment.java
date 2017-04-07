@@ -261,6 +261,12 @@ public class LeftFragment extends Fragment implements DictionaryFragment.Callbac
                     case "en":
                         language = Recognizer.Language.ENGLISH;
                         break;
+                    case "tr":
+                        language = Recognizer.Language.TURKISH;
+                        break;
+                    case "uk":
+                        language = Recognizer.Language.UKRAINIAN;
+                        break;
                     default:
                         language = NO_LANGUAGE;
                 }
@@ -381,6 +387,8 @@ public class LeftFragment extends Fragment implements DictionaryFragment.Callbac
         else if (resultCode == RecognizerActivity.RESULT_OK && requestCode == REQUEST_RECOGNIZE)
         {
             String recognizedText = data.getStringExtra(RecognizerActivity.EXTRA_RESULT);
+            String recognizedLanguage = data.getStringExtra(RecognizerActivity.EXTRA_LANGUAGE);
+            mTranslation.setLangFrom(recognizedLanguage.substring(0,2));
             mFieldToTranslate.setText(recognizedText.substring(0,recognizedText.length()-1));
 //            SpeechKit добавляет лишний пробел в конце слова, здесь он убирается
             translate();
@@ -450,6 +458,12 @@ public class LeftFragment extends Fragment implements DictionaryFragment.Callbac
 //            Ничего не делаю, если текст для перевода пустой
             return;
         }
+//        Удаление лишних символов
+        String string = mFieldToTranslate.getText().toString();
+        string = string.replaceAll("'","");
+        string = string.replaceAll(";","");
+        mFieldToTranslate.setText(string);
+
         if (mFieldToTranslate.getText().length() > 3000)
         {
 //            Ограничивается длина текста для get-запроса
@@ -471,6 +485,7 @@ public class LeftFragment extends Fragment implements DictionaryFragment.Callbac
 //                Если перевод не из словаря, просто восстанавливаю данные из базы
                 mTranslation = temp;
                 updateView();
+                setVisibleDictionaryFragment(false);
             }
             else
             {

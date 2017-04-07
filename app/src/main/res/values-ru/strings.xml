@@ -21,5 +21,5 @@
   <string name="no_direction">Не удается перевести в этом направлении, выберете другой язык</string>
   <string name="history_empty">История очищена</string>
   <string name="favorites_empty">Избранное очищено</string>
-  <string name="language_not_supported">Выбранный язык не поддерживается для голосового перевода. Выберете Русский или Английский язык</string>
+  <string name="language_not_supported">Выбранный язык не поддерживается для голосового перевода. Выберете Русский, Английский, Турецкий или Украинский язык</string>
 </resources>
