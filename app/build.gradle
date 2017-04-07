@@ -43,6 +43,9 @@ dependencies {
 
     compile 'com.jakewharton:butterknife:8.5.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
+
+    compile 'com.yandex.android:mobmetricalib:2.62'
+    compile 'com.yandex.android:speechkit:2.5.0'
 }
 
 apply plugin: 'com.getkeepsafe.dexcount'

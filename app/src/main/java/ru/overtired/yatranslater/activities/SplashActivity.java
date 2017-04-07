@@ -3,8 +3,6 @@ package ru.overtired.yatranslater.activities;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -20,8 +18,8 @@ import java.util.Locale;
 import ru.overtired.yatranslater.R;
 import ru.overtired.yatranslater.database.Downloader;
 import ru.overtired.yatranslater.database.PreferencesScheme;
-import ru.overtired.yatranslater.structure.Language;
 import ru.overtired.yatranslater.database.Singleton;
+import ru.overtired.yatranslater.structure.Language;
 
 //Эта активность загружает языки с сервера и сохраняет их в базе данных
 //Языки загружает либо на русском, либо на английском в зависимости от конкретной локали
