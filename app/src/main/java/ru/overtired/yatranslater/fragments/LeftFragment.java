@@ -270,7 +270,7 @@ public class LeftFragment extends Fragment implements DictionaryFragment.Callbac
                     {
                         Intent intent = new Intent(getActivity(), RecognizerActivity.class);
                         intent.putExtra(RecognizerActivity.EXTRA_LANGUAGE, language);
-                        intent.putExtra(RecognizerActivity.EXTRA_MODEL, Recognizer.Model.NOTES);
+                        intent.putExtra(RecognizerActivity.EXTRA_MODEL, Recognizer.Model.QUERIES);
                         startActivityForResult(intent, REQUEST_RECOGNIZE);
                     }
                     else
@@ -381,7 +381,8 @@ public class LeftFragment extends Fragment implements DictionaryFragment.Callbac
         else if (resultCode == RecognizerActivity.RESULT_OK && requestCode == REQUEST_RECOGNIZE)
         {
             String recognizedText = data.getStringExtra(RecognizerActivity.EXTRA_RESULT);
-            mFieldToTranslate.setText(recognizedText);
+            mFieldToTranslate.setText(recognizedText.substring(0,recognizedText.length()-1));
+//            SpeechKit добавляет лишний пробел в конце слова, здесь он убирается
             translate();
         }
     }
@@ -451,6 +452,7 @@ public class LeftFragment extends Fragment implements DictionaryFragment.Callbac
         }
         if (mFieldToTranslate.getText().length() > 3000)
         {
+//            Ограничивается длина текста для get-запроса
             mFieldToTranslate.setText(mFieldToTranslate.getText().toString().substring(0, 3000));
         }
 

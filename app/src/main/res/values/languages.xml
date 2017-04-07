@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-  <string-array name="languages">
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <string-array tools:ignore="MissingTranslation" name="languages">
     <item>af</item>
     <item>am</item>
     <item>ar</item>
