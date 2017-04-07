@@ -26,5 +26,6 @@
   <string name="no_direction">Couldn\'t translate in this derection, choose another language</string>
   <string name="history_empty">The history is empty!</string>
   <string name="favorites_empty">Favorites list is empty!</string>
+  <string name="language_not_supported">This language is not supported for voice speech translation. Choose Russian or English</string>
 
 </resources>

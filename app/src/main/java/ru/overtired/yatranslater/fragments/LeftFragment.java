@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.preference.PreferenceManager;
 import android.text.InputType;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +34,9 @@ import ru.overtired.yatranslater.database.PreferencesScheme;
 import ru.overtired.yatranslater.database.Singleton;
 import ru.overtired.yatranslater.structure.Translation;
 import ru.overtired.yatranslater.structure.dictionary.Dictionary;
+import ru.yandex.speechkit.Recognizer;
+import ru.yandex.speechkit.SpeechKit;
+import ru.yandex.speechkit.gui.RecognizerActivity;
 
 /**
  * Created by overtired on 14.03.17.
@@ -40,11 +44,14 @@ import ru.overtired.yatranslater.structure.dictionary.Dictionary;
 
 public class LeftFragment extends Fragment implements DictionaryFragment.Callback
 {
-    public final static int REQUEST_LANG_FROM = 0;
-    public final static int REQUEST_LANG_TO = 1;
+    public static final int REQUEST_LANG_FROM = 0;
+    public static final int REQUEST_LANG_TO = 1;
+    public static final int REQUEST_RECOGNIZE = 2;
 
     private static final String ARG_DICTIONARY = "arg_dictionary";
     private static final String ARG_TRANSLATION = "arg_translation";
+
+    private static final String NO_LANGUAGE = "no_language";
 
     private Unbinder mUnbinder;
 
@@ -67,6 +74,8 @@ public class LeftFragment extends Fragment implements DictionaryFragment.Callbac
     ScrollView mScrollView;
     @BindView(R.id.fragment_left_button_clear)
     ImageButton mButtonClear;
+    @BindView(R.id.fragment_left_button_speech)
+    ImageButton mButtonSpeech;
     @BindView(R.id.fragment_left_progressbar)
     MaterialProgressBar mProgressBar;
 
@@ -237,6 +246,44 @@ public class LeftFragment extends Fragment implements DictionaryFragment.Callbac
                 showKeyboard();
             }
         });
+
+        mButtonSpeech.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                String language;
+                switch (mTranslation.getLangFrom())
+                {
+                    case "ru":
+                        language = Recognizer.Language.RUSSIAN;
+                        break;
+                    case "en":
+                        language = Recognizer.Language.ENGLISH;
+                        break;
+                    default:
+                        language = NO_LANGUAGE;
+                }
+                if(!language.equals(NO_LANGUAGE))
+                {
+                    if (Downloader.hasInternetConnection(getActivity()))
+                    {
+                        Intent intent = new Intent(getActivity(), RecognizerActivity.class);
+                        intent.putExtra(RecognizerActivity.EXTRA_LANGUAGE, language);
+                        intent.putExtra(RecognizerActivity.EXTRA_MODEL, Recognizer.Model.NOTES);
+                        startActivityForResult(intent, REQUEST_RECOGNIZE);
+                    }
+                    else
+                    {
+                        Toast.makeText(getActivity(), R.string.no_internet, Toast.LENGTH_SHORT).show();
+                    }
+                }else
+                {
+                    Toast.makeText(getActivity(),R.string.language_not_supported,Toast.LENGTH_SHORT)
+                            .show();
+                }
+            }
+        });
     }
 
     @Override
@@ -318,19 +365,24 @@ public class LeftFragment extends Fragment implements DictionaryFragment.Callbac
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        if (resultCode != Activity.RESULT_OK)
+        if (resultCode == Activity.RESULT_OK)
         {
-            return;
+            if (requestCode == REQUEST_LANG_FROM)
+            {
+                mTranslation.setLangFrom(data.getStringExtra(LanguageChooseActivity.EXTRA_LANG));
+                updateView();
+            }
+            else if (requestCode == REQUEST_LANG_TO)
+            {
+                mTranslation.setLangTo(data.getStringExtra(LanguageChooseActivity.EXTRA_LANG));
+                updateView();
+            }
         }
-        if (requestCode == REQUEST_LANG_FROM)
+        else if (resultCode == RecognizerActivity.RESULT_OK && requestCode == REQUEST_RECOGNIZE)
         {
-            mTranslation.setLangFrom(data.getStringExtra(LanguageChooseActivity.EXTRA_LANG));
-            updateView();
-        }
-        else if (requestCode == REQUEST_LANG_TO)
-        {
-            mTranslation.setLangTo(data.getStringExtra(LanguageChooseActivity.EXTRA_LANG));
-            updateView();
+            String recognizedText = data.getStringExtra(RecognizerActivity.EXTRA_RESULT);
+            mFieldToTranslate.setText(recognizedText);
+            translate();
         }
     }
 
@@ -397,9 +449,9 @@ public class LeftFragment extends Fragment implements DictionaryFragment.Callbac
 //            Ничего не делаю, если текст для перевода пустой
             return;
         }
-        if(mFieldToTranslate.getText().length()>3000)
+        if (mFieldToTranslate.getText().length() > 3000)
         {
-            mFieldToTranslate.setText(mFieldToTranslate.getText().toString().substring(0,3000));
+            mFieldToTranslate.setText(mFieldToTranslate.getText().toString().substring(0, 3000));
         }
 
         if (Singleton.get(getActivity()).hasDirection(mTranslation.getLangFrom() + "-" + mTranslation.getLangTo()))

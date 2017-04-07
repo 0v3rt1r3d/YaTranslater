@@ -34,7 +34,7 @@
       android:layout_alignParentRight="true"
       android:layout_centerVertical="true"
       android:layout_marginRight="16dp"
-      android:background="@android:color/transparent"
+      android:background="?android:selectableItemBackground"
       android:src="@drawable/ic_remove_translations"/>
 
   </RelativeLayout>
